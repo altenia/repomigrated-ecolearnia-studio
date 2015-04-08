@@ -2,14 +2,15 @@
  * Created by ysahn on 4/8/15.
  */
 var Hapi = require("hapi");
+var Lodash = require("lodash");
 var nconf = require('nconf');
 
 nconf.argv()
     .env()
-    .file({ file: './config/cohevium.conf.json' });
+    .file({ file: './config/ecolearnia-studio.conf.json' });
 
 var port = nconf.get('port');
-var contentBaseDir = nconf.get('contentBaseDir');
+var coheviumConf = nconf.get('cohevium');
 var logConf = nconf.get('log');
 
 var server = new Hapi.Server();
@@ -21,12 +22,16 @@ server.connection(
     }
 );
 
+Lodash.extend(coheviumConf, {
+    log: logConf
+});
+
 server.register([
     { register: require("lout") },
-    { register: require("cohevium"), options: { contentBaseDir: contentBaseDir, log: logConf, publicpath: 'public'} }
+    { register: require("cohevium"), options: coheviumConf }
 ], function(err) {
     if (err) throw err;
     server.start(function() {
-        console.log("Cohevium server started @ " + server.info.uri);
+        console.log("EcoLearniaStudio server started @ " + server.info.uri);
     });
 });

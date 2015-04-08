@@ -8,14 +8,7 @@
 <body>
 
 <script>
-    var contentservice = require('./services/content-service');
-    //var ContentService = require('./services/content-service').ContentService;
 
-    var contentService = new contentservice.ContentService({baseUrl: 'http://localhost:9099'});
-    contentService.queryNodes()
-            .done(function(data){
-                console.log(data);
-            })
 </script>
 
 </body>

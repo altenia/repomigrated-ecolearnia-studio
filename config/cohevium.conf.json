@@ -1,0 +1,9 @@
+{
+	"port": 8080,
+	"contentBaseDir": null,
+
+	"log": {
+		"level": "debug",
+		"logToScreen": true
+	}
+}

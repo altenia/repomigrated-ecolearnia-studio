@@ -1,0 +1,41 @@
+<h4 id="title">Cohevium</h4>
+
+<iframe id="theFrame" src="" style="width:100%"></iframe>
+
+<script>
+$( document ).ready(function() {
+	function setFrameDimensions() {
+		var frameHeight = window.innerHeight - 180;
+		//var frameWidth = $('#theFrame').parent().width();
+
+		$('#theFrame').css('min-height', frameHeight);
+		//$('#theFrame').css('width', frameWidth);
+	};
+	setFrameDimensions();
+
+	$(window).resize(function() {
+		setFrameDimensions();
+	});
+
+	var qparms = parseQueryString();
+	source = qparms.source;
+	$('#theFrame').attr('src', source);
+	title = qparms.title;
+	$('#title').text(title);	
+});
+
+function parseQueryString()
+{
+    var oGetVars = {};
+    if (window.location.search.length > 1)
+    {
+        for (var aItKey, nKeyId = 0, aCouples = window.location.search.substr(1).split('&'); nKeyId < aCouples.length; nKeyId++)
+        {
+            aItKey = aCouples[nKeyId].split('=');
+            oGetVars[unescape(aItKey[0])] = aItKey.length > 1 ? unescape(aItKey[1]) : '';
+        }
+    }
+
+    return oGetVars;
+};
+</script>

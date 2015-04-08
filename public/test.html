@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <script src='/js/app.bundle.js'></script>
+    <title></title>
+</head>
+<body>
+
+<script>
+    var ContentService = require('./services/content-service').ContentService;
+
+    var contentService = new ContentService({baseUrl: 'http://localhost:9099'});
+    contentService.queryNodes()
+            .done(function(data){
+                console.log(data);
+            })
+</script>
+
+</body>
+</html>

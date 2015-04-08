@@ -1,0 +1,13 @@
+{
+	"port": 8080,
+
+  	"cohevium": {
+	  "publicPath": "public",
+	  "contentBaseDir": "cohevium-content"
+	},
+
+	"log": {
+		"level": "debug",
+		"logToScreen": true
+	}
+}

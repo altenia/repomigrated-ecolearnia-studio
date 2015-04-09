@@ -8,7 +8,13 @@
 <body>
 
 <script>
+    var ContentService = require('content-service').ContentService;
 
+    var contentService = new ContentService({baseUrl: 'http://localhost:9099'});
+    contentService.queryNodes()
+            .done(function(data){
+                console.log(data.toJSON());
+            });
 </script>
 
 </body>

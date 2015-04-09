@@ -4,7 +4,8 @@
   "description": "EcoLearnia's content authoring studio",
   "main": "ecolearnia-studio.js",
   "scripts": {
-    "browserify": "browserify client/clientapp.js -o public/js/app.bundle.js",
+    "build-client": "browserify -r ./client/services/content-service.js:content-service client/clientapp.js -o public/js/app.bundle.js -dv",
+    "watch-client": "watchify   -r ./client/services/content-service.js:content-service client/clientapp.js -o public/js/app.bundle.js -dv",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -41,10 +42,11 @@
     "when": "^3.7.2"
   },
   "devDependencies": {
-    "browserify": "^9.0.7",
+    "browserify": "latest",
     "chai": "^2.0.0",
     "mocha": "^2.1.0",
     "should": "^5.0.0",
-    "sinon": "^1.12.2"
+    "sinon": "^1.12.2",
+    "watchify": "latest"
   }
 }

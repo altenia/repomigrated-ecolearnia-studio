@@ -54,11 +54,17 @@ internals.ContentNode = Model.extend({
     }
 });
 
-
-module.exports.ContentNodeCollection = Collection.extend({
-    model: internals.ContentNode,
-    url: '/api/my-model'
+internals.ContentNodeCollection = Collection.extend({
+    model: internals.ContentNode
 });
 
+internals.createContentNodeCollection = function(url)
+{
+    collection = new internals.ContentNodeCollection();
+    collection.url = url;
+    return collection;
+}
+
+
 module.exports.ContentNode = internals.ContentNode;
-module.exports.ContentNodeCollection = internals.ContentNodeCollection;
+module.exports.createContentNodeCollection = internals.createContentNodeCollection;

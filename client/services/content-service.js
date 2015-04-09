@@ -19,7 +19,28 @@ internals.ContentService = function(config)
 
 internals.ContentService.prototype.queryNodes = function(criteria)
 {
+
     var deferred = $.Deferred();
+
+    var contentNodes = contentnodemodel.createContentNodeCollection(this.baseUrl + '/nodes');
+    
+    function successCallback(collection, response, options) {
+        deferred.resolve(collection);
+    }
+
+    function errorCallback(collection, response, options) {
+        deferred.reject(collection);
+    }
+
+    contentNodes.fetch({ 
+        //data: {page: 3},
+        success: successCallback,
+        error: errorCallback
+    });
+
+    return deferred.promise();
+
+    /*
     // criteriaToQueryString(criteria);
     return $.ajax({
         url: this.baseUrl + '/nodes'

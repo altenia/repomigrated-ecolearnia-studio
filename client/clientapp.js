@@ -12,3 +12,6 @@ contentService.queryNodes()
     });
 */
 console.log("done");
+
+// Configure underscore template to use {{ }} instead of <% %>
+_.templateSettings.interpolate = /\{\{(.+?)\}\}/g;

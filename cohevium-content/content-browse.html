@@ -1,2 +1,22 @@
-<h1>EcoLearnia Studio</h1>
 
+<div id="content-root-list"></div>
+
+
+<script src='js/app.bundle.js'></script>
+
+<script>
+    var $ = require('jquery');
+    var ContentService = require('content-service').ContentService;
+    var ContentListView = require('contentlist-view').ContentListView;
+
+    var contentListView;
+    var contentService = new ContentService({baseUrl: 'http://localhost:9099'});
+    contentService.queryNodes()
+            .done(function(data){
+                console.log(data.toJSON());
+                var contentListView = new ContentListView({el: $('#content-root-list'), collection});
+                contentListView.render();
+            });
+
+
+</script>

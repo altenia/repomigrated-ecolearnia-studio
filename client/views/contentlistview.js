@@ -4,9 +4,10 @@
  * Sample using Backbone View with React
  * http://www.thomasboyt.com/2013/12/17/using-reactjs-as-a-backbone-view.html
  */
-var View = require ('ampersand-view');
-var React = require('react');
-var ContentListComponent = require ('contentlistcomponent').ContentListComponent;
+var AmpersandCollectionView = require ('ampersand-collection-view');
+//var React = require('react');
+var React = require('react/addons');
+var ContentListComponent = require ('./contentlistcomponent.jsx').ContentListComponent;
 
 var internals = {};
 
@@ -16,8 +17,9 @@ internals.ContentListView = AmpersandCollectionView.extend({
     template: '<div data-hook="content_root_list" class="content-root-list"></div>',
 
     render: function () {
-        this.renderWithTemplate(this);
-        React.renderComponent(new ContentListComponent({ contentNodes: this.collection}), this.$('.content-root-list').get(0));
+        //this.renderWithTemplate(this);
+        var contentList = React.createElement(ContentListComponent, { contentNodes: this.collection.toJSON()});
+        React.render(contentList, this.el);
         return this;
     },
 

@@ -4,8 +4,8 @@
   "description": "EcoLearnia's content authoring studio",
   "main": "ecolearnia-studio.js",
   "scripts": {
-    "build-client": "browserify -r -t reactify ./client/views/contentlistcomponent.jsx -o public/js/app.bundle.js -dv",
-    "watch-client": "watchify   -r jquery:jquery -t reactify ./client/views/contentlistcomponent.jsx ./client/views/contentlistview:contentlist-view ./client/services/content-service.js:content-service client/clientapp.js -o public/js/app.bundle.js -dv",
+    "build-client": "browserify -t reactify -r ./client/views/contentlistview:contentlist-view -r ./client/services/content-service.js:content-service client/clientapp.js  -o public/js/app.bundle.js -d",
+    "watch-client": "watchify   -t reactify -r ./client/views/contentlistview:contentlist-view -r ./client/services/content-service.js:content-service client/clientapp.js  -o public/js/app.bundle.js -d",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -20,6 +20,7 @@
   "license": "MIT",
   "dependencies": {
     "ampersand-collection": "^1.4.5",
+    "ampersand-collection-view": "^1.4.0",
     "ampersand-events": "^1.1.1",
     "ampersand-model": "^5.0.3",
     "ampersand-rest-collection": "^4.0.0",
@@ -39,7 +40,7 @@
     "nconf": "^0.7.1",
     "node-uuid": "^1.4.2",
     "promise": "^6.1.0",
-    "react": "^0.13.1",
+    "react": "^0.13.2",
     "when": "^3.7.2"
   },
   "devDependencies": {

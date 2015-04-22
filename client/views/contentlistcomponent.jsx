@@ -1,14 +1,15 @@
 /**
  * Created by ysahn on 4/13/15.
  */
-var React = require('react');
+var React = require('react/addons');
 
 /** @jsx React.DOM */
 var internals = {};
 
 internals.ContentListItemComponent = React.createClass({
     render: function() {
-        return <a href="http://venmo.com">Venmo</a>
+        var contentNode = this.props.contentNode;
+        return <a href={contentNode.metadata.title}>{contentNode.uuid}</a>
     }
 });
 
@@ -21,9 +22,9 @@ internals.ContentListComponent = React.createClass({
 
         var listItems = contentNodes.map(function(contentNode) {
             return (
-                <ContentListItemComponent
+                <li><internals.ContentListItemComponent
                     contentNode = {contentNode}
-                />
+                /></li>
             )
         });
 

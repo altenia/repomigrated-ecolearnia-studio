@@ -47,7 +47,7 @@
             <li class="unavailable"><a href="#">OA-2-3</a></li>
             <li class="current"><a href="#">Problem 1a</a></li>
         </ul>
-        <div id="content-root-list"></div>
+        <div id="content-tree"></div>
 
     </div>
 </div>
@@ -59,6 +59,7 @@
     var ContentService = require('content-service').ContentService;
 
     var ContentCollectionView = require('contentcollection-view').ContentCollectionView;
+    var ContentTreeView = require('contenttree-view').ContentTreeView;
 
     var contentService = new ContentService({baseUrl: 'http://localhost:9099'});
     contentService.queryNodes()
@@ -67,9 +68,14 @@
                 var contentTableView = new ContentCollectionView({collection: data, el:contentRootTableEl, componentType: 'table'});
                 contentTableView.render();
 
-                var contentRootListEl = document.getElementById('content-root-list');
-                var contentListView = new ContentCollectionView({collection: data, el:contentRootListEl});
-                contentListView.render();
-                console.log(data.toJSON());
+                console.log('list:', data.toJSON());
+            });
+
+    contentService.fetchNode('test-node.01')
+            .done(function(data){
+                var contentTreeEl = document.getElementById('content-tree');
+                var contentTreeView = new ContentTreeView({model: data, el:contentTreeEl});
+                contentTreeView.render();
+                console.log('model:', data.toJSON());
             });
 </script>

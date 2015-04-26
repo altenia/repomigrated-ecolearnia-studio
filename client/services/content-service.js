@@ -56,4 +56,26 @@ internals.ContentService.prototype.queryNodes = function(criteria)
 };
 
 
+internals.ContentService.prototype.fetchNode = function(uuid) {
+
+    var deferred = $.Deferred();
+
+    var contentNode = contentnodemodel.createContentNode(this.baseUrl + '/nodes', uuid);
+
+    function successCallback(model, response, options) {
+        deferred.resolve(model);
+    }
+
+    function errorCallback(model, response, options) {
+        deferred.reject(model);
+    }
+
+    contentNode.fetch({
+        success: successCallback,
+        error: errorCallback
+    });
+
+    return deferred.promise();
+}
+
 module.exports.ContentService = internals.ContentService;

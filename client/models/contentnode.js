@@ -58,13 +58,21 @@ internals.ContentNodeCollection = Collection.extend({
     model: internals.ContentNode
 });
 
+internals.createContentNode = function(urlRoot, uuid)
+{
+    var model = new internals.ContentNode({uuid: uuid});
+    model.urlRoot = urlRoot;
+    return model;
+}
+
 internals.createContentNodeCollection = function(url)
 {
-    collection = new internals.ContentNodeCollection();
+    var collection = new internals.ContentNodeCollection();
     collection.url = url;
     return collection;
 }
 
 
 module.exports.ContentNode = internals.ContentNode;
+module.exports.createContentNode = internals.createContentNode;
 module.exports.createContentNodeCollection = internals.createContentNodeCollection;

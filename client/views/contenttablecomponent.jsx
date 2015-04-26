@@ -4,6 +4,7 @@
 var React = require('react/addons');
 
 /** @jsx React.DOM */
+
 var internals = {};
 
 internals.ContentTableItemComponent = React.createClass({
@@ -11,7 +12,7 @@ internals.ContentTableItemComponent = React.createClass({
         var contentNode = this.props.contentNode;
         return ([
             <td>{contentNode.uuid}</td>,
-            <td>{contentNode.metadata.title}</td>
+            <td><a href={"#content/"+contentNode.metadata.uuid}>{contentNode.metadata.title}</a></td>
         ])
     }
 });

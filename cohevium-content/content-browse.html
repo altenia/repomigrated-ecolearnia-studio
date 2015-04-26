@@ -1,22 +1,75 @@
+<div class="row full-width">
+    <div id="pane-menu" class="columns small-4 medium-4 hide-for-small-down" >
 
-<div id="content-root-list"></div>
+        <ul class="accordion" data-accordion="myAccordionGroup">
+            <li class="accordion-navigation">
+                <a href="#panel1a">Favorites</a>
+                <div id="panel1a" class="content">
+                    Favorites
+                </div>
+            </li>
+            <li class="accordion-navigation">
+                <a href="#panel2a">Root Contents</a>
+                <div id="panel2a" class="content">
+
+                    <!-- Filter -->
+                    <form>
+                        <div class="row collapse" >
+                            <div class="small-3 columns">
+                                <span class="prefix">Locale</span>
+                            </div>
+                            <div class="small-9 columns">
+                                <input type="text"  placeholder="Locale">
+                            </div>
+                        </div>
+                        <div class="row collapse">
+                            <div class="small-3 columns">
+                                <span class="prefix">Grade</span>
+                            </div>
+                            <div class="small-9 columns">
+                                <input type="text" placeholder="Grade">
+                            </div>
+                        </div>
+                    </form>
+
+                    <div id="content-root-table"></div>
+
+                </div>
+            </li>
+        </ul>
+
+    </div>
+
+    <div id="pane-content" class="columns small-12 medium-8">
+        <ul class="breadcrumbs">
+            <li><a href="#">Workspace A</a></li>
+            <li><a href="#">EN_US-MA</a></li>
+            <li class="unavailable"><a href="#">OA-2-3</a></li>
+            <li class="current"><a href="#">Problem 1a</a></li>
+        </ul>
+        <div id="content-root-list"></div>
+
+    </div>
+</div>
 
 
-<script src='js/app.bundle.js'></script>
+<script src='/cohevium/public/js/app.bundle.js'></script>
 
 <script>
-    var $ = require('jquery');
     var ContentService = require('content-service').ContentService;
-    var ContentListView = require('contentlist-view').ContentListView;
 
-    var contentListView;
+    var ContentCollectionView = require('contentcollection-view').ContentCollectionView;
+
     var contentService = new ContentService({baseUrl: 'http://localhost:9099'});
     contentService.queryNodes()
             .done(function(data){
-                console.log(data.toJSON());
-                var contentListView = new ContentListView({el: $('#content-root-list'), collection});
+                var contentRootTableEl = document.getElementById('content-root-table');
+                var contentTableView = new ContentCollectionView({collection: data, el:contentRootTableEl, componentType: 'table'});
+                contentTableView.render();
+
+                var contentRootListEl = document.getElementById('content-root-list');
+                var contentListView = new ContentCollectionView({collection: data, el:contentRootListEl});
                 contentListView.render();
+                console.log(data.toJSON());
             });
-
-
 </script>

@@ -3,6 +3,8 @@
     "version": "1.0",
     "appInfo": {
             "name": "EcoLearnia Studio",
+            "homeUrl": "www.mathnia.com",
+            "logoUrl": "/cohevium/public/images/logo.png",
             "description": "Content authoring studio"
         },
     "!doc": "theme is combinatin of template and items, it can be configured per path_prefix",

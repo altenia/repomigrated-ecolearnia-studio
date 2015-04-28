@@ -1,3 +1,39 @@
+<!-- SECONDARY BAR { -->
+<div class="fixed second-top-bar">
+    <nav id="secondary-top-bar" class="top-bar" data-topbar role="navigation">
+        <ul class="title-area">
+            <li class="name">
+                <h1><a href="">Hello second</a></h1>
+            </li>
+        </ul>
+        <section class="top-bar-section">
+            <ul class="left">
+                <li>
+
+                </li>
+            </ul>
+            <ul class="right">
+                <li class="has-dropdown menu-icon">
+                    <a href="#"><i class="fa fa-link"></i></a>
+                </li>
+                <li class="has-dropdown "><a href="#"><i class="fa fa-bars"></i></a>
+                    <ul class="dropdown">
+                        <li><a href="#">Bookmark</a></li>
+                        <li><a href="#">Make copy</a></li>
+                        <li class="divider"></li>
+                        <li><a href="#">Rename</a></li>
+                        <li><a href="#">Move to</a></li>
+                    </ul>
+                </li>
+                <li class="divider"></li>
+
+                <li><a href=""><i class="fa fa-cog"></i></a> </li>
+            </ul>
+        </section>
+    </nav>
+</div>
+<!-- } SECONDARY BAR -->
+
 <div class="row full-width">
     <div id="pane-menu" class="columns small-4 medium-4 hide-for-small-down" >
 
@@ -10,7 +46,7 @@
             </li>
             <li class="accordion-navigation">
                 <a href="#panel2a">Root Contents</a>
-                <div id="panel2a" class="content">
+                <div id="panel2a" class="content active">
 
                     <!-- Filter -->
                     <form>
@@ -56,12 +92,16 @@
 <script src='/cohevium/public/js/app.bundle.js'></script>
 
 <script>
+    var Router = require('ampersand-router');
+
     var ContentService = require('content-service').ContentService;
 
     var ContentCollectionView = require('contentcollection-view').ContentCollectionView;
     var ContentTreeView = require('contenttree-view').ContentTreeView;
 
-    var contentService = new ContentService({baseUrl: 'http://localhost:9099'});
+    var contentService = new ContentService({rootUrl: 'http://localhost:9099'});
+
+    // Populate the root nodes
     contentService.queryNodes()
             .done(function(data){
                 var contentRootTableEl = document.getElementById('content-root-table');
@@ -71,11 +111,32 @@
                 console.log('list:', data.toJSON());
             });
 
-    contentService.fetchNode('test-node.01')
-            .done(function(data){
-                var contentTreeEl = document.getElementById('content-tree');
-                var contentTreeView = new ContentTreeView({model: data, el:contentTreeEl});
-                contentTreeView.render();
-                console.log('model:', data.toJSON());
-            });
+
+    var ContentBrowserRouter = Router.extend({
+        routes: {
+            '': 'home',
+            'content/:uuid': 'content',
+        },
+
+        home: function() {
+            console.log('home');
+        },
+
+        content: function(uuid) {
+            console.log(uuid);
+            contentService.fetchNode(uuid)
+                    .done(function(data){
+                        var contentTreeEl = document.getElementById('content-tree');
+                        var contentTreeView = new ContentTreeView({model: data, el:contentTreeEl});
+                        contentTreeView.render();
+                        console.log('model:', data.toJSON());
+                    });
+        }
+    });
+
+    var router = new ContentBrowserRouter();
+    var t = router.history.start({pushState: false});
+
+
+
 </script>

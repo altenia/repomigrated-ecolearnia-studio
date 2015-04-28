@@ -4,7 +4,7 @@
   "description": "EcoLearnia's content authoring studio",
   "main": "ecolearnia-studio.js",
   "scripts": {
-    "build-client": "browserify -t reactify -r ./client/views/contentcollectionview:contentcollection-view -r ./client/views/contenttree-view:contenttree-view -r ./client/services/content-service.js:content-service client/clientapp.js  -o public/js/app.bundle.js -d",
+    "build-client": "browserify -t reactify -r ./client/views/contentcollectionview:contentcollection-view -r ./client/views/contenttree-view:contenttree-view -r ./client/services/content-service.js:content-service -r ampersand-router -r jquery  -o public/js/app.bundle.js -d",
     "watch-client": "watchify   -t reactify -r ./client/views/contentcollectionview:contentcollection-view -r ./client/services/content-service.js:content-service client/clientapp.js  -o public/js/app.bundle.js -d",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

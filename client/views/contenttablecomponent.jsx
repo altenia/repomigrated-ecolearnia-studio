@@ -27,7 +27,7 @@ internals.ContentTableComponent = React.createClass({
         var tableRows = contentNodes.map(function(contentNode) {
             return (
                 <tr>
-                    <td>{contentNode.uuid}</td>
+                    <td><a href={"#content/" + contentNode.uuid}>{contentNode.uuid}</a></td>
                     <td>{contentNode.metadata.title}</td>
                 </tr>
             )

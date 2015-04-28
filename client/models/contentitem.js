@@ -1,19 +1,19 @@
 /**
- * Created by ysahn on 4/7/15.
+ * Created by ysahn on 4/27/15.
  */
 var Model = require('ampersand-model');
 var Collection = require('ampersand-rest-collection');
 
 var internals = {};
 
-internals.ContentNode = Model.extend({
+internals.ContentItem = Model.extend({
     idAttribute: 'uuid',
     props: {
         uuid: { type: 'string', required: true },
         refName: { type: 'string', required: true }, // Reference Name of this content
         parent: { type: 'string' },
         parentUuid: { type: 'string' },
-        ordering: { type: 'number' }, // Ordering position within it's parent
+        ordering: { type: 'number' }, // Index within it's parent
 
         createdBy: { type: 'string' },
         createdAt: { type: 'date' },
@@ -22,7 +22,8 @@ internals.ContentNode = Model.extend({
         copiedFrom: { type: 'string' },
         kind: { type: 'string', required: true }, // <CourseTemplate|Assignment>,
         metadata: {
-            // The area in which the learner is engaged",
+            // The area in which the learner is engaged,
+            // If the values are not provided, it inherits from parent
             learningArea: {
                 subject:     { type: 'string', required: true }, // "Match"
                 subjectArea: { type: 'string', required: true }, // "Arithmetic"
@@ -51,30 +52,59 @@ internals.ContentNode = Model.extend({
 
         body: {
             // The models section includes data passed to"
-            items: { type: 'array'}
+            models: {type: object},
+
+            // The presenters sections includes configuration information",
+            // for the UI components ",
+            presenters: { type: 'array'},
+
+            processFlow: {type: 'object'},
+
+            // The models section includes data passed to",
+            policy: {
+                maxAttempts: { type: 'number'},
+                // Optional - if present, each attempt will be timed in seconds",
+                timed: { type: 'number'},,
+                timeOverAction: { type: 'string'},
+            },
+
+            // The models section includes data passed to",
+            submissionEval: {
+                engine: {type: 'string'},
+                correctAnswer: {type: 'object'},
+                // The models section includes data passed to",
+                feedback: [
+                    {
+                        case: {type: 'object'}, // Expression
+                        message: {type: 'string'} // feedback message
+                    }
+                ],
+                solution: {type: 'object'},
+                hints: { type: 'array'}
+            }
         }
     }
 });
 
-internals.ContentNodeCollection = Collection.extend({
-    model: internals.ContentNode
+internals.ContentItemCollection = Collection.extend({
+    model: internals.ContentItem
 });
 
-internals.createContentNode = function(urlRoot, uuid)
+internals.createContentItem = function(urlRoot, uuid)
 {
-    var model = new internals.ContentNode({uuid: uuid});
+    var model = new internals.ContentItem({uuid: uuid});
     model.urlRoot = urlRoot;
     return model;
 }
 
-internals.createContentNodeCollection = function(url)
+internals.createContentItemCollection = function(url)
 {
-    var collection = new internals.ContentNodeCollection();
+    var collection = new internals.ContentItemCollection();
     collection.url = url;
     return collection;
 }
 
 
-module.exports.ContentNode = internals.ContentNode;
-module.exports.createContentNode = internals.createContentNode;
-module.exports.createContentNodeCollection = internals.createContentNodeCollection;
+module.exports.ContentItem = internals.ContentItem;
+module.exports.createContentItem = internals.createContentItem;
+module.exports.createContentItemCollection = internals.createContentItemCollection;

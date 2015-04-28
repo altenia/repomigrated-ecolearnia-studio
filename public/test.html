@@ -7,23 +7,32 @@
 </head>
 <body>
 
-<div id="content-list"></div>
+<div id="placeholder"></div>
 
 
 <script>
-    var ContentService = require('content-service').ContentService;
+    var Router = require('ampersand-router');
 
-    var ContentListView = require('contentlist-view').ContentListView;
+    var MyRouter = Router.extend({
+        routes: {
+            '': 'home',
+            'content/:uuid': 'content',
+        },
 
-    var el = document.getElementById('content-list');
+        home: function() {
+            alert('home');
+        },
 
-    var contentService = new ContentService({baseUrl: 'http://localhost:9099'});
-    contentService.queryNodes()
-            .done(function(data){
-                var contentListView = new ContentListView({collection: data, el:el});
-                contentListView.render();
-                console.log(data.toJSON());
-            });
+        content: function(uuid) {
+            alert(uuid);
+        }
+    });
+
+    var router = new MyRouter();
+    router.on('route', function(event){
+        console.log('hello');
+    });
+
 </script>
 
 </body>

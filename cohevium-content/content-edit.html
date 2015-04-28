@@ -1,0 +1,50 @@
+<div class="row full-width">
+    <div class="columns small-12" >
+
+        <dl class="tabs" data-tab>
+            <dd class="tab-title active"><a href="#panel_metadata">Metadata</a></dd>
+            <dd class="tab-title"><a href="#panel_source">Source</a></dd>
+            <dd class="tab-title"><a href="#panel_form">Form</a></dd>
+            <dd class="tab-title"><a href="#panel_preview">Preview</a></dd>
+        </dl>
+        <div class="tabs-content">
+            <div class="content active" id="panel_metadata">
+                <p>Form of metadata</p>
+            </div>
+            <div class="content" id="panel_source">
+                <p>JSON body's source code using ACE editor or JSON editor</p>
+            </div>
+            <div class="content" id="panel_form">
+                <p>Form based</p>
+            </div>
+            <div class="content" id="panel_preview">
+                <p>Preview of the content (rendered using the presenters)</p>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+
+<script src="/cohevium/public/foundation/js/foundation/foundation.tab.js"></script>
+<script src='/cohevium/public/js/app.bundle.js'></script>
+
+<script>
+    /*
+    var ContentService = require('content-service').ContentService;
+
+    var ContentCollectionView = require('contentcollection-view').ContentCollectionView;
+    var ContentTreeView = require('contenttree-view').ContentTreeView;
+
+    var contentService = new ContentService({baseUrl: 'http://localhost:9099'});
+
+    contentService.fetchNode('test-node.01')
+            .done(function(data){
+                var contentTreeEl = document.getElementById('content-data');
+                var contentTreeView = new ContentTreeView({model: data, el:contentTreeEl});
+                contentTreeView.render();
+                console.log('model:', data.toJSON());
+            });
+*/
+</script>

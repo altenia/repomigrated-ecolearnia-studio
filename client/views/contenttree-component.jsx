@@ -1,5 +1,7 @@
 /**
  * Created by ysahn on 4/13/15.
+ *
+ * @see http://jsfiddle.net/ssorallen/XX8mw/
  */
 var React = require('react/addons');
 
@@ -14,6 +16,9 @@ internals.ContentItemComponent = React.createClass({
             <div>
                 <span>{contentItem.uuid}</span>
                 <span><a href={"#content/"+contentItem.metadata.uuid}>{contentItem.metadata.title}</a></span>
+                <span title="bookmark"><i className="fa fa-bookmark"></i></span>
+                <span title="copy"><i className="fa fa-copy"></i></span>
+                <span title="add"><i className="fa fa-plus"></i></span>
             </div>
         )
     }
@@ -31,7 +36,11 @@ internals.ContentTreeNode = React.createClass({
 
         if (this.props.node.body.subnodes != null) {
             childNodes = this.props.node.body.subnodes.map(function(node, index) {
-                return <li key={index}><internals.ContentTreeNode node={node} /></li>
+                return (
+                    <li key={index}>
+                        <internals.ContentTreeNode node={node} />
+                    </li>
+                )
             });
 
             classObj = {
@@ -61,9 +70,13 @@ internals.ContentTreeNode = React.createClass({
 
         return (
             <div>
-                <h5 onClick={this.toggle} className={React.addons.classSet(classObj)}>
+                <span onClick={this.toggle} className={React.addons.classSet(classObj)}>
                 {this.props.node.metadata.title} ({this.props.node.kind})
-                </h5>
+                </span>
+                <span title="bookmark"><i className="fa fa-bookmark"></i></span>
+                <span title="edit"><i className="fa fa-edit"></i></span>
+                <span title="copy"><i className="fa fa-copy"></i></span>
+                <span title="add"><i className="fa fa-plus"></i></span>
                 <ul style={style}>
                     {childNodes}
                 </ul>

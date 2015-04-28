@@ -6,7 +6,7 @@ var Router = require('ampersand-router');
 
 var internals = {};
 
-internals.MainRouter = Router.extend({
+internals.ContentBrowserRouter = Router.extend({
     routes: {
         '': 'home',
         'content/:uuid': 'content',
@@ -24,7 +24,7 @@ internals.MainRouter = Router.extend({
 });
 
 
-module.exports.MainRouter = internals.MainRouter;
+module.exports.ContentBrowserRouter = internals.ContentBrowserRouter;
 
 // Configure underscore template to use {{ }} instead of <% %>
 //_.templateSettings.interpolate = /\{\{(.+?)\}\}/g;

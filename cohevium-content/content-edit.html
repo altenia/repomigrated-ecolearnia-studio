@@ -1,6 +1,7 @@
 <div class="row full-width">
     <div class="columns small-12" >
 
+        <!--
         <dl class="tabs" data-tab>
             <dd class="tab-title active"><a href="#panel_metadata">Metadata</a></dd>
             <dd class="tab-title"><a href="#panel_source">Source</a></dd>
@@ -21,7 +22,11 @@
                 <p>Preview of the content (rendered using the presenters)</p>
             </div>
         </div>
-
+        <div>
+            <a href="#" class="button">Save</a> <a href="#" class="button">Revert</a>
+        </div>
+        -->
+        <div id="content-editor"></div>
     </div>
 
 </div>
@@ -31,20 +36,49 @@
 <script src='/cohevium/public/js/app.bundle.js'></script>
 
 <script>
-    /*
+    var Router = require('ampersand-router');
+
     var ContentService = require('content-service').ContentService;
+    var ContentEditorView = require('contenteditor-view').ContentEditorView;
 
-    var ContentCollectionView = require('contentcollection-view').ContentCollectionView;
-    var ContentTreeView = require('contenttree-view').ContentTreeView;
+    var contentService = new ContentService({rootUrl: 'http://localhost:9099'});
 
-    var contentService = new ContentService({baseUrl: 'http://localhost:9099'});
+    // @todo - Populate the breadcrumb
 
-    contentService.fetchNode('test-node.01')
-            .done(function(data){
-                var contentTreeEl = document.getElementById('content-data');
-                var contentTreeView = new ContentTreeView({model: data, el:contentTreeEl});
-                contentTreeView.render();
-                console.log('model:', data.toJSON());
-            });
-*/
+    var ContentEditorRouter = Router.extend({
+        routes: {
+            '': 'home',
+            'item/:uuid': 'item',
+            'node/:uuid': 'node',
+        },
+
+        home: function() {
+            console.log('home');
+        },
+
+        item: function(uuid) {
+            console.log(uuid);
+            contentService.fetchItem(uuid)
+                    .done(function(data){
+                        var contentEditorEl = document.getElementById('content-editor');
+                        var contentEditorView = new ContentEditorView({model: data, el:contentEditorEl});
+                        contentEditorView.render();
+                        console.log('model:', data.toJSON());
+                    });
+        },
+
+        node: function(uuid) {
+            console.log(uuid);
+            contentService.fetchNode(uuid)
+                    .done(function(data){
+                        var contentEditorEl = document.getElementById('content-editor');
+                        var contentEditorView = new ContentEditorView({model: data, el:contentEditorEl});
+                        contentEditorView.render();
+                        console.log('model:', data.toJSON());
+                    });
+        }
+    });
+
+    var router = new ContentEditorRouter();
+    var t = router.history.start({pushState: false});
 </script>

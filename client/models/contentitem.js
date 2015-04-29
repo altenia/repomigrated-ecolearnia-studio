@@ -9,6 +9,7 @@ var internals = {};
 internals.ContentItem = Model.extend({
     idAttribute: 'uuid',
     props: {
+        realmUuid: { type: 'string', required: false }, // @todo turn this to requried
         uuid: { type: 'string', required: true },
         refName: { type: 'string', required: true }, // Reference Name of this content
         parent: { type: 'string' },
@@ -47,12 +48,12 @@ internals.ContentItem = Model.extend({
             description:{ type: 'string' }, // "Sum of Single Digit",
             // ? How the pre recomendation should be encoded? by GUID?",
             preRecommendations: { type: 'array'},
-            isAssessment: { type: Boolean }
+            isAssessment: { type: 'boolean' }
         },
 
         body: {
             // The models section includes data passed to"
-            models: {type: object},
+            models: {type: 'object'},
 
             // The presenters sections includes configuration information",
             // for the UI components ",
@@ -64,8 +65,8 @@ internals.ContentItem = Model.extend({
             policy: {
                 maxAttempts: { type: 'number'},
                 // Optional - if present, each attempt will be timed in seconds",
-                timed: { type: 'number'},,
-                timeOverAction: { type: 'string'},
+                timed: { type: 'number'},
+                timeOverAction: { type: 'string'}
             },
 
             // The models section includes data passed to",

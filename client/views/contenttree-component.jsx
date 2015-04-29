@@ -14,8 +14,8 @@ internals.ContentItemComponent = React.createClass({
         var contentItem = this.props.item.item;
         return (
             <div>
-                <span>{contentItem.uuid}</span>
-                <span><a href={"#content/"+contentItem.metadata.uuid}>{contentItem.metadata.title}</a></span>
+                <span>{contentItem.metadata.learningArea.domainCode}</span>
+                <span><a href={this.props.siteBaseUrl + "/content-edit.html/#item/"+contentItem.uuid}>{contentItem.metadata.title}</a></span>
                 <span title="bookmark"><i className="fa fa-bookmark"></i></span>
                 <span title="copy"><i className="fa fa-copy"></i></span>
                 <span title="add"><i className="fa fa-plus"></i></span>
@@ -38,10 +38,10 @@ internals.ContentTreeNode = React.createClass({
             childNodes = this.props.node.body.subnodes.map(function(node, index) {
                 return (
                     <li key={index}>
-                        <internals.ContentTreeNode node={node} />
+                        <internals.ContentTreeNode node={node} siteBaseUrl={this.props.siteBaseUrl} />
                     </li>
                 )
-            });
+            }.bind(this));
 
             classObj = {
                 togglable: true,
@@ -53,8 +53,8 @@ internals.ContentTreeNode = React.createClass({
         if (this.props.node.body.items != null &&
             this.props.node.body.items.length > 0) {
             childNodes = this.props.node.body.items.map(function(item, index) {
-                return <li key={index}><internals.ContentItemComponent item={item} /></li>
-            });
+                return <li key={index}><internals.ContentItemComponent item={item} siteBaseUrl={this.props.siteBaseUrl} /></li>
+            }.bind(this));
 
             classObj = {
                 togglable: true,

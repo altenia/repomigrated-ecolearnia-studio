@@ -4,8 +4,8 @@
   "description": "EcoLearnia's content authoring studio",
   "main": "ecolearnia-studio.js",
   "scripts": {
-    "build-client": "browserify -t reactify -r ./client/views/contentcollectionview:contentcollection-view -r ./client/views/contenttree-view:contenttree-view -r ./client/services/content-service.js:content-service -r ampersand-router -r jquery  -o public/js/app.bundle.js -d",
-    "watch-client": "watchify   -t reactify -r ./client/views/contentcollectionview:contentcollection-view -r ./client/services/content-service.js:content-service client/clientapp.js  -o public/js/app.bundle.js -d",
+    "build-client": "browserify -t reactify -r ./client/views/contentcollection-view:contentcollection-view -r ./client/views/contenttree-view:contenttree-view -r ./client/views/contenteditor-view:contenteditor-view -r ./client/services/content-service.js:content-service -r ampersand-router -r jquery  -o public/js/app.bundle.js -d",
+    "watch-client": "watchify   -t reactify -r ./client/views/contentcollection-view:contentcollection-view -r ./client/views/contenttree-view:contenttree-view -r ./client/views/contenteditor-view:contenteditor-view -r ./client/services/content-service.js:content-service -r ampersand-router -r jquery  -o public/js/app.bundle.js -d -v",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -42,6 +42,7 @@
     "node-uuid": "^1.4.2",
     "promise": "^6.1.0",
     "react": "^0.13.2",
+    "react-intl": "^1.2.0",
     "when": "^3.7.2"
   },
   "devDependencies": {

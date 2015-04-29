@@ -3,6 +3,7 @@
  */
 var $ = require('jquery');
 var contentnodemodel = require('../models/contentnode');
+var contentitemmodel = require('../models/contentitem');
 
 /** Declaration of internal namespace */
 var internals = {};
@@ -105,7 +106,7 @@ internals.ContentService.prototype.queryItems = function(criteria, parentNodeUui
         baseUrl = this.rootUrl + '/contentitems';
     }
 
-    var contentItem = contentnodemodel.createContentItem(this.rootUrl + '/nodes', uuid);
+    var contentItem = contentitemmodel.createContentItem(this.rootUrl + '/nodes', uuid);
 
     function successCallback(model, response, options) {
         deferred.resolve(model);
@@ -139,7 +140,7 @@ internals.ContentService.prototype.fetchItem = function(uuid, parentNodeUuid) {
     } else {
         baseUrl = this.rootUrl + '/contentitems';
     }
-    var contentItem = contentnodemodel.createContentItem(baseUrl, uuid);
+    var contentItem = contentitemmodel.createContentItem(baseUrl, uuid);
 
     function successCallback(model, response, options) {
         deferred.resolve(model);

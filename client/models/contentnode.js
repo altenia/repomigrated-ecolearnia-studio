@@ -9,6 +9,8 @@ var internals = {};
 internals.ContentNode = Model.extend({
     idAttribute: 'uuid',
     props: {
+
+        realmUuid: { type: 'string', required: false }, // @todo turn this to requried
         uuid: { type: 'string', required: true },
         refName: { type: 'string', required: true }, // Reference Name of this content
         parent: { type: 'string' },
@@ -46,7 +48,7 @@ internals.ContentNode = Model.extend({
             description:{ type: 'string' }, // "Sum of Single Digit",
             // ? How the pre recomendation should be encoded? by GUID?",
             preRecommendations: { type: 'array'},
-            isAssessment: { type: Boolean }
+            isAssessment: { type: 'boolean' }
         },
 
         body: {

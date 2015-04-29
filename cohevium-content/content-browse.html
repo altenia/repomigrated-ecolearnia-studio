@@ -112,7 +112,7 @@
             });
 
 
-    var ContentBrowserRouter = Router.extend({
+    var ContentBrowseRouter = Router.extend({
         routes: {
             '': 'home',
             'content/:uuid': 'content',
@@ -127,16 +127,19 @@
             contentService.fetchNode(uuid)
                     .done(function(data){
                         var contentTreeEl = document.getElementById('content-tree');
-                        var contentTreeView = new ContentTreeView({model: data, el:contentTreeEl});
+                        var contentTreeView = new ContentTreeView(
+                                {
+                                    model: data,
+                                    el: contentTreeEl,
+                                    siteBaseUrl: '/cohevium/content'
+                                }
+                        );
                         contentTreeView.render();
                         console.log('model:', data.toJSON());
                     });
         }
     });
 
-    var router = new ContentBrowserRouter();
+    var router = new ContentBrowseRouter();
     var t = router.history.start({pushState: false});
-
-
-
 </script>

@@ -7,8 +7,8 @@
 var AmpersandCollectionView = require ('ampersand-collection-view');
 //var React = require('react');
 var React = require('react/addons');
-var ContentListComponent = require ('./contentlistcomponent.jsx').ContentListComponent;
-var ContentTableComponent = require ('./contenttablecomponent.jsx').ContentTableComponent;
+var ContentListComponent = require ('./contentlist-component.jsx').ContentListComponent;
+var ContentTableComponent = require ('./contenttable-component.jsx').ContentTableComponent;
 
 var internals = {};
 

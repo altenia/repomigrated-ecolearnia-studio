@@ -43,6 +43,7 @@
     "promise": "^6.1.0",
     "react": "^0.13.2",
     "react-intl": "^1.2.0",
+    "themis": "^1.1.5",
     "when": "^3.7.2"
   },
   "devDependencies": {

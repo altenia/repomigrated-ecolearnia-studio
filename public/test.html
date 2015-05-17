@@ -7,14 +7,32 @@
 </head>
 <body>
 
-<script>
-    var ContentService = require('content-service').ContentService;
+<div id="placeholder"></div>
 
-    var contentService = new ContentService({baseUrl: 'http://localhost:9099'});
-    contentService.queryNodes()
-            .done(function(data){
-                console.log(data.toJSON());
-            });
+
+<script>
+    var Router = require('ampersand-router');
+
+    var MyRouter = Router.extend({
+        routes: {
+            '': 'home',
+            'content/:uuid': 'content',
+        },
+
+        home: function() {
+            alert('home');
+        },
+
+        content: function(uuid) {
+            alert(uuid);
+        }
+    });
+
+    var router = new MyRouter();
+    router.on('route', function(event){
+        console.log('hello');
+    });
+
 </script>
 
 </body>

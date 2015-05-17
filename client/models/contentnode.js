@@ -9,11 +9,13 @@ var internals = {};
 internals.ContentNode = Model.extend({
     idAttribute: 'uuid',
     props: {
+
+        realmUuid: { type: 'string', required: false }, // @todo turn this to requried
         uuid: { type: 'string', required: true },
         refName: { type: 'string', required: true }, // Reference Name of this content
         parent: { type: 'string' },
         parentUuid: { type: 'string' },
-        index: { type: 'number' }, // Index within it's parent
+        ordering: { type: 'number' }, // Ordering position within it's parent
 
         createdBy: { type: 'string' },
         createdAt: { type: 'date' },
@@ -26,6 +28,8 @@ internals.ContentNode = Model.extend({
             learningArea: {
                 subject:     { type: 'string', required: true }, // "Match"
                 subjectArea: { type: 'string', required: true }, // "Arithmetic"
+                domainCodeSource: { type: 'string', required: false }, // "CommonCore",
+                domainCode: { type: 'string', required: false }, // "arithmetic",
                 // Array of the topic hierarchy starting from the broadest to  specific",
                 // Without including the subject and subjectArea",
                 topicHierarchy: { type: 'array'},
@@ -44,7 +48,7 @@ internals.ContentNode = Model.extend({
             description:{ type: 'string' }, // "Sum of Single Digit",
             // ? How the pre recomendation should be encoded? by GUID?",
             preRecommendations: { type: 'array'},
-            isAssessment: { type: Boolean }
+            isAssessment: { type: 'boolean' }
         },
 
         body: {
@@ -58,13 +62,21 @@ internals.ContentNodeCollection = Collection.extend({
     model: internals.ContentNode
 });
 
+internals.createContentNode = function(urlRoot, uuid)
+{
+    var model = new internals.ContentNode({uuid: uuid});
+    model.urlRoot = urlRoot;
+    return model;
+}
+
 internals.createContentNodeCollection = function(url)
 {
-    collection = new internals.ContentNodeCollection();
+    var collection = new internals.ContentNodeCollection();
     collection.url = url;
     return collection;
 }
 
 
 module.exports.ContentNode = internals.ContentNode;
+module.exports.createContentNode = internals.createContentNode;
 module.exports.createContentNodeCollection = internals.createContentNodeCollection;

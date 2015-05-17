@@ -1,0 +1,138 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head lang="en">
+    <meta charset="UTF-8" />
+    <script src="js/el-interactives.bundle.js" type="text/javascript" ></script>
+    <title>Interactive Test</title>
+</head>
+<body>
+
+<div id="placeholder"></div>
+
+<script type="text/javascript">
+    var interactives = require('interactives');
+
+    var contentSpec = {
+        "models": {
+            "question": {
+                "prompt": "What are possible answer for square root of 4?",
+                "asking": [
+                    {
+                        "answers": { "type": "array[number]" }
+                    }
+                ],
+                "options": [
+                    {
+                        "label": "2",
+                        "value": "2"
+                    },
+                    {
+                        "label": "3",
+                        "value": "3"
+                    },
+                    {
+                        "label": "4",
+                        "value": "4"
+                    },
+                    {
+                        "label": "-2",
+                        "value": "-2"
+                    }
+                ],
+                // Optional, when stat is available
+                "submissions": {
+
+                }
+            }
+        },
+        "components": [
+            {
+                "id": "my_question",
+                "type": "TemplateContainer",
+                "config": {
+                    "template": "<div>{{.models.question.prompt}}<br /> {{.components.mvquestion}} <br/> ${actionbar} <br/> ${feedback}</div>",
+                    "~doc": "Optionally:"
+                }
+            },
+            {
+                "id": "mvquestion",
+                "type": "MultiValueQuestion",
+                "config": {
+                    "question": { "_lref" : ".models.question"},
+                    "presentation": "multiselect"
+                }
+            },
+            {
+                "id": "actionbar",
+                "type": "ActionBar",
+                "spec": {
+                    "items": [
+                        "audio","submission","reset","read","hint"
+                    ]
+                }
+            },
+            {
+                "id": "feedback",
+                "type": "Feedback",
+                "config": {
+                    "display": "list"
+                }
+            }
+        ],
+        "actions": {
+            "solution": "4 + 4 + 1 = 9",
+            "!doc": "hints is an array in the order that is shown per attemp failure",
+            "hints": [
+                "How can 5 be decomposed?"
+            ]
+        },
+        "processFlow": {
+            "beforeRender": {
+
+            },
+            "afterSumission": {
+
+            }
+        },
+        "policy": {
+            "maxAttempts": 10,
+            "!doc": "Optional - if present, each attempt will be timed in seconds",
+            "timed": 10,
+            "timeOverAction": "action to take when time is over"
+        },
+        "submissionEval": {
+            "engine": "ArithmeticExpression",
+            "correctAnswer": {
+                "sum": "9"
+            },
+            "responses": {
+                "attemptFeedbacks": [
+                    {
+                        "case": "$sum $gt $9",
+                        "message": "Number too large"
+                    },
+                    {
+                        "case": "$sum $lt $9",
+                        "message": "Your anser $sum is too small"
+                    }
+                ],
+
+            }
+        }
+    };
+
+    var settings = {};
+    settings.content = contentSpec;
+    settings.componentNamespace = 'interactives';
+
+    var coreContext = interactives.createCoreContext(settings);
+
+    var el = document.getElementById('placeholder');
+    coreContext.renderComponent('my_question', el);
+
+</script>
+
+</body>
+</html>

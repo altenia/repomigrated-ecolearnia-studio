@@ -4,8 +4,10 @@
   "description": "EcoLearnia's content authoring studio",
   "main": "ecolearnia-studio.js",
   "scripts": {
-    "build-client": "browserify -r ./client/services/content-service.js:content-service client/clientapp.js -o public/js/app.bundle.js -dv",
-    "watch-client": "watchify   -r ./client/services/content-service.js:content-service client/clientapp.js -o public/js/app.bundle.js -dv",
+    "build-client": "browserify -t reactify -r ./client/views/contentcollection-view:contentcollection-view -r ./client/views/contenttree-view:contenttree-view -r ./client/views/contenteditor-view:contenteditor-view -r ./client/services/content-service.js:content-service -r ampersand-router -r jquery  -o public/js/app.bundle.js -d",
+    "watch-client": "watchify   -t reactify -r ./client/views/contentcollection-view:contentcollection-view -r ./client/views/contenttree-view:contenttree-view -r ./client/views/contenteditor-view:contenteditor-view -r ./client/services/content-service.js:content-service -r ampersand-router -r jquery  -o public/js/app.bundle.js -d -v",
+    "build-inter": "browserify -t reactify -r ./client/interactives/interactives.js:interactives -r -o public/js/el-interactives.bundle.js -d",
+    "watch-inter": "watchify   -t reactify -r ./client/interactives/interactives.js:interactives -r -o public/js/el-interactives.bundle.js -d -v",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -20,9 +22,11 @@
   "license": "MIT",
   "dependencies": {
     "ampersand-collection": "^1.4.5",
+    "ampersand-collection-view": "^1.4.0",
     "ampersand-events": "^1.1.1",
     "ampersand-model": "^5.0.3",
     "ampersand-rest-collection": "^4.0.0",
+    "ampersand-router": "^3.0.2",
     "ampersand-view": "^7.3.0",
     "async": "^0.9.0",
     "bunyan": "^1.3.3",
@@ -39,12 +43,16 @@
     "nconf": "^0.7.1",
     "node-uuid": "^1.4.2",
     "promise": "^6.1.0",
+    "react": "^0.13.2",
+    "react-intl": "^1.2.0",
+    "themis": "^1.1.5",
     "when": "^3.7.2"
   },
   "devDependencies": {
     "browserify": "latest",
     "chai": "^2.0.0",
     "mocha": "^2.1.0",
+    "reactify": "^1.1.0",
     "should": "^5.0.0",
     "sinon": "^1.12.2",
     "watchify": "latest"

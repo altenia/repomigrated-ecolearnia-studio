@@ -3,26 +3,33 @@
  */
 var $ = require('jquery');
 var contentnodemodel = require('../models/contentnode');
+var contentitemmodel = require('../models/contentitem');
 
 /** Declaration of internal namespace */
 var internals = {};
 
 /**
  *
+ * @param config
  * @constructor
  */
 internals.ContentService = function(config)
 {
-    this.baseUrl = config.baseUrl;
+    this.rootUrl = config.rootUrl;
 
 };
 
+/**
+ * Retrieves content nodes
+ * @param criteria
+ * @returns {Promise}
+ */
 internals.ContentService.prototype.queryNodes = function(criteria)
 {
 
     var deferred = $.Deferred();
 
-    var contentNodes = contentnodemodel.createContentNodeCollection(this.baseUrl + '/nodes');
+    var contentNodes = contentnodemodel.createContentNodeCollection(this.rootUrl + '/nodes');
     
     function successCallback(collection, response, options) {
         deferred.resolve(collection);
@@ -43,7 +50,7 @@ internals.ContentService.prototype.queryNodes = function(criteria)
     /*
     // criteriaToQueryString(criteria);
     return $.ajax({
-        url: this.baseUrl + '/nodes'
+        url: this.rootUrl + '/nodes'
     })
         /*
         .done(function( data ) {
@@ -55,5 +62,100 @@ internals.ContentService.prototype.queryNodes = function(criteria)
         */
 };
 
+/**
+ * Fetches a node and its descendants
+ * @param uuid
+ * @returns {*}
+ */
+internals.ContentService.prototype.fetchNode = function(uuid) {
+
+    var deferred = $.Deferred();
+
+    var contentNode = contentnodemodel.createContentNode(this.rootUrl + '/nodes', uuid);
+
+    function successCallback(model, response, options) {
+        deferred.resolve(model);
+    }
+
+    function errorCallback(model, response, options) {
+        deferred.reject(model);
+    }
+
+    contentNode.fetch({
+        success: successCallback,
+        error: errorCallback
+    });
+
+    return deferred.promise();
+}
+
+/**
+ * Retrieves content items
+ * @param {Object} criteria
+ * @param {!string} parentNodeUuid
+ * @returns {*}
+ */
+internals.ContentService.prototype.queryItems = function(criteria, parentNodeUuid) {
+
+    var deferred = $.Deferred();
+
+    var baseUrl;
+    if (parentNodeUuid) {
+        baseUrl = this.rootUrl + '/nodes' + parentNodeUuid + '/items';
+    } else {
+        baseUrl = this.rootUrl + '/contentitems';
+    }
+
+    var contentItem = contentitemmodel.createContentItem(this.rootUrl + '/nodes', uuid);
+
+    function successCallback(model, response, options) {
+        deferred.resolve(model);
+    }
+
+    function errorCallback(model, response, options) {
+        deferred.reject(model);
+    }
+
+    contentItem.fetch({
+        success: successCallback,
+        error: errorCallback
+    });
+
+    return deferred.promise();
+}
+
+/**
+ *
+ * @param {string} uuid
+ * @param {!string} parentNodeUuid
+ * @returns {Promise}
+ */
+internals.ContentService.prototype.fetchItem = function(uuid, parentNodeUuid) {
+
+    var deferred = $.Deferred();
+
+    var baseUrl;
+    if (parentNodeUuid) {
+        baseUrl = this.rootUrl + '/nodes' + parentNodeUuid + '/items';
+    } else {
+        baseUrl = this.rootUrl + '/contentitems';
+    }
+    var contentItem = contentitemmodel.createContentItem(baseUrl, uuid);
+
+    function successCallback(model, response, options) {
+        deferred.resolve(model);
+    }
+
+    function errorCallback(model, response, options) {
+        deferred.reject(model);
+    }
+
+    contentItem.fetch({
+        success: successCallback,
+        error: errorCallback
+    });
+
+    return deferred.promise();
+}
 
 module.exports.ContentService = internals.ContentService;

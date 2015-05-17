@@ -37,9 +37,9 @@ internals.CoreContext = function(settings)
     /**
      * The namespace to look ro
      */
-    this.comonentModule_ = global;
+    this.componentModule_ = global;
     if (settings.componentNamespace) {
-        this.comonentModule_ = global[settings.componentNamespace];
+        this.componentModule_ = global[settings.componentNamespace];
     }
 
     /**
@@ -66,34 +66,70 @@ internals.CoreContext = function(settings)
     this.mapifyComponentSpecs_(this.content_);
 };
 
+// Static method
 
 /**
- * getObject
- * Returns the object by creating it or from reference from existing
  *
- * @param param
+ * @param fqn
+ * @returns {object}
+ *      Format: { domain: <models|components>, id: (string) }
  */
-internals.CoreContext.prototype.getObject = function(param)
+internals.CoreContext.parseFqn = function(fqn) {
+    var retval = {};
+    if (fqn) {
+        if (fqn[0] === '.') {
+            var parts = fqn.split('.');
+            retval.domain = parts[0];
+            retval.id = parts.shift();
+        } else {
+            retval.id = fqn;
+        }
+    }
+    return retval;
+};
+
+/**
+ * getValue
+ *
+ * Returns the parameter itself unless it contains a local reference which is
+ * a fully qualified name (fqn) of a model object or component object
+ *
+ * @param param  - the parameter which could be the value itself
+ *      or may be an object which contains "_lref" denoting a local fully
+ *      qualified name to where the actual value is.
+ */
+internals.CoreContext.prototype.getValue = function(param)
 {
     var retval = param;
     // If it contains a local reference, get the object it points to.
     if (param._lref)
     {
-        // parse the dot notation
+        retval = this.getObjectFromFqn(param._lref);
+    }
+    return retval;
+};
 
-        // if it starts with '.model' returns the JSON object,
-        if (utils.startsWith(param._lref, '.model'))
-        {
-            var refPath = param._lref.substring(8);
-            retval = utils.dotAccess(this.content_.models, refPath);
-        }
+/**
+ * getObjectFromFqn
+ * Returns the model object or component object
+ *
+ * @param fqn  - the Fully Qualified Name of the object
+ */
+internals.CoreContext.prototype.getObjectFromFqn = function(fqn)
+{
+    var retval;
+    // if it starts with '.model' returns the JSON object,
+    if (utils.startsWith(fqn, '.model'))
+    {
+        var refPath = fqn.substring(8);
+        retval = utils.dotAccess(this.content_.models, refPath);
+    }
 
-        // if it starts with '.component' returns the Component object\
-        else if (utils.startsWith(param._lref, '.component'))
-        {
-            var componentId = param._lref.substring(12);
-            retval = this.getComponent(componentId);
-        }
+    // if it starts with '.component' returns the Component object\
+    else if (utils.startsWith(fqn, '.component'))
+    {
+        var componentId = fqn.substring(12);
+        retval = this.getComponent(componentId);
     }
     return retval;
 };
@@ -124,16 +160,27 @@ internals.CoreContext.prototype.mapifyComponentSpecs_ = function(content)
  */
 internals.CoreContext.prototype.createComponent = function(spec)
 {
-    if (!(spec.type in this.comonentModule_)) {
+    if (!(spec.type in this.componentModule_)) {
         throw Error('Component ' + spec.type + ' not found in module');
     }
-    var componentClass = this.comonentModule_[spec.type];
+    var componentClass = this.componentModule_[spec.type];
 
-    return React.createElement(componentClass, {
+    var componentType = componentClass.prototype.componentType();
+
+    var constructorArg = {
         coreContext: this,
         models: this.content_.models,
         config: spec.config
-    });
+    };
+
+    var retval = null;
+    if (componentType === 'react') {
+        retval = React.createElement(componentClass, constructorArg);
+    } else {
+        retval = new componentClass(constructorArg);
+    }
+
+    return retval;
 };
 
 /**
@@ -161,11 +208,26 @@ internals.CoreContext.prototype.getComponent = function(id) {
  * @param {DOM} el  - DOM element to render the component
  * @returns the el
  */
-internals.CoreContext.prototype.renderComponent = function(id, el)
+internals.CoreContext.prototype.renderComponent = function(param, el)
 {
-    var component = this.getComponent(id);
+    // We are assuming that if the param is a string, then it is the
+    // component id; otherwise is the component itself;
+    var component = param;
+    if (typeof param === 'string') {
+        component = this.getComponent(param);
+    }
 
-    React.render(component, el);
+    // Little hack so I can get the component type from Backbone's view or React.
+    // React provides componentType() method through mixin
+    var componentType = (component.componentType) ? component.componentType() : component.type.prototype.componentType();
+
+    // @todo - Implement strategy pattern to handle different componentTypes
+    if (componentType === 'react') {
+        React.render(component, el);
+    } else {
+        component.render();
+        el.appendChild(component.el);
+    }
 
     return el;
 };

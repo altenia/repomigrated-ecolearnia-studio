@@ -7,6 +7,7 @@
     "build-client": "browserify -t reactify -r ./client/views/contentcollection-view:contentcollection-view -r ./client/views/contenttree-view:contenttree-view -r ./client/views/contenteditor-view:contenteditor-view -r ./client/services/content-service.js:content-service -r ampersand-router -r jquery  -o public/js/app.bundle.js -d",
     "watch-client": "watchify   -t reactify -r ./client/views/contentcollection-view:contentcollection-view -r ./client/views/contenttree-view:contenttree-view -r ./client/views/contenteditor-view:contenteditor-view -r ./client/services/content-service.js:content-service -r ampersand-router -r jquery  -o public/js/app.bundle.js -d -v",
     "build-inter": "browserify -t reactify -r ./client/interactives/interactives.js:interactives -r -o public/js/el-interactives.bundle.js -d",
+    "watch-inter": "watchify   -t reactify -r ./client/interactives/interactives.js:interactives -r -o public/js/el-interactives.bundle.js -d -v",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

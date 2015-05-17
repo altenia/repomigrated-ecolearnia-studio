@@ -50,9 +50,9 @@
         "components": [
             {
                 "id": "my_question",
-                "type": "TemplatedQuestion",
+                "type": "TemplateContainer",
                 "config": {
-                    "template": "${.presenter.mvquestion} <br/> ${actionbar} <br/> ${feedback}",
+                    "template": "<div>{{.models.question.prompt}}<br /> {{.components.mvquestion}} <br/> ${actionbar} <br/> ${feedback}</div>",
                     "~doc": "Optionally:"
                 }
             },
@@ -130,7 +130,7 @@
     var coreContext = interactives.createCoreContext(settings);
 
     var el = document.getElementById('placeholder');
-    coreContext.renderComponent('mvquestion', el);
+    coreContext.renderComponent('my_question', el);
 
 </script>
 

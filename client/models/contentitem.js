@@ -57,7 +57,9 @@ internals.ContentItem = Model.extend({
 
             // The presenters sections includes configuration information",
             // for the UI components ",
-            presenters: { type: 'array'},
+            components: { type: 'array'},
+
+            actions: { type: 'object'},
 
             processFlow: {type: 'object'},
 
@@ -74,14 +76,18 @@ internals.ContentItem = Model.extend({
                 engine: {type: 'string'},
                 correctAnswer: {type: 'object'},
                 // The models section includes data passed to",
-                feedback: [
-                    {
-                        case: {type: 'object'}, // Expression
-                        message: {type: 'string'} // feedback message
-                    }
-                ],
-                solution: {type: 'object'},
-                hints: { type: 'array'}
+                responses: {
+                    attemptFeedbacks: [
+                        {
+                            case: {type: 'object'}, // Expression
+                            message: {type: 'string'} // feedback message
+                        }
+                    ],
+                    timeoutFeedback: {type: 'string'},
+                    pastDueDateFeedback: {type: 'string'},
+                    solution: {type: 'object'},
+                    hints: {type: 'array'}
+                }
             }
         }
     }

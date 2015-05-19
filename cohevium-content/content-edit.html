@@ -1,14 +1,9 @@
+
 <div class="row full-width">
     <div class="columns small-12" >
 
-        
-
         <div id="content-editor"></div>
 
-        <div id="editor">function foo(items) {
-            var x = "All this is syntax highlighted";
-            return x;
-        }</div>
     </div>
 
 </div>
@@ -16,12 +11,12 @@
 
 <script src="/cohevium/public/foundation/js/foundation/foundation.tab.js"></script>
 <script src='/cohevium/public/js/app.bundle.js'></script>
+<script src='/cohevium/public/js/el-interactives.bundle.js'></script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.1.9/ace.js" type="text/javascript" charset="utf-8"></script>
+<!-- <script src="/cohevium/public/ace-editor/ace.js" type="text/javascript" charset="utf-8"></script> -->
+
 <script>
-    var editor = ace.edit("editor");
-    editor.setTheme("ace/theme/monokai");
-    editor.getSession().setMode("ace/mode/javascript");
 
     var Router = require('ampersand-router');
 
@@ -43,29 +38,37 @@
             console.log('home');
         },
 
+        // Route for editing an item
         item: function(uuid) {
             console.log(uuid);
             contentService.fetchItem(uuid)
-                    .done(function(data){
+                    .done(function(contentItem){
                         var contentEditorEl = document.getElementById('content-editor');
-                        var contentEditorView = new ContentEditorView({model: data, el:contentEditorEl});
+                        var contentEditorView = new ContentEditorView({model: contentItem, el:contentEditorEl});
                         contentEditorView.render();
-                        console.log('model:', data.toJSON());
+                        console.log('model:', contentItem.toJSON());
                     });
         },
 
+        // Route for editing a node
         node: function(uuid) {
             console.log(uuid);
             contentService.fetchNode(uuid)
-                    .done(function(data){
+                    .done(function(contentNode){
                         var contentEditorEl = document.getElementById('content-editor');
-                        var contentEditorView = new ContentEditorView({model: data, el:contentEditorEl});
+                        var contentEditorView = new ContentEditorView({model: contentNode, el:contentEditorEl});
                         contentEditorView.render();
-                        console.log('model:', data.toJSON());
+                        console.log('model:', contentNode.toJSON());
                     });
         }
     });
 
     var router = new ContentEditorRouter();
     var t = router.history.start({pushState: false});
+
+    /*
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/monokai");
+    editor.getSession().setMode("ace/mode/json");
+    */
 </script>

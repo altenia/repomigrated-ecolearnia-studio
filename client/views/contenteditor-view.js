@@ -15,23 +15,32 @@ internals.ContentEditorView = AmpersandView.extend({
     // Not needed:
     template: '<div data-hook="content_editor" class="content-tree"></div>',
 
-    initialize: function(options) {
+    initialize: function(options)
+    {
         console.log("ContentEditorView options are:", options);
         this.siteBaseUrl = options.siteBaseUrl
     },
 
-    render: function () {
+    render: function ()
+    {
         //this.renderWithTemplate(this);
         var component = React.createElement(
             ContentEditorComponent,
             {
-                contentModel: this.model,
-                siteBaseUrl: this.siteBaseUrl
+                content: this.model.toJSON(),
+                siteBaseUrl: this.siteBaseUrl,
+                onSaveContent: this.saveContent.bind(this)
             }
         );
         React.render(component, this.el);
         return this;
     },
+
+    saveContent: function(content)
+    {
+        this.model.set(content);
+        this.model.save();
+    }
 
 });
 

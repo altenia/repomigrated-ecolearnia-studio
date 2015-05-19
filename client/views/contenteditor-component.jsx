@@ -2,6 +2,7 @@
  * Created by ysahn on 4/29/15.
  */
 var React = require('react/addons');
+var AceEditorComponent = require('./aceeditor-component.jsx').AceEditorComponent;
 
 /** @jsx React.DOM */
 
@@ -12,13 +13,14 @@ internals.MetadataEditorComponent = React.createClass({
     getInitialState: function () {
         return {
             metadataText: JSON.stringify(this.props.content.metadata, null, 4)
-        }
+        };
     },
     componentWillReceiveProps: function(nextProps) {
         // Update state when property change was propagated
         this.setState({metadataText: JSON.stringify(nextProps.content.metadata, null, 4)});
         console.log('componentWillReceiveProps', nextProps);
     },
+
     render: function() {
 
         var metadataText = JSON.stringify(this.props.content.metadata, null, 4);
@@ -27,9 +29,14 @@ internals.MetadataEditorComponent = React.createClass({
             metadataText = this.state.metadataText;
         }
 
+        var elStyle = {
+            height: '200px',
+            border: '1px solid #888'
+        };
+
         return (
             <div>
-                <textarea onChange={this.handleChange} onBlur={this.handleBlur}  value={metadataText} />
+                <textarea style={elStyle} onChange={this.handleChange} onBlur={this.handleBlur}  value={metadataText} />
             </div>
         )
     },
@@ -39,7 +46,7 @@ internals.MetadataEditorComponent = React.createClass({
         try {
             var content = {
                 metadata: JSON.parse(metadataText)
-            }
+            };
             this.props.onContentUpdate(content);
         } catch (ex) {
             console.log(ex);
@@ -49,7 +56,7 @@ internals.MetadataEditorComponent = React.createClass({
     handleBlur: function(event) {
         var content = {
             metadata: JSON.parse(event.target.value)
-        }
+        };
         this.props.onContentUpdate(content);
     }
 });
@@ -61,6 +68,7 @@ internals.SourceEditorComponent = React.createClass({
             contentText: JSON.stringify(this.props.content, null, 4)
         }
     },
+
     componentWillReceiveProps: function(nextProps) {
         // Update state when property change was propagated, even originated 
         // from this same compontent
@@ -68,30 +76,46 @@ internals.SourceEditorComponent = React.createClass({
         console.log('componentWillReceiveProps', nextProps);
     },
 
+    componentDidMount: function() {
+    },
+
     render: function() {
 
         var contentText = this.state.contentText;
-        
-        var textAreaStyle = {
-            height: '10em'
-        }
+
+        var elStyle = {
+            display: 'block',
+            margin: 'auto',
+            width: '100%',
+            height: '300px',
+            border: '1px solid #888'
+        };
 
         // If I use defaultValue updates from other component is no reflected here.
+        // <textarea style={textAreaStyle} onChange={this.handleInputChange} onBlur={this.handleBlur} value={contentText} />
         return (
             <div>
-                <textarea style={textAreaStyle} onChange={this.handleChange} onBlur={this.handleBlur} value={contentText} />
+                <AceEditorComponent  el="sourceBox" mode="javascript" onChange={this.handleInputChange} onBlur={this.handleInputBlur} value={contentText} />
             </div>
-        )
+        );
     },
-    handleChange: function(event) {
-        var contentText = event.target.value;
-        this.setState({contentText: contentText });
-        
+
+    /**
+     * Handles the value change in the editor box
+     * @param value
+     */
+    handleInputChange: function(value) {
+        this.setState({contentText: value });
     },
-    handleBlur: function(event) {
+
+    /**
+     * Handles the editor blur in the editor box
+     * @param value
+     */
+    handleInputBlur: function(value) {
         console.log('change');
         try {
-            var content = JSON.parse(this.state.contentText);
+            var content = JSON.parse(value);
             this.props.onContentUpdate(content);
         } catch (ex) {
             console.log(ex);
@@ -195,7 +219,7 @@ internals.TabsComponent = React.createClass({
 internals.ContentEditorComponent = React.createClass({
     getInitialState: function () {
         return {
-            content: this.props.contentModel.toJSON()
+            content: this.props.content
         }
     },
 
@@ -205,14 +229,17 @@ internals.ContentEditorComponent = React.createClass({
             <div>
                 <internals.TabsComponent content={this.state.content} onContentUpdate={this.updateContent} />
                 <div>
-                    <a href="#" className="button">Save</a> <a href="#" className="button">Revert</a>
+                    <a href="#" className="button" onClick={this.handleClickSave}>Save</a> <a href="#" className="button">Revert</a>
                 </div>
             </div>
         );
     },
 
-    // Content related event handlers:
+    /* Content related event handlers: */
 
+    /**
+     * Update content in the state.
+     */
     updateContent: function(partialContent)
     {
         // You may add callback as las parameter
@@ -227,9 +254,15 @@ internals.ContentEditorComponent = React.createClass({
         this.setState({content: content});
     },
 
-    saveContent: function(content)
+    /**
+     * Handle "save" button click 
+     */
+    handleClickSave: function(e)
     {
-        this.props.contentModel.save();
+        e.preventDefault();
+        //var temp = this.props.contentModel.toJSON();
+        //this.props.contentModel.save();
+        this.props.onSaveContent(this.state.content);
     }
 
 });

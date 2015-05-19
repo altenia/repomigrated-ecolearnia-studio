@@ -38,7 +38,10 @@ internals.CoreContext = function(settings)
      * The namespace to look ro
      */
     this.componentModule_ = global;
-    if (settings.componentNamespace) {
+    if (settings.componentModule) {
+        this.componentModule_ = settings.componentModule;
+    }
+    else if (settings.componentNamespace) {
         this.componentModule_ = global[settings.componentNamespace];
     }
 
@@ -66,7 +69,7 @@ internals.CoreContext = function(settings)
     this.mapifyComponentSpecs_(this.content_);
 };
 
-// Static method
+/*** Static methods ***/
 
 /**
  *
@@ -86,6 +89,13 @@ internals.CoreContext.parseFqn = function(fqn) {
         }
     }
     return retval;
+};
+
+/*** Member methods ***/
+
+internals.CoreContext.prototype.setContent = function(content)
+{
+    this.content_ = content;
 };
 
 /**
@@ -204,7 +214,7 @@ internals.CoreContext.prototype.getComponent = function(id) {
 /**
  * Renders the component to specific DOM element
  *
- * @param {string} id  - The component id
+ * @param {string} param  - The component or the component id
  * @param {DOM} el  - DOM element to render the component
  * @returns the el
  */
@@ -230,6 +240,19 @@ internals.CoreContext.prototype.renderComponent = function(param, el)
     }
 
     return el;
+};
+
+/**
+ * Renders the main component on the element
+ *
+ * @param el
+ */
+internals.CoreContext.prototype.render = function(el) {
+    if (!this.content_ || !this.content_.components) {
+        throw Error('No component was specified');
+    }
+    var mainComponentId = this.content_.components[0].id;
+    return this.renderComponent(mainComponentId, el);
 };
 
 /**

@@ -3,6 +3,7 @@
  */
 var React = require('react/addons');
 var AceEditorComponent = require('./aceeditor-component.jsx').AceEditorComponent;
+var interactives = require('../interactives/interactives');
 
 /** @jsx React.DOM */
 
@@ -40,6 +41,7 @@ internals.MetadataEditorComponent = React.createClass({
             </div>
         )
     },
+
     handleChange: function(event) {
         var metadataText = event.target.value;
         this.setState({metadataText: metadataText });
@@ -148,13 +150,33 @@ internals.FormEditorComponent = React.createClass({
 });
 
 internals.PreviewComponent = React.createClass({
+
+    componentDidMount: function() {
+        var settings = {
+            content: this.props.content.body,
+            componentModule: interactives
+        };
+
+        this.coreContext = interactives.createCoreContext(settings);
+
+        var el = document.getElementById('interactive-preview');
+        this.coreContext.render(el);
+    },
+
+    componentWillReceiveProps: function(nextProps) {
+        this.coreContext.setContent(nextProps.content.body);
+
+        var el = document.getElementById('interactive-preview');
+        this.coreContext.render(el);
+    },
+
     render: function() {
         var textAreaStyle = {
             height: '10em'
-        }
+        };
         return (
             <div>
-                <textarea style={textAreaStyle} readOnly="true" value={JSON.stringify(this.props.content, null, 4)} />
+                <div id="interactive-preview"></div>
             </div>
         )
     }

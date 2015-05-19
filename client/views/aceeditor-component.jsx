@@ -59,19 +59,6 @@ internals.AceEditorComponent = React.createClass({
         // from this same component
         //this.setState({contentText: JSON.stringify(nextProps.content, null, 4)});
 
-        /*
-        this.editor = ace.edit(this.props.elId);
-        this.editor.getSession().setMode('ace/mode/' + this.props.mode);
-        this.editor.setTheme('ace/theme/' + this.props.theme);
-        this.editor.setFontSize(this.props.fontSize);
-        this.editor.on('change', this.handleChange);
-        this.editor.on('blur', this.handleBlur);
-        this.editor.renderer.setShowGutter(this.props.showGutter);
-        this.editor.setOption('maxLines', this.props.maxLines);
-        this.editor.setOption('readOnly', this.props.readOnly);
-        this.editor.setOption('highlightActiveLine', this.props.highlightActiveLine);
-        this.editor.setShowPrintMargin(this.props.setShowPrintMargin);
-        */
         if (this.editor.getValue() !== nextProps.value) {
             this.editor.setValue(nextProps.value);
         }

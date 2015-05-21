@@ -1,7 +1,18 @@
-/**
- * Created by ysahn on 4/29/15.
+/*
+ * This file is part of the EcoLearnia platform.
  *
- * Content editor view
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+/**
+ * EcoLearnia v0.0.1
+ *
+ * @fileoverview
+ *  This file includes definition of ContentEditorView.
+ *
+ * @author Young Suk Ahn Park
+ * @date 4/29/15
  */
 var AmpersandView = require ('ampersand-view');
 //var React = require('react');
@@ -11,6 +22,7 @@ var ContentEditorComponent = require ('./contenteditor-component.jsx').ContentEd
 var internals = {};
 
 /** @jsx React.DOM */
+
 internals.ContentEditorView = AmpersandView.extend({
     // Not needed:
     template: '<div data-hook="content_editor" class="content-tree"></div>',

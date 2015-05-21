@@ -1,8 +1,21 @@
+/*
+ * This file is part of the EcoLearnia platform.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 /**
- * Created by ysahn on 4/29/15.
+ * EcoLearnia v0.0.1
+ *
+ * @fileoverview
+ *  This file includes definition of AceEditorComponent.
+ *
+ * @author Young Suk Ahn Park
+ * @date 5/18/15
  */
 var React = require('react/addons');
-// Depends on ace
+// Depends on ace, make sure that the hosting page has link to the ace editor js file
 
 /** @jsx React.DOM */
 
@@ -27,7 +40,9 @@ internals.AceEditorComponent = React.createClass({
         onChange: React.PropTypes.func,
         onBlur: React.PropTypes.func,
     },
-    getDefaultProps: function() {
+
+    getDefaultProps: function()
+    {
         return {
             elId   : 'ace-editor',
             mode   : '',
@@ -48,13 +63,16 @@ internals.AceEditorComponent = React.createClass({
         };
     },
 
-    getInitialState: function () {
+    getInitialState: function ()
+    {
         console.log('getInitialState');
         return {
             value: this.props.value
         }
     },
-    componentWillReceiveProps: function(nextProps) {
+
+    componentWillReceiveProps: function(nextProps)
+    {
         // Update state when property change was propagated, even originated
         // from this same component
         //this.setState({contentText: JSON.stringify(nextProps.content, null, 4)});
@@ -65,7 +83,8 @@ internals.AceEditorComponent = React.createClass({
         console.log('componentWillReceiveProps', nextProps);
     },
 
-    componentDidMount: function() {
+    componentDidMount: function()
+    {
         this.editor = ace.edit(this.props.elId);
         this.editor.getSession().setMode('ace/mode/' + this.props.mode);
         this.editor.setTheme('ace/theme/' + this.props.theme);
@@ -84,7 +103,8 @@ internals.AceEditorComponent = React.createClass({
         }
     },
 
-    render: function() {
+    render: function()
+    {
 
         var elStyle = {
             display: 'block',
@@ -103,14 +123,16 @@ internals.AceEditorComponent = React.createClass({
         );
     },
 
-    handleChange: function() {
+    handleChange: function()
+    {
         var value = this.editor.getValue();
         if (this.props.onChange) {
             this.props.onChange(value);
         }
     },
 
-    handleBlur: function() {
+    handleBlur: function()
+    {
         var value = this.editor.getValue();
         if (this.props.onBlur) {
             this.props.onBlur(value);

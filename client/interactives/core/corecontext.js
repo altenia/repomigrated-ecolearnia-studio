@@ -1,5 +1,20 @@
+/*
+ * This file is part of the EcoLearnia platform.
+ *
+ * (c) Young Suk Ahn Park <ys.ahnpark@mathnia.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 /**
- * Created by ysahn on 5/13/15.
+ * EcoLearnia v0.0.1
+ *
+ * @fileoverview
+ *  This file includes the definition of CoreContext class.
+ *
+ * @author Young Suk Ahn Park
+ * @date 5/13/15
  */
 
 var utils = require('../../common/utils');
@@ -9,15 +24,30 @@ var React = require('react/addons');
 
 var internals = {};
 
+
 /**
- * Content Runtime Environment's (Core) Context
+ * @class CoreContext
  *
- * @param config
+ * @module interactives/core
+ *
+ * @classdesc
+ *  Content Runtime Environment's (Core) Context.
+ *  A CoreContext manages the overall lifecycle and interaction of the
+ *  components specified in the content.
+ *  Based on the content specification, it creates the components and renders
+ *  them as needed.
+ *  Besides the components, it also has the references to the subpub for event
+ *  delivery.
+ *
+ *  The object of this class is created using the factory method createCoreContext().
+ *
  * @constructor
+ *
+ * @param {object} settings
+ *
  */
 internals.CoreContext = function(settings)
 {
-
     /**
      * SubPub: component than handles events
      */
@@ -77,7 +107,8 @@ internals.CoreContext = function(settings)
  * @returns {object}
  *      Format: { domain: <models|components>, id: (string) }
  */
-internals.CoreContext.parseFqn = function(fqn) {
+internals.CoreContext.parseFqn = function(fqn)
+{
     var retval = {};
     if (fqn) {
         if (fqn[0] === '.') {
@@ -93,6 +124,14 @@ internals.CoreContext.parseFqn = function(fqn) {
 
 /*** Member methods ***/
 
+/**
+ * Sets the content.
+ * Triggers re-rendering.
+ *
+ * @todo - Trigger re-rendering
+ *
+ * @param {object} content
+ */
 internals.CoreContext.prototype.setContent = function(content)
 {
     this.content_ = content;
@@ -104,7 +143,7 @@ internals.CoreContext.prototype.setContent = function(content)
  * Returns the parameter itself unless it contains a local reference which is
  * a fully qualified name (fqn) of a model object or component object
  *
- * @param param  - the parameter which could be the value itself
+ * @param {object} param  - the parameter which could be the value itself
  *      or may be an object which contains "_lref" denoting a local fully
  *      qualified name to where the actual value is.
  */
@@ -121,9 +160,10 @@ internals.CoreContext.prototype.getValue = function(param)
 
 /**
  * getObjectFromFqn
+ *
  * Returns the model object or component object
  *
- * @param fqn  - the Fully Qualified Name of the object
+ * @param {string} fqn  - the Fully Qualified Name of the object
  */
 internals.CoreContext.prototype.getObjectFromFqn = function(fqn)
 {
@@ -146,10 +186,13 @@ internals.CoreContext.prototype.getObjectFromFqn = function(fqn)
 
 
 /**
+ * mapifyComponentSpecs_
+ * @private
+ *
  * Initializes the componentSpec map. Converts the content.components array into map
  * @param content
- * @returns {{}|*}
- * @private
+ *
+ * @return {Object.<string, Object>}
  */
 internals.CoreContext.prototype.mapifyComponentSpecs_ = function(content)
 {
@@ -166,6 +209,7 @@ internals.CoreContext.prototype.mapifyComponentSpecs_ = function(content)
  * Builds the components as specified in the spec
  *
  * @param {object} spec  - The specification of the components
+ *
  * @return {object}  The component instance (a React element)
  */
 internals.CoreContext.prototype.createComponent = function(spec)
@@ -194,12 +238,15 @@ internals.CoreContext.prototype.createComponent = function(spec)
 };
 
 /**
+ * getComponent
+ *
  * Returns the component instance.
- * Either returns the existing objec in the reference table, or creates
+ * Either returns the existing object in the reference table, or creates
  * one, registers it and returns it.
  *
- * @param id
- * @returns {Object} The component instance (a React element)
+ * @param [string} id
+ *
+ * @return {object} The component instance (a React element)
  */
 internals.CoreContext.prototype.getComponent = function(id) {
     if (!(id in this.componentReferences_)) {
@@ -212,11 +259,13 @@ internals.CoreContext.prototype.getComponent = function(id) {
 };
 
 /**
+ * renderComponent
+ *
  * Renders the component to specific DOM element
  *
  * @param {string} param  - The component or the component id
  * @param {DOM} el  - DOM element to render the component
- * @returns the el
+ * @return {DOM}  - The el
  */
 internals.CoreContext.prototype.renderComponent = function(param, el)
 {
@@ -243,11 +292,16 @@ internals.CoreContext.prototype.renderComponent = function(param, el)
 };
 
 /**
+ * render
+ *
  * Renders the main component on the element
  *
- * @param el
+ * @param {DOM} el
+ *
+ * @returns {DOM}
  */
-internals.CoreContext.prototype.render = function(el) {
+internals.CoreContext.prototype.render = function(el)
+{
     if (!this.content_ || !this.content_.components) {
         throw Error('No component was specified');
     }
@@ -256,9 +310,11 @@ internals.CoreContext.prototype.render = function(el) {
 };
 
 /**
- * Factory method
+ * createCoreContext
  *
- * return context
+ * Factory method to create a CoreContext
+ *
+ * @return {CoreContext}
  */
 internals.createCoreContext = function(settings)
 {

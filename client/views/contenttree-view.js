@@ -1,8 +1,19 @@
-/**
- * Created by ysahn on 4/9/15.
+/*
+ * This file is part of the EcoLearnia platform.
  *
- * Based on sample using Backbone View with React
- * http://www.thomasboyt.com/2013/12/17/using-reactjs-as-a-backbone-view.html
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+/**
+ * EcoLearnia v0.0.1
+ *
+ * @fileoverview
+ *  This file includes definition of ContentTreeView.
+ * @see http://jsfiddle.net/ssorallen/XX8mw/
+ *
+ * @author Young Suk Ahn Park
+ * @date 4/9/15
  */
 var AmpersandView = require ('ampersand-view');
 //var React = require('react');
@@ -21,7 +32,8 @@ internals.ContentTreeView = AmpersandView.extend({
         this.siteBaseUrl = options.siteBaseUrl
     },
 
-    render: function () {
+    render: function ()
+    {
         //this.renderWithTemplate(this);
         var contentComponent = React.createElement(
             ContentTreeComponent,

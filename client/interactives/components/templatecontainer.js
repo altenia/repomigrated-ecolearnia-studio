@@ -1,16 +1,43 @@
-/**
- * Created by ysahn on 5/13/15.
+/*
+ * This file is part of the EcoLearnia platform.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
-var ViewComponent = require('./viewcomponent').ViewComponent;
+
+/**
+ * EcoLearnia v0.0.1
+ *
+ * @fileoverview
+ *  This file includes the definition of TemplateContainerComponent class.
+ *
+ * @author Young Suk Ahn Park
+ * @date 5/13/15
+ */
+var EliViewComponent = require('./eliviewcomponent').EliViewComponent;
 
 var internals = {};
 
 internals.const = {
-    // prefix for EcoLearnia Interactive Object
+    // prefix for EcoLearnia Interactive Object, used at the data-hook attributes
     ID_PREFIX: 'elio_'
 };
 
-internals.TemplateContainerComponent = ViewComponent.extend({
+/**
+ * @class TemplateContainerComponent
+ *
+ * @module interactives/components
+ *
+ * @classdesc
+ *  React based component that represents a container component.
+ *  Container component is a component that is composed of several other
+ *  components.
+ *  This particular implementation uses template where {{ <object.id> }} is
+ *  replaced by the respective component or model value.
+ *
+ * @todo - Do validation/sanitization of the HTML tags in the template string.
+ */
+internals.TemplateContainerComponent = EliViewComponent.extend({
 
     /**
      * Map of key -> ELI object,
@@ -31,14 +58,16 @@ internals.TemplateContainerComponent = ViewComponent.extend({
         return
     },*/
 
-    initialize: function(options) {
+    initialize: function(options)
+    {
         this.coreContext = options.coreContext;
         this.contentModels = options.contentModels;
         this.config = options.config;
         this.template = this.parseTemplate(options.config.template);
     },
 
-    render: function() {
+    render: function()
+    {
         this.renderWithTemplate(this);
 
         // For each of the placeholders (divs with data-hook)

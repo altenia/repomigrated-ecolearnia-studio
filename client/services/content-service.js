@@ -1,5 +1,18 @@
+/*
+ * This file is part of the EcoLearnia platform.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 /**
- * Created by ysahn on 4/7/15.
+ * EcoLearnia v0.0.1
+ *
+ * @fileoverview
+ *  This file includes definition of ContentService proxy class.
+ *
+ * @author Young Suk Ahn Park
+ * @date 4/7/15
  */
 var $ = require('jquery');
 var contentnodemodel = require('../models/contentnode');
@@ -20,7 +33,10 @@ internals.ContentService = function(config)
 };
 
 /**
+ * queryNodes
+ *
  * Retrieves content nodes
+ *
  * @param criteria
  * @returns {Promise}
  */
@@ -63,9 +79,12 @@ internals.ContentService.prototype.queryNodes = function(criteria)
 };
 
 /**
+ * fetchNode
+ *
  * Fetches a node and its descendants
+ *
  * @param uuid
- * @returns {*}
+ * @returns {Promise}
  */
 internals.ContentService.prototype.fetchNode = function(uuid) {
 
@@ -87,16 +106,20 @@ internals.ContentService.prototype.fetchNode = function(uuid) {
     });
 
     return deferred.promise();
-}
+};
 
 /**
+ * queryItems
+ *
  * Retrieves content items
+ *
  * @param {Object} criteria
  * @param {!string} parentNodeUuid
- * @returns {*}
+ *
+ * @return {Promise}
  */
-internals.ContentService.prototype.queryItems = function(criteria, parentNodeUuid) {
-
+internals.ContentService.prototype.queryItems = function(criteria, parentNodeUuid)
+{
     var deferred = $.Deferred();
 
     var baseUrl;
@@ -122,16 +145,20 @@ internals.ContentService.prototype.queryItems = function(criteria, parentNodeUui
     });
 
     return deferred.promise();
-}
+};
 
 /**
+ * fetchItem
+ *
+ * Retrieves a single content item
  *
  * @param {string} uuid
  * @param {!string} parentNodeUuid
- * @returns {Promise}
+ *
+ * @return {Promise}
  */
-internals.ContentService.prototype.fetchItem = function(uuid, parentNodeUuid) {
-
+internals.ContentService.prototype.fetchItem = function(uuid, parentNodeUuid)
+{
     var deferred = $.Deferred();
 
     var baseUrl;
@@ -156,6 +183,6 @@ internals.ContentService.prototype.fetchItem = function(uuid, parentNodeUuid) {
     });
 
     return deferred.promise();
-}
+};
 
 module.exports.ContentService = internals.ContentService;

@@ -1,5 +1,18 @@
+/*
+ * This file is part of the EcoLearnia platform.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 /**
- * Created by ysahn on 4/7/15.
+ * EcoLearnia v0.0.1
+ *
+ * @fileoverview
+ *  This file includes definition of ContentNode model.
+ *
+ * @author Young Suk Ahn Park
+ * @date 4/7/15
  */
 var Model = require('ampersand-model');
 var Collection = require('ampersand-rest-collection');
@@ -67,14 +80,14 @@ internals.createContentNode = function(urlRoot, uuid)
     var model = new internals.ContentNode({uuid: uuid});
     model.urlRoot = urlRoot;
     return model;
-}
+};
 
 internals.createContentNodeCollection = function(url)
 {
     var collection = new internals.ContentNodeCollection();
     collection.url = url;
     return collection;
-}
+};
 
 
 module.exports.ContentNode = internals.ContentNode;

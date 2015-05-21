@@ -1,7 +1,20 @@
-/**
- * Created by ysahn on 5/15/15.
+/*
+ * This file is part of the EcoLearnia platform.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
+
+/**
+ * EcoLearnia v0.0.1
+ *
+ * @fileoverview
+ *  This file includes utility functions.
+ *
+ * @author Young Suk Ahn Park
+ * @date 5/15/15
+ */
 
 var internals = {};
 
@@ -12,9 +25,11 @@ var internals = {};
  * @param {string} str
  * @param {string} suffix
  */
-module.exports.endsWith = function(str, suffix) {
+module.exports.endsWith = function (str, suffix)
+{
     return str.indexOf(suffix, str.length - suffix.length) !== -1;
 };
+
 
 /**
  * startsWith
@@ -24,11 +39,11 @@ module.exports.endsWith = function(str, suffix) {
  * @param {string} prefix
  * @param {number} position
  */
-module.exports.startsWith = function(str, prefix, position) {
+module.exports.startsWith = function (str, prefix, position)
+{
     position = position || 0;
     return str.lastIndexOf(prefix, position) === position;
 };
-
 
 
 /**
@@ -41,12 +56,14 @@ module.exports.startsWith = function(str, prefix, position) {
  *   --> myval = 'Hello World'
  * source: http://stackoverflow.com/questions/6393943/convert-javascript-string-in-dot-notation-into-an-object-reference
  *
- * @param obj
- * @param is
- * @param value
- * @returns {*}
+ * @param {object} obj  - The object to be accessed
+ * @param {string} is  - The dot notation string
+ * @param {*|undefined}  - if provided, this call is a setting call, otherwise getting call
+ *
+ * @return {*}   - The value
  */
-module.exports.dotAccess = function(obj, is, value) {
+module.exports.dotAccess = function (obj, is, value)
+{
     if (typeof is == 'string')
         return module.exports.dotAccess(obj, is.split('.'), value);
     else if (is.length == 1 && value !==undefined)
@@ -61,7 +78,8 @@ module.exports.dotAccess = function(obj, is, value) {
 /**
  * dotPopulate
  */
-module.exports.dotPopulate = function(obj, values) {
+module.exports.dotPopulate = function (obj, values)
+{
     for (var property in values) {
         if (values.hasOwnProperty(property)) {
             module.export.dotAccess(obj, property, values[property]);

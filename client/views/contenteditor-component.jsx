@@ -1,5 +1,19 @@
+/*
+ * This file is part of the EcoLearnia platform.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 /**
- * Created by ysahn on 4/29/15.
+ * EcoLearnia v0.0.1
+ *
+ * @fileoverview
+ *  This file includes ContentEditorComponent and its dependent components.
+ *  The ContentEditorComponent is used to author (create/edit) a content
+ *
+ * @author Young Suk Ahn Park
+ * @date 4/29/15
  */
 var React = require('react/addons');
 var AceEditorComponent = require('./aceeditor-component.jsx').AceEditorComponent;
@@ -9,20 +23,33 @@ var interactives = require('../interactives/interactives');
 
 var internals = {};
 
-
+/**
+ * @class MetadataEditorComponent
+ *
+ * @classdesc
+ *  React based class for editing content's metadata.
+ *  Currently a simple JSON editor
+ *
+ * @todo - Make it a form based with validation
+ */
 internals.MetadataEditorComponent = React.createClass({
-    getInitialState: function () {
+
+    getInitialState: function ()
+    {
         return {
             metadataText: JSON.stringify(this.props.content.metadata, null, 4)
         };
     },
-    componentWillReceiveProps: function(nextProps) {
+
+    componentWillReceiveProps: function(nextProps)
+    {
         // Update state when property change was propagated
         this.setState({metadataText: JSON.stringify(nextProps.content.metadata, null, 4)});
         console.log('componentWillReceiveProps', nextProps);
     },
 
-    render: function() {
+    render: function()
+    {
 
         var metadataText = JSON.stringify(this.props.content.metadata, null, 4);
         if (this.state.metadataText !== metadataText)
@@ -42,7 +69,12 @@ internals.MetadataEditorComponent = React.createClass({
         )
     },
 
-    handleChange: function(event) {
+    /**
+     *
+     * @param {Event} event
+     */
+    handleChange: function(event)
+    {
         var metadataText = event.target.value;
         this.setState({metadataText: metadataText });
         try {
@@ -55,7 +87,13 @@ internals.MetadataEditorComponent = React.createClass({
             return false;
         }
     },
-    handleBlur: function(event) {
+
+    /**
+     *
+     * @param {Event} event
+     */
+    handleBlur: function(event)
+    {
         var content = {
             metadata: JSON.parse(event.target.value)
         };
@@ -63,6 +101,15 @@ internals.MetadataEditorComponent = React.createClass({
     }
 });
 
+/**
+ * @class SourceEditorComponent
+ *
+ * @classdesc
+ *  React based Component class for editing content (raw) source.
+ *  Uses Ace editor.
+ *
+ * @todo - Disable navigating away when there is a syntax error in the source.
+ */
 internals.SourceEditorComponent = React.createClass({
     getInitialState: function () {
         console.log('getInitialState');
@@ -127,6 +174,14 @@ internals.SourceEditorComponent = React.createClass({
 
 });
 
+/**
+ * @class FormEditorComponent
+ *
+ * @classdesc
+ *  React based compontent for editing using forms (Visual editor).
+ *
+ * @todo - Implement the form.
+ */
 internals.FormEditorComponent = React.createClass({
     render: function() {
         var body = this.props.content.body;
@@ -149,6 +204,14 @@ internals.FormEditorComponent = React.createClass({
 
 });
 
+/**
+ * @class PreviewComponent
+ *
+ * @classdesc
+ *  Component for previewing the Interactive UI
+ *
+ * @todo - Fix so the Backbone view based components are correctly synced.
+ */
 internals.PreviewComponent = React.createClass({
 
     componentDidMount: function() {
@@ -166,6 +229,8 @@ internals.PreviewComponent = React.createClass({
     componentWillReceiveProps: function(nextProps) {
         this.coreContext.setContent(nextProps.content.body);
 
+        // This code syncs the React components but not BackboneView-based components
+        // @todo - fix BackboneView-based components to sync
         var el = document.getElementById('interactive-preview');
         this.coreContext.render(el);
     },
@@ -184,8 +249,11 @@ internals.PreviewComponent = React.createClass({
 });
 
 /**
- * Zurb Foundation based tabs
- * @type {*|Function}
+ * @class TabsComponent
+ *
+ * @classdesc
+ *  Components that manages the tabs (Zurb's Foundation based)
+ *
  */
 internals.TabsComponent = React.createClass({
 
@@ -237,7 +305,15 @@ internals.TabsComponent = React.createClass({
     }
 });
 
-
+/**
+ * @class ContentEditorComponent
+ *
+ * @classdesc
+ *  Component that encapsulates the overall content editing capabilities
+ *  presented in different tabs.
+ *
+ * @type {*|Function}
+ */
 internals.ContentEditorComponent = React.createClass({
     getInitialState: function () {
         return {

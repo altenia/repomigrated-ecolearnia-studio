@@ -1,7 +1,19 @@
-/**
- * Created by ysahn on 4/13/15.
+/*
+ * This file is part of the EcoLearnia platform.
  *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+/**
+ * EcoLearnia v0.0.1
+ *
+ * @fileoverview
+ *  This file includes definition of ContentItemComponent.
  * @see http://jsfiddle.net/ssorallen/XX8mw/
+ *
+ * @author Young Suk Ahn Park
+ * @date 4/13/15
  */
 var React = require('react/addons');
 
@@ -10,7 +22,9 @@ var React = require('react/addons');
 var internals = {};
 
 internals.ContentItemComponent = React.createClass({
-    render: function() {
+
+    render: function()
+    {
         var contentItem = this.props.item.item;
         return (
             <div>
@@ -25,12 +39,16 @@ internals.ContentItemComponent = React.createClass({
 });
 
 internals.ContentTreeNode = React.createClass({
-    getInitialState: function () {
+
+    getInitialState: function ()
+    {
         return {
             visible: true
         };
     },
-    render: function() {
+
+    render: function()
+    {
         var childNodes;
         var classObj;
 
@@ -83,7 +101,9 @@ internals.ContentTreeNode = React.createClass({
             </div>
         );
     },
-    toggle: function() {
+
+    toggle: function()
+    {
         this.setState({visible: !this.state.visible});
     }
 });

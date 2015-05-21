@@ -1,5 +1,21 @@
+/*
+ * This file is part of the EcoLearnia platform.
+ *
+ * (c) Young Suk Ahn Park <ys.ahnpark@mathnia.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+
 /**
- * Created by ysahn on 5/14/15.
+ * EcoLearnia v0.0.1
+ *
+ * @fileoverview
+ *  This file includes references to all interactive components and core dependencies.
+ *
+ * @author Young Suk Ahn Park
+ * @date 5/14/15
  */
 
 var corecontext = require('./core/corecontext');

@@ -1,5 +1,18 @@
+/*
+ * This file is part of the EcoLearnia platform.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 /**
- * Created by ysahn on 4/27/15.
+ * EcoLearnia v0.0.1
+ *
+ * @fileoverview
+ *  This file includes definition of ContentItem model.
+ *
+ * @author Young Suk Ahn Park
+ * @date 4/27/15
  */
 var Model = require('ampersand-model');
 var Collection = require('ampersand-rest-collection');
@@ -102,14 +115,14 @@ internals.createContentItem = function(urlRoot, uuid)
     var model = new internals.ContentItem({uuid: uuid});
     model.urlRoot = urlRoot;
     return model;
-}
+};
 
 internals.createContentItemCollection = function(url)
 {
     var collection = new internals.ContentItemCollection();
     collection.url = url;
     return collection;
-}
+};
 
 
 module.exports.ContentItem = internals.ContentItem;

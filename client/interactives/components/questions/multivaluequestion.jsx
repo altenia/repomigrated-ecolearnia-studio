@@ -1,16 +1,44 @@
+/*
+ * This file is part of the EcoLearnia platform.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 /**
- * Created by ysahn on 5/13/15.
+ * EcoLearnia v0.0.1
+ *
+ * @fileoverview
+ *  This file includes the definition of MultiValueQuestionComponent class.
+ *
+ * @author Young Suk Ahn Park
+ * @date 5/13/15
  */
 var React = require('react/addons');
-var ReactEliComponentMixin = require('../reactmixin').ReactEliComponentMixin;
+var EliReactComponentMixin = require('../elireactmixin').EliReactComponentMixin;
 
 /** @jsx React.DOM */
 
 var internals = {};
 
+/**
+ * @class MultiValueQuestionComponent
+ *
+ * @module interactives/components/questions
+ *
+ * @classdesc
+ *  React based component that represents a generic multiValue question.
+ *  A multivalue quesions are those which the question can ask for multiple
+ *  values.
+ *  Therefore the submission has the structure of
+ *  Object.<key: string, value: Object>
+ *
+ * @todo - Submission handling: keep the state in models
+ * @todo - Factor out the presenter: multiselect, multichoice, etc.
+ */
 internals.MultiValueQuestionComponent = React.createClass({
 
-    mixins: [ReactEliComponentMixin],
+    mixins: [EliReactComponentMixin],
 
     propTypes: {
         // Content Runtime Environment's context
@@ -21,13 +49,15 @@ internals.MultiValueQuestionComponent = React.createClass({
         config: React.PropTypes.object.isRequired
     },
 
-    getInitialState: function () {
+    getInitialState: function ()
+    {
         return {
             models: this.props.contentModels
         }
     },
 
-    render: function() {
+    render: function()
+    {
 
         // Returns the object either from the config question value itself
         // Or from the reference to the model.

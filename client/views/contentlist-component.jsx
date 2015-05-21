@@ -1,5 +1,18 @@
+/*
+ * This file is part of the EcoLearnia platform.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 /**
- * Created by ysahn on 4/13/15.
+ * EcoLearnia v0.0.1
+ *
+ * @fileoverview
+ *  This file includes definition of ContentListItemComponent.
+ *
+ * @author Young Suk Ahn Park
+ * @date 4/13/15
  */
 var React = require('react/addons');
 
@@ -14,10 +27,14 @@ internals.ContentListItemComponent = React.createClass({
 });
 
 internals.ContentListComponent = React.createClass({
-    getInitialState: function () {
+
+    getInitialState: function ()
+    {
         return {editing: null};
     },
-    render: function() {
+
+    render: function()
+    {
         var contentNodes = this.props.contentNodes;
 
         var listItems = contentNodes.map(function(contentNode) {

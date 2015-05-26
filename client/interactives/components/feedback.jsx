@@ -16,8 +16,7 @@
  */
 
 var React = require('react/addons');
-
-/** @jsx React.DOM */
+var EliReactComponent = require('./elireactcomponent').EliReactComponent;
 
 var internals = {};
 
@@ -33,20 +32,10 @@ var internals = {};
  *
  * @todo - Implement!
  */
-internals.FeedbackComponent = React.createClass({
-
-    getInitialState: function ()
-    {
-        return {
-            content: this.props.contentModel.toJSON()
-        }
-    },
-
-    render: function()
+export class FeedbackComponent extends EliReactComponent
+{
+    render()
     {
 
     }
-});
-
-
-module.exports.FeedbackComponent = internals.FeedbackComponent;
+}

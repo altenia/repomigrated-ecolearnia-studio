@@ -40,6 +40,10 @@ internals.EliViewComponent = AmpersandView.extend({
         config: 'object'
     },
 
+    /**
+     * Returns the type of this component (view)
+     * @returns {string}
+     */
     componentType: function()
     {
         return 'view';

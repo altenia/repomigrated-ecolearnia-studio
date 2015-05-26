@@ -15,9 +15,7 @@
  * @date 5/13/15
  */
 var React = require('react/addons');
-var EliReactComponentMixin = require('../elireactmixin').EliReactComponentMixin;
-
-/** @jsx React.DOM */
+var EliReactComponent = require('../elireactcomponent').EliReactComponent;
 
 var internals = {};
 
@@ -36,10 +34,9 @@ var internals = {};
  * @todo - Submission handling: keep the state in models
  * @todo - Factor out the presenter: multiselect, multichoice, etc.
  */
-internals.MultiValueQuestionComponent = React.createClass({
-
-    mixins: [EliReactComponentMixin],
-
+export class MultiValueQuestionComponent extends EliReactComponent
+{
+    /*
     propTypes: {
         // Content Runtime Environment's context
         coreContext: React.PropTypes.object.isRequired,
@@ -47,18 +44,18 @@ internals.MultiValueQuestionComponent = React.createClass({
         contentModels: React.PropTypes.object.isRequired,
         // Component's settings
         config: React.PropTypes.object.isRequired
-    },
-
-    getInitialState: function ()
+    },*/
+    constructor(props)
     {
-        return {
-            models: this.props.contentModels
+        super(props);
+
+        this.state = {
+            submitted: false
         }
-    },
+    }
 
-    render: function()
+    render()
     {
-
         // Returns the object either from the config question value itself
         // Or from the reference to the model.
         var question = this.props.coreContext.getValue(this.props.config.question);
@@ -79,7 +76,4 @@ internals.MultiValueQuestionComponent = React.createClass({
             </div>
         );
     }
-});
-
-
-module.exports.MultiValueQuestionComponent = internals.MultiValueQuestionComponent;
+}

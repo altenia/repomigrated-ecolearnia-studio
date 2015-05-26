@@ -26,9 +26,13 @@ var Feedback = require('./components/feedback.jsx').FeedbackComponent;
 var MultiValueQuestion = require('./components/questions/multivaluequestion.jsx').MultiValueQuestionComponent;
 var TemplateContainerComponent = require('./components/templatecontainer').TemplateContainerComponent;
 
+
+module.exports.createCoreContext = corecontext.createCoreContext;
+
 // The interactive components must be exported, otherwise the CoreContext will
 // not be able to instantiate.
 module.exports.MultiValueQuestion = MultiValueQuestion;
 module.exports.TemplateContainer = TemplateContainerComponent;
-module.exports.createCoreContext = corecontext.createCoreContext;
+module.exports.ActionBar = ActionBar;
+
 

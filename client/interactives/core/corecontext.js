@@ -153,19 +153,19 @@ internals.CoreContext.prototype.getValue = function(param)
     // If it contains a local reference, get the object it points to.
     if (param._lref)
     {
-        retval = this.getObjectFromFqn(param._lref);
+        retval = this.resolveObject(param._lref);
     }
     return retval;
 };
 
 /**
- * getObjectFromFqn
+ * resolveObject
  *
  * Returns the model object or component object
  *
  * @param {string} fqn  - the Fully Qualified Name of the object
  */
-internals.CoreContext.prototype.getObjectFromFqn = function(fqn)
+internals.CoreContext.prototype.resolveObject = function(fqn)
 {
     var retval;
     // if it starts with '.model' returns the JSON object,
@@ -223,7 +223,7 @@ internals.CoreContext.prototype.createComponent = function(spec)
 
     var constructorArg = {
         coreContext: this,
-        models: this.content_.models,
+        contentModels: this.content_.models,
         config: spec.config
     };
 

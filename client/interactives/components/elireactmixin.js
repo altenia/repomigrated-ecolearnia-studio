@@ -10,6 +10,8 @@
  *
  * @fileoverview
  *  This file includes the definition of EliReactComponentMixin mixin.
+ *  NOTE: Prefer use of class inheritance over mixin.
+ *  @see elireactcomponent.js
  *
  * @author Young Suk Ahn Park
  * @date 5/15/15
@@ -17,7 +19,6 @@
 
 /**
  * Mixin for ELI Components based on React
- *
  *
  */
 var EliReactComponentMixin = {

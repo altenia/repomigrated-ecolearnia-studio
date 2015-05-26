@@ -52,7 +52,7 @@
                 "id": "my_question",
                 "type": "TemplateContainer",
                 "config": {
-                    "template": "<div>{{.models.question.prompt}}<br /> {{.components.mvquestion}} <br/> ${actionbar} <br/> ${feedback}</div>",
+                    "template": "<div>{{.models.question.prompt}}<br /> {{.components.mvquestion}} <br/> {{.components.actionbar}} <br/> ${feedback}</div>",
                     "~doc": "Optionally:"
                 }
             },
@@ -67,7 +67,7 @@
             {
                 "id": "actionbar",
                 "type": "ActionBar",
-                "spec": {
+                "config": {
                     "items": [
                         "audio","submission","reset","read","hint"
                     ]

@@ -75,7 +75,7 @@ internals.TemplateContainerComponent = EliViewComponent.extend({
         for (var key in this.elios_) {
             var objectFqn = this.elios_[key];
             var objectEl = this.queryByHook(key);
-            var object = this.coreContext.getObjectFromFqn(objectFqn);
+            var object = this.coreContext.resolveObject(objectFqn);
 
             if (object.type && object.type.prototype) {
                 // is a component, render it in the el

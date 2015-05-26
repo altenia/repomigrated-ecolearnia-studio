@@ -2,6 +2,25 @@
 
 ## EcoLearnia
 
+Wouldn't it be great if children could learn having fun? 
+How about if people that have mastered a subject can contribute with contents,
+and developers and designers can create interesting apps and games enriching 
+the learners' experience?
+
+EcoLearnia is addressing those questions by providing an online learning 
+platform.
+
+EcoLearnia's vision is to create a universal ecosystem for learning 
+though knowledge sharing.
+
+Think about Facebook and Wikipedia for learning!
+
+EcoLearnia will allow people to create learning apps and contents. The apps and 
+contents will be curated for quality. Student will learn and master skills 
+engaging interactive content presented in gamified form for higher engagement.
+Ultimately the content usage data will be used for continuous efficacy 
+improvement.
+
 ### About EcoLearnia - The Big Picture
 EcoLearnia is an open source learning platform that enables ecosystem of 
 learning content production and consumption.
@@ -76,6 +95,18 @@ And finally build the EL-S
 `npm run build-client`
 
 
+## Directory Structure
+
+- `artifacts`: Includes documentation and other non-source-code artifacts
+- `client`: Client-side source code
+- `cohevium-content`: Includes HTML pages for the authoring tool
+- `config`: Contains the configuration file
+- `node_modules`: nodejs' packages
+- `public`: Web server's public folder. It contains public assets such as css.
+- `el-studio.js`: The main execution script 
+- `LICENSE`: The license of this software
+
+
 ## Configuring the Server
 
 The server configuration file is `config/ecolearnia-studio.conf.json`.
@@ -104,18 +135,7 @@ To run in normal mode:
 To run in debug mode:
 `node --debug el-studio.js`
 
-See the reference below, development link, for further detail on running in debug mode.
-
-## Directory Structure
-
-- `artifacts`: Includes documentation and other non-source-code artifacts
-- `client`: Client-side source code
-- `cohevium-content`: Includes HTML pages for the authoring tool
-- `config`: Contains the configuration file
-- `node_modules`: nodejs' packages
-- `public`: Web server's public folder. It contains public assets such as css.
-- `el-studio.js`: The main execution script 
-- `LICENSE`: The license of this software
+See the reference below - development link - for further detail on running in debug mode.
 
 
 ## Development
@@ -125,6 +145,7 @@ references below.
 
 
 ## Basic User Guide
+http://localhost:8080/cohevium/content/content-browse.html
 
 The initial page includes the main navigation. The user can search and browse
 content nodes and items. Selecting a node or item will open up the the 
@@ -135,5 +156,21 @@ editing page.
 
 - EcoLearnia server [repository](https://github.com/altenia/ecolearnia)
 - EcoLearnia content doc [repository](https://github.com/altenia/ecolearnia)
-- Interactives development: [interactives-dev](./artifacts/docs/interctives-dev.md)
-- Studio development: [interactives-dev](./artifacts/docs/studio-dev.md)
+- Interactives development: [artifacs/docs/interactives-dev.md](./artifacts/docs/interctives-dev.md)
+- Studio development: [artifacs/docs/studio-dev.md](./artifacts/docs/studio-dev.md)
+
+
+## LICENSE
+
+## Contributing
+
+Education is not in hands of few organizations, but it’s everyone’s business. 
+We should all be participant, actively collaborating to the disseminating 
+knowledge to our kids and generations to come.
+
+Your contribution and support is highly valuable. We invite you to be an active 
+participant of the education fostering community. 
+
+Feel free to fork and improve/enhance EcoLearnia any way you want. If you feel 
+that the system or the Ace community will benefit from your changes, please open 
+a pull request.

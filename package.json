@@ -29,6 +29,7 @@
     "ampersand-router": "^3.0.2",
     "ampersand-view": "^7.3.0",
     "async": "^0.9.0",
+    "bluebird": "^2.9.27",
     "bunyan": "^1.3.3",
     "cohevium": "git://github.com/altenia/cohevium.git",
     "fast-json-patch": "^0.5.1",
@@ -50,8 +51,10 @@
   "devDependencies": {
     "babel-core": "^5.4.5",
     "babelify": "^6.1.1",
+    "blanket": "^1.1.7",
     "browserify": "latest",
     "chai": "^2.0.0",
+    "glob": "^5.0.10",
     "mocha": "^2.1.0",
     "reactify": "^1.1.0",
     "should": "^5.0.0",

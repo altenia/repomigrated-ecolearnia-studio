@@ -5,7 +5,6 @@
  * file that was distributed with this source code.
  */
 
-
 /**
  * EcoLearnia v0.0.1
  *

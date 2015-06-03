@@ -34,7 +34,7 @@ var internals = {};
  * @todo - Submission handling: keep the state in models
  * @todo - Factor out the presenter: multiselect, multichoice, etc.
  */
-export class MultiValueQuestionComponent extends EliReactComponent
+export class SelectQuestionComponent extends EliReactComponent
 {
     /*
     propTypes: {
@@ -60,7 +60,7 @@ export class MultiValueQuestionComponent extends EliReactComponent
         // Or from the reference to the model.
         var question = this.props.coreContext.getValue(this.props.config.question);
 
-        var options = question.options.map(function(option) {
+        var options = question.fields[0].options.map(function(option) {
             return (
                 <li className="eli-question-option"><input type="checkbox" name="answers" value={option.value} />{option.label}</li>
             )

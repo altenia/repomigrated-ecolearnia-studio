@@ -69,3 +69,7 @@ using React.
 - Bablejs site provides a [page on ES6 ](https://babeljs.io/docs/learn-es6/)
   which should be suficient for most use cases.
 
+http://localhost:9090/debug?port=5858
+http://localhost:9099/contentitems/test-item.01
+http://localhost:8080/cohevium/content/content-edit.html/#item/test-item.01
+http://localhost:8080/cohevium/public/test-interactives.html

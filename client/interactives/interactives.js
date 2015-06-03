@@ -23,7 +23,7 @@ var corecontext = require('./core/corecontext');
 // Interactive Components.
 var ActionBar = require('./components/actionbar.jsx').ActionBarComponent;
 var Feedback = require('./components/feedback.jsx').FeedbackComponent;
-var MultiValueQuestion = require('./components/questions/multivaluequestion.jsx').MultiValueQuestionComponent;
+var SelectQuestion = require('./components/questions/selectquestion.jsx').SelectQuestionComponent;
 var TemplateContainerComponent = require('./components/templatecontainer').TemplateContainerComponent;
 
 
@@ -31,7 +31,7 @@ module.exports.createCoreContext = corecontext.createCoreContext;
 
 // The interactive components must be exported, otherwise the CoreContext will
 // not be able to instantiate.
-module.exports.MultiValueQuestion = MultiValueQuestion;
+module.exports.SelectQuestion = SelectQuestion;
 module.exports.TemplateContainer = TemplateContainerComponent;
 module.exports.ActionBar = ActionBar;
 

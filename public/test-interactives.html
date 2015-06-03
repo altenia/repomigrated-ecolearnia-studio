@@ -18,29 +18,31 @@
         "models": {
             "question": {
                 "prompt": "What are possible answer for square root of 4?",
-                "asking": [
+                "fields": [
                     {
-                        "answers": { "type": "array[number]" }
+                        "id": "theAnswer",
+                        "type": "number",
+                        "options": [
+                            {
+                                "label": "2",
+                                "value": "2"
+                            },
+                            {
+                                "label": "3",
+                                "value": "3"
+                            },
+                            {
+                                "label": "4",
+                                "value": "4"
+                            },
+                            {
+                                "label": "-2",
+                                "value": "-2"
+                            }
+                        ]
                     }
                 ],
-                "options": [
-                    {
-                        "label": "2",
-                        "value": "2"
-                    },
-                    {
-                        "label": "3",
-                        "value": "3"
-                    },
-                    {
-                        "label": "4",
-                        "value": "4"
-                    },
-                    {
-                        "label": "-2",
-                        "value": "-2"
-                    }
-                ],
+
                 // Optional, when stat is available
                 "submissions": {
 
@@ -52,13 +54,13 @@
                 "id": "my_question",
                 "type": "TemplateContainer",
                 "config": {
-                    "template": "<div>{{.models.question.prompt}}<br /> {{.components.mvquestion}} <br/> {{.components.actionbar}} <br/> ${feedback}</div>",
+                    "template": "<div>{{.models.question.prompt}}<br /> {{.components.selectquestion}} <br/> {{.components.actionbar}} <br/> ${feedback}</div>",
                     "~doc": "Optionally:"
                 }
             },
             {
-                "id": "mvquestion",
-                "type": "MultiValueQuestion",
+                "id": "selectquestion",
+                "type": "SelectQuestion",
                 "config": {
                     "question": { "_lref" : ".models.question"},
                     "presentation": "multiselect"

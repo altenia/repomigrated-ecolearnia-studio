@@ -17,7 +17,11 @@
  * @date 5/13/15
  */
 
+var _ = require('lodash');
+
+
 var utils = require('../../common/utils');
+var logger = require('../../common/logger');
 var SubPub = require('./subpub');
 
 var React = require('react/addons');
@@ -49,6 +53,11 @@ var internals = {};
 internals.CoreContext = function(settings)
 {
     /**
+     * The logger
+     */
+    this.logger_ = logger.getLogger('CoreContext');
+
+    /**
      * SubPub: component than handles events
      */
     this.subpub_ = null;
@@ -56,7 +65,7 @@ internals.CoreContext = function(settings)
     /**
      * Submission Evaluator: Handles submission for evaluation.
      */
-    this.submissionEvaluator_ = null;
+    this.submissionHandler_ = null;
 
     /**
      * Decorator: Decorates UI components by adding styles.
@@ -65,7 +74,7 @@ internals.CoreContext = function(settings)
     this.decorator_ = null;
 
     /**
-     * The namespace to look ro
+     * The namespace to look for the components
      */
     this.componentModule_ = global;
     if (settings.componentModule) {
@@ -73,6 +82,7 @@ internals.CoreContext = function(settings)
     }
     else if (settings.componentNamespace) {
         this.componentModule_ = global[settings.componentNamespace];
+        this.logger_.info({ componentNamespace: settings.componentNamespace} );
     }
 
     /**
@@ -82,15 +92,15 @@ internals.CoreContext = function(settings)
     this.content_ = settings.content; // the content body
 
     /**
-     *
-     * @type {{}}
+     * Map of component id and it's specification (description)
+     * @type {Object}
      * @private
      */
     this.componentSpecs_ = {};
 
     /**
-     * Reference to components
-     * @type {Object} Map wher keys are component ids and value are the Components
+     * Reference to component instances
+     * @type {Object} Map where keys are component ids and value are the components instances
      */
     this.componentReferences_ = {};
 
@@ -198,10 +208,15 @@ internals.CoreContext.prototype.mapifyComponentSpecs_ = function(content)
 {
     content.components.forEach(function(element, index, array) {
         if (element.id in this.componentSpecs_) {
-            throw Error('Duplicate component ID');
+            throw new Error('Duplicate component ID');
         }
         this.componentSpecs_[element.id] = element;
     }.bind(this));
+
+    var componentIds = _.keys(this.componentSpecs_);
+
+    this.logger_.debug(componentIds, 'Component Specs mapified.');
+
     return this.componentSpecs_;
 };
 
@@ -209,13 +224,14 @@ internals.CoreContext.prototype.mapifyComponentSpecs_ = function(content)
  * Builds the components as specified in the spec
  *
  * @param {object} spec  - The specification of the components
+ * @param {string} id  - id of the component, for loggin purpose
  *
  * @return {object}  The component instance (a React element)
  */
-internals.CoreContext.prototype.createComponent = function(spec)
+internals.CoreContext.prototype.createComponent = function(spec, id)
 {
     if (!(spec.type in this.componentModule_)) {
-        throw Error('Component ' + spec.type + ' not found in module');
+        throw new Error('Component ' + spec.type + ' not found in module');
     }
     var componentClass = this.componentModule_[spec.type];
 
@@ -233,6 +249,10 @@ internals.CoreContext.prototype.createComponent = function(spec)
     } else {
         retval = new componentClass(constructorArg);
     }
+    this.logger_.info(
+        { componentType: componentType, type: spec.type, id: id},
+        'Component created'
+    );
 
     return retval;
 };
@@ -251,9 +271,9 @@ internals.CoreContext.prototype.createComponent = function(spec)
 internals.CoreContext.prototype.getComponent = function(id) {
     if (!(id in this.componentReferences_)) {
         if (!(id in this.componentSpecs_)) {
-            throw Error('Component ID not found');
+            throw new Error('Component ID not found');
         }
-        this.componentReferences_[id] = this.createComponent(this.componentSpecs_[id]);
+        this.componentReferences_[id] = this.createComponent(this.componentSpecs_[id], id);
     }
     return this.componentReferences_[id];
 };
@@ -303,7 +323,7 @@ internals.CoreContext.prototype.renderComponent = function(param, el)
 internals.CoreContext.prototype.render = function(el)
 {
     if (!this.content_ || !this.content_.components) {
-        throw Error('No component was specified');
+        throw new Error('No component was specified');
     }
     var mainComponentId = this.content_.components[0].id;
     return this.renderComponent(mainComponentId, el);

@@ -18,7 +18,8 @@
  * @date 5/14/15
  */
 
-var corecontext = require('./core/corecontext');
+var itemcontext = require('./core/itemcontext');
+var PubSub = require('./core/pubsub').PubSub;
 
 // Interactive Components.
 var ActionBar = require('./components/actionbar.jsx').ActionBarComponent;
@@ -26,13 +27,19 @@ var Feedback = require('./components/feedback.jsx').FeedbackComponent;
 var SelectQuestion = require('./components/questions/selectquestion.jsx').SelectQuestionComponent;
 var TemplateContainerComponent = require('./components/templatecontainer').TemplateContainerComponent;
 
+// @note - this can be externalized to another js bundle
+var LocalEvaluator = require('./core/evaluator').LocalEvaluator;
+module.exports.LocalEvaluator = LocalEvaluator;
+var evaluation = require('./evaluation/evaluation');
+module.exports.evaluation = evaluation;
 
-module.exports.createCoreContext = corecontext.createCoreContext;
+module.exports.PubSub = PubSub;
+module.exports.createItemContext = itemcontext.createItemContext;
 
 // The interactive components must be exported, otherwise the CoreContext will
 // not be able to instantiate.
 module.exports.SelectQuestion = SelectQuestion;
 module.exports.TemplateContainer = TemplateContainerComponent;
 module.exports.ActionBar = ActionBar;
-
+module.exports.Feedback = Feedback;
 

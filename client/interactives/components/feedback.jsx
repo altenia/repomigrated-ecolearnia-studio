@@ -17,6 +17,7 @@
 
 var React = require('react/addons');
 var EliReactComponent = require('./elireactcomponent').EliReactComponent;
+var Events = require('../core/events').Events;
 
 var internals = {};
 
@@ -34,8 +35,37 @@ var internals = {};
  */
 export class FeedbackComponent extends EliReactComponent
 {
+    constructor(props)
+    {
+        super(props);
+        this.bind_('handleEvaluatedEvent_');
+
+        this.state = {
+            evaluation: {}
+        };
+
+        this.props.itemContext.pubsub.subscribe(
+            Events.ANSWER_EVALUATED,
+            this.handleEvaluatedEvent_.bind(this)
+        );
+    }
+
+    handleEvaluatedEvent_(message)
+    {
+        if(message.source.itemId === this.itemAssociationId())
+        {
+            this.setState({evaluation: message.payload});
+        }
+    }
+
     render()
     {
-
+        // The "eli" prefix in the className stands for EcoLearnia Interactive
+        var evalDump = JSON.stringify(this.state.evaluation);
+        return (
+            <div className="eli-feedback">
+                {evalDump}
+            </div>
+        );
     }
 }

@@ -32,10 +32,9 @@ var internals = {};
 internals.EliViewComponent = AmpersandView.extend({
 
     props: {
+        componentId: 'string',
         // Content Runtime Environment's context
-        coreContext: 'object',
-        // Content models
-        contentModels: 'object',
+        itemContext: 'object',
         // Component's settings
         config: 'object'
     },
@@ -44,7 +43,7 @@ internals.EliViewComponent = AmpersandView.extend({
      * Returns the type of this component (view)
      * @returns {string}
      */
-    componentType: function()
+    componentKind: function()
     {
         return 'view';
     }

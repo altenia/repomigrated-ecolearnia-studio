@@ -48,3 +48,5 @@ internals.createSimplePromise = function(func)
 */
 
 module.exports.createPromise = internals.createBluebirdPromise;
+
+module.exports.props = Bluebird.props;

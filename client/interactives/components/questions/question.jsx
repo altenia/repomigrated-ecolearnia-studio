@@ -16,6 +16,7 @@
  */
 var React = require('react/addons');
 var EliReactComponent = require('../elireactcomponent').EliReactComponent;
+var Events = require('../../core/events').Events;
 
 /**
  * @class QuestionComponent
@@ -36,14 +37,45 @@ export class AbstractQuestionComponent extends EliReactComponent
     constructor(props)
     {
         super(props);
+        this.bind_('handleEvaluatedEvent_');
+
+        this.props.itemContext.pubsub.subscribe(
+            Events.ANSWER_EVALUATED,
+            this.handleEvaluatedEvent_.bind(this)
+        );
 
         this.state = {
-            submitted: false
+            evaluation: {}
+        };
+
+    }
+
+    handleEvaluatedEvent_(message)
+    {
+        if(message.source.itemId === this.itemAssociationId())
+        {
+            // do something
         }
     }
 
-    stageSubmissionField(fieldId, answeredKey, answeredValue)
+    /**
+     * returns the option's value of a chosen field
+     * @param question
+     * @param fieldId
+     * @param key
+     * @returns {*}
+     */
+    getOptionValue(question, fieldId, key)
     {
-        this.props.submissionEvaluator_.stageField(fieldId, answredKey, answeredValue);
+        var field = question.fields.find( function(element, index) {
+            return (element.id === fieldId);
+        });
+        if (!field) {
+            return null;
+        }
+        var option = field.options.find( function(element, index) {
+            return (element.key === key);
+        });
+        return option.value;
     }
 }

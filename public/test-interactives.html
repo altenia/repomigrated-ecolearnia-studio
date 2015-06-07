@@ -15,38 +15,65 @@
     var interactives = require('interactives');
 
     var contentSpec = {
-        "models": {
+        "definition": {
+            "greet": "Hello There",
             "question": {
-                "prompt": "What are possible answer for square root of 4?",
+                "prompt": "What are the possible answers for square root of 4?",
                 "fields": [
                     {
-                        "id": "theAnswer",
+                        "id": "field1",
                         "type": "number",
+                        "required": true,
                         "options": [
                             {
-                                "label": "2",
+                                "key": "2",
                                 "value": "2"
                             },
                             {
-                                "label": "3",
+                                "key": "3",
                                 "value": "3"
                             },
                             {
-                                "label": "4",
+                                "key": "4",
                                 "value": "4"
                             },
                             {
-                                "label": "-2",
+                                "key": "-2",
+                                "value": "-4"
+                            }
+                        ]
+                    },
+                    {
+                        "id": "field2",
+                        "type": "number",
+                        "options": [
+                            {
+                                "key": "2",
+                                "value": "2"
+                            },
+                            {
+                                "key": "4",
+                                "value": "4"
+                            },
+                            {
+                                "key": "-2",
                                 "value": "-2"
                             }
                         ]
                     }
                 ],
 
-                // Optional, when stat is available
-                "submissions": {
-
-                }
+                "submissions": [
+                    {
+                        "timestamp": "2015-05-02T02:12:12",
+                        "timeSpent": 3,
+                        "score": 1,
+                        "fields": [
+                            { "fieldId": 0, "answeredKey": "2", "answeredValue": "Two", "score": 1, "feedback": 'Great' },
+                            { "fieldId": 1, "answeredKey": "-2", "answeredValue": "Minus Two", score: 1 }
+                        ]
+                    }
+                ]
             }
         },
         "components": [
@@ -54,7 +81,7 @@
                 "id": "my_question",
                 "type": "TemplateContainer",
                 "config": {
-                    "template": "<div>{{.models.question.prompt}}<br /> {{.components.selectquestion}} <br/> {{.components.actionbar}} <br/> ${feedback}</div>",
+                    "template": "<div>{{.definition.greet}}<br /> {{.components.selectquestion}} <br/> {{.components.actionbar}} <br/> {{.components.feedback}}</div>",
                     "~doc": "Optionally:"
                 }
             },
@@ -62,8 +89,8 @@
                 "id": "selectquestion",
                 "type": "SelectQuestion",
                 "config": {
-                    "question": { "_lref" : ".models.question"},
-                    "presentation": "multiselect"
+                    "question": { "_lref" : ".definition.question"},
+                    "layout": "flow"
                 }
             },
             {
@@ -71,7 +98,7 @@
                 "type": "ActionBar",
                 "config": {
                     "items": [
-                        "audio","submission","reset","read","hint"
+                        "tts","submit","reset","hint"
                     ]
                 }
             },
@@ -83,11 +110,13 @@
                 }
             }
         ],
+
         "actions": {
-            "solution": "4 + 4 + 1 = 9",
+            "solution": "2 * 2 = 4; also -2 * -2 = 4",
             "!doc": "hints is an array in the order that is shown per attemp failure",
             "hints": [
-                "How can 5 be decomposed?"
+                "What multiplied twice gives 4?",
+                "Remember that multiplying two negatives yields positive."
             ]
         },
         "processFlow": {
@@ -99,41 +128,82 @@
             }
         },
         "policy": {
-            "maxAttempts": 10,
+            "maxAttempts": 3,
             "!doc": "Optional - if present, each attempt will be timed in seconds",
             "timed": 10,
             "timeOverAction": "action to take when time is over"
         },
-        "submissionEval": {
-            "engine": "ArithmeticExpression",
-            "correctAnswer": {
-                "sum": "9"
+        "evalRule": {
+            "fieldRules": {
+                "field1": {
+                    "engine": "regex",
+                    "pattern": "(2|\\-2)"
+                },
+                "field2": {
+                    "engine": "regex",
+                    "pattern": "(2|\\-2)"
+                }
             },
-            "responses": {
-                "attemptFeedbacks": [
-                    {
-                        "case": "$sum $gt $9",
-                        "message": "Number too large"
-                    },
-                    {
-                        "case": "$sum $lt $9",
-                        "message": "Your answer $sum is too small"
+            "responses": [
+                {
+                    "case": { "condition": "incorrect", "field": "field1"},
+                    "feedback": {
+                        "field": "field1",
+                        "message":"Incorrect"
                     }
-                ],
-                "timeoutFeedback": "YOu timed out",
-                "pastDueDateFeedback": "YOu timed out"
-            }
+                },
+                {
+                    "case": { "condition": "incorrect", "field": "field2"},
+                    "feedback": {
+                        "field": "field2",
+                        "message": "Incorrect"
+                    }
+                },
+                {
+                    "case": "$field1 > 2",
+                    "feedback": {
+                        "field": "field1",
+                        "message": "Number too large"
+                    }
+                },
+                {
+                    "case": "$field1 == $field2",
+                    "feedback": {
+                        "field": "__aggregate__",
+                        "message": "Fields cannot be same"
+                    }
+                },
+                {
+                    "case": "__timeout__",
+                    "feedback": {
+                        "field": "__aggregate__",
+                        "message": "Sorry, timed out"
+                    }
+                },
+                {
+                    "case": "__past_due__",
+                    "feedback": {
+                        "field": "__aggregate__",
+                        "message": "Due date passed"
+                    }
+                }
+            ]
         }
     };
 
     var settings = {};
     settings.content = contentSpec;
     settings.componentNamespace = 'interactives';
+    settings.pubsub = new interactives.PubSub();
 
-    var coreContext = interactives.createCoreContext(settings);
+    var evaluator = new interactives.LocalEvaluator(settings);
+    interactives.evaluation.registerEvalEngines(evaluator);
+
+    var itemContext = interactives.createItemContext(settings);
+    evaluator.registerItem(itemContext);
 
     var el = document.getElementById('placeholder');
-    coreContext.renderComponent('my_question', el);
+    itemContext.renderComponent('my_question', el);
 
 </script>
 

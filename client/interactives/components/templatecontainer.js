@@ -60,7 +60,7 @@ internals.TemplateContainerComponent = EliViewComponent.extend({
 
     initialize: function(options)
     {
-        this.coreContext = options.coreContext;
+        this.itemContext = options.itemContext;
         this.contentModels = options.contentModels;
         this.config = options.config;
         this.template = this.parseTemplate(options.config.template);
@@ -71,16 +71,16 @@ internals.TemplateContainerComponent = EliViewComponent.extend({
         this.renderWithTemplate(this);
 
         // For each of the placeholders (divs with data-hook)
-        // Inject the object from the coreContext
+        // Inject the object from the itemContext
         for (var key in this.elios_) {
             var objectFqn = this.elios_[key];
             var objectEl = this.queryByHook(key);
-            var object = this.coreContext.resolveObject(objectFqn);
+            var object = this.itemContext.resolveObject(objectFqn);
 
             if (object.type && object.type.prototype) {
                 // is a component, render it in the el
                 // @todo - Consider checking for object.type.prototype.componentType
-                this.coreContext.renderComponent(object, objectEl);
+                this.itemContext.renderComponent(object, objectEl);
             } else {
                 // @todo - Is is OK to just set the textContext with stringified object?
                 objectEl.textContent = object.toString();

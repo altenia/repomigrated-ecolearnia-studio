@@ -34,7 +34,11 @@ export class EliReactComponent extends React.Component
     constructor(props)
     {
         super(props);
+
+        this.itemAssociationId_ = props.itemAssociationId;
+        this.componentId_ = props.componentId;
     }
+
 }
 
 /**
@@ -47,19 +51,35 @@ EliReactComponent.prototype.bind_ = function(...methods)
 };
 
 /**
- * Returns the type of this component (react)
+ * Returns the ID of the item that this component pertains
+ */
+EliReactComponent.prototype.itemAssociationId = function()
+{
+    return this.itemAssociationId_;
+};
+
+/**
+ * Returns the ID of this component instance
+ */
+EliReactComponent.prototype.componentId = function()
+{
+    return this.componentId_;
+};
+
+/**
+ * Returns the kind of this component (react)
  * @returns {string}
  */
-EliReactComponent.prototype.componentType = function()
+EliReactComponent.prototype.componentKind = function()
 {
     return 'react';
 };
 
 EliReactComponent.propTypes = {
+    // Component ID
+    componentId: React.PropTypes.object.isRequired,
     // Content Runtime Environment's context
-    coreContext: React.PropTypes.object.isRequired,
-    // Content models
-    contentModels: React.PropTypes.object.isRequired,
+    itemContext: React.PropTypes.object.isRequired,
     // Component's settings
     config: React.PropTypes.object.isRequired
 };

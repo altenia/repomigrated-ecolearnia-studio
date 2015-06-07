@@ -22,7 +22,7 @@
  *
  */
 var EliReactComponentMixin = {
-    componentType: function()
+    componentKind: function()
     {
         return 'react';
     }

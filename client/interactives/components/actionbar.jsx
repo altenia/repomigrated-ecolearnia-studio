@@ -17,6 +17,7 @@
 
 var React = require('react/addons');
 var EliReactComponent = require('./elireactcomponent').EliReactComponent;
+var Events = require('../core/events').Events;
 
 
 var internals = {};
@@ -39,17 +40,37 @@ export class ActionBarComponent extends EliReactComponent
     constructor(props)
     {
         super(props);
+        //this.bind_('handleAction_');
 
         this.state = {
             submitted: false
         }
     }
 
+    handleAction_(type, e)
+    {
+        // e.preventDefault();
+        this.props.itemContext.pubsub.publish(
+            'action:' + type,
+            this.itemAssociationId(),
+            this.componentId(),
+            type);
+    }
+
     renderItem_(type)
     {
         var retval = null;
-        if (type == 'audio') {
-            retval = <div><a href="audio">audio-icon</a></div>
+        if (type == 'tts') {
+            retval = <div><a onClick={this.handleAction_.bind(this, 'tts')} >audio-icon</a></div>
+        }
+        if (type == 'submit') {
+            retval = <div><button onClick={this.handleAction_.bind(this, 'submit')} >Submit</button></div>
+        }
+        if (type == 'reset') {
+            retval = <div><a onClick={this.handleAction_.bind(this, 'reset')} >Reset</a></div>
+        }
+        if (type == 'hint') {
+            retval = <div><a onClick={this.handleAction_.bind(this, 'hint')} >Hint</a></div>
         }
         return retval;
     }

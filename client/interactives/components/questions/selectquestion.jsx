@@ -15,7 +15,7 @@
  * @date 5/13/15
  */
 var React = require('react/addons');
-var EliReactComponent = require('../elireactcomponent').EliReactComponent;
+var AbstractQuestionComponent = require('./question.jsx').AbstractQuestionComponent;
 
 var internals = {};
 
@@ -34,12 +34,12 @@ var internals = {};
  * @todo - Submission handling: keep the state in models
  * @todo - Factor out the presenter: multiselect, multichoice, etc.
  */
-export class SelectQuestionComponent extends EliReactComponent
+export class SelectQuestionComponent extends AbstractQuestionComponent
 {
     /*
     propTypes: {
         // Content Runtime Environment's context
-        coreContext: React.PropTypes.object.isRequired,
+        itemContext: React.PropTypes.object.isRequired,
         // Content models
         contentModels: React.PropTypes.object.isRequired,
         // Component's settings
@@ -52,27 +52,51 @@ export class SelectQuestionComponent extends EliReactComponent
         this.state = {
             submitted: false
         }
+
+        this.bind_('handleChange_');
+    }
+
+    handleChange_(fieldId, key, e)
+    {
+        var checked = event.target.checked;
+        var question = this.props.itemContext.getValue(this.props.config.question);
+
+        if (checked) {
+            var value = this.getOptionValue(question, fieldId, key);
+            this.props.itemContext.answerModel.addStagedAnswer(fieldId, key, value);
+        } else {
+            this.props.itemContext.answerModel.removeStagedAnswer(fieldId, key);
+        }
     }
 
     render()
     {
         // Returns the object either from the config question value itself
         // Or from the reference to the model.
-        var question = this.props.coreContext.getValue(this.props.config.question);
+        var question = this.props.itemContext.getValue(this.props.config.question);
 
-        var options = question.fields[0].options.map(function(option) {
-            return (
-                <li className="eli-question-option"><input type="checkbox" name="answers" value={option.value} />{option.label}</li>
-            )
-        });
+        var optionsSet = [];
+        question.fields.forEach( function(element, index){
+            var options = element.options.map(function(option) {
+                return (
+                    <li className="eli-question-option">
+                        <input type="checkbox" name={element.id} onChange={this.handleChange_.bind(this, element.id, option.key)} value={option.value} />
+                        {option.value}
+                    </li>
+                )
+            }.bind(this));
+            optionsSet.push(
+                <ul>
+                    {options}
+                </ul>);
+        }.bind(this));
+
 
         // The "eli" prefix in the className stands for EcoLearnia Interactive
         return (
             <div className="eli-question">
                 <span className="eli-question-prompt">{question.prompt}</span>
-                <ul>
-                    {options}
-                </ul>
+                {optionsSet}
             </div>
         );
     }

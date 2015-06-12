@@ -19,8 +19,6 @@ var React = require('react/addons');
 var AceEditorComponent = require('./aceeditor-component.jsx').AceEditorComponent;
 var interactives = require('../interactives/interactives');
 
-/** @jsx React.DOM */
-
 var internals = {};
 
 /**
@@ -220,25 +218,22 @@ internals.PreviewComponent = React.createClass({
             componentModule: interactives
         };
 
-        this.coreContext = interactives.createCoreContext(settings);
+        this.itemContext = interactives.createItemContext(settings);
 
         var el = document.getElementById('interactive-preview');
-        this.coreContext.render(el);
+        this.itemContext.render(el);
     },
 
     componentWillReceiveProps: function(nextProps) {
-        this.coreContext.setContent(nextProps.content.body);
+        this.itemContext.setContent(nextProps.content.body);
 
         // This code syncs the React components but not BackboneView-based components
         // @todo - fix BackboneView-based components to sync
         var el = document.getElementById('interactive-preview');
-        this.coreContext.render(el);
+        this.itemContext.render(el);
     },
 
     render: function() {
-        var textAreaStyle = {
-            height: '10em'
-        };
         return (
             <div>
                 <div id="interactive-preview"></div>

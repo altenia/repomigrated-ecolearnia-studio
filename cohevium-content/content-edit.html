@@ -10,6 +10,7 @@
 
 
 <script src="/cohevium/public/foundation/js/foundation/foundation.tab.js"></script>
+<script src="/cohevium/public/foundation/js/foundation/foundation.dropdown.js"></script>
 <script src='/cohevium/public/js/app.bundle.js'></script>
 <script src='/cohevium/public/js/el-interactives.bundle.js'></script>
 
@@ -24,6 +25,13 @@
     var ContentEditorView = require('contenteditor-view').ContentEditorView;
 
     var contentService = new ContentService({rootUrl: 'http://localhost:9099'});
+
+    function openMessageModal(title, body)
+    {
+        $('#messageModalTitle').html(title);
+        $('#messageModalBody').html(body);
+        $('#messageModal').foundation('reveal', 'open');
+    }
 
     // @todo - Populate the breadcrumb
 
@@ -42,12 +50,16 @@
         item: function(uuid) {
             console.log(uuid);
             contentService.fetchItem(uuid)
-                    .done(function(contentItem){
+                    .done(function(contentItem) {
                         var contentEditorEl = document.getElementById('content-editor');
                         var contentEditorView = new ContentEditorView({model: contentItem, el:contentEditorEl});
                         contentEditorView.render();
                         console.log('model:', contentItem.toJSON());
-                    });
+                    })/*
+                    .catch(function (error) {
+
+                        //$('#messageModal').foundation('reveal', 'close');
+                    })*/;
         },
 
         // Route for editing a node
@@ -66,9 +78,11 @@
     var router = new ContentEditorRouter();
     var t = router.history.start({pushState: false});
 
-    /*
-    var editor = ace.edit("editor");
-    editor.setTheme("ace/theme/monokai");
-    editor.getSession().setMode("ace/mode/json");
-    */
+
 </script>
+
+<div id="messageModal" class="reveal-modal" data-reveal aria-labelledby="messageModalTitle" aria-hidden="true" role="dialog">
+    <h2 id="messageModalTitle"></h2>
+    <div id="messageModalBody"></div>
+    <a class="close-reveal-modal" aria-label="Close">&#215;</a>
+</div>

@@ -22,7 +22,7 @@ var React = require('react/addons');
 
 var utils = require('../../common/utils');
 var logger = require('../../common/logger');
-var SubPub = require('./pubsub');
+var SubPub = require('./../../common/pubsub');
 
 var AnswerModel = require('./answermodel').AnswerModel;
 

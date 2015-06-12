@@ -19,7 +19,7 @@
  */
 
 var itemcontext = require('./core/itemcontext');
-var PubSub = require('./core/pubsub').PubSub;
+var PubSub = require('./../common/pubsub').PubSub;
 
 // Interactive Components.
 var ActionBar = require('./components/actionbar.jsx').ActionBarComponent;

@@ -17,8 +17,6 @@
 var React = require('react/addons');
 // Depends on ace, make sure that the hosting page has link to the ace editor js file
 
-/** @jsx React.DOM */
-
 var internals = {};
 
 

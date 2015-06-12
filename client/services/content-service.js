@@ -14,7 +14,8 @@
  * @author Young Suk Ahn Park
  * @date 4/7/15
  */
-var $ = require('jquery');
+//var $ = require('jquery');
+var promiseutils = require('../common/promiseutils');
 var contentnodemodel = require('../models/contentnode');
 var contentitemmodel = require('../models/contentitem');
 
@@ -42,40 +43,33 @@ internals.ContentService = function(config)
  */
 internals.ContentService.prototype.queryNodes = function(criteria)
 {
+    var promise = promiseutils.createPromise( function(resolve, reject) {
 
-    var deferred = $.Deferred();
+        var contentNodes = contentnodemodel.createContentNodeCollection(this.rootUrl + '/nodes');
 
-    var contentNodes = contentnodemodel.createContentNodeCollection(this.rootUrl + '/nodes');
-    
-    function successCallback(collection, response, options) {
-        deferred.resolve(collection);
-    }
+        function successCallback(collection, response, options) {
+            resolve(collection);
+        }
 
-    function errorCallback(collection, response, options) {
-        deferred.reject(collection);
-    }
-
-    contentNodes.fetch({ 
-        //data: {page: 3},
-        success: successCallback,
-        error: errorCallback
-    });
-
-    return deferred.promise();
-
-    /*
-    // criteriaToQueryString(criteria);
-    return $.ajax({
-        url: this.rootUrl + '/nodes'
-    })
-        /*
-        .done(function( data ) {
-            if ( console && console.log ) {
-                console.log( data );
+        function errorCallback(collection, response, options) {
+            if (response.body)
+            {
+                reject(response);
+            } else {
+                var error = new Error('Communication error');
+                reject(error);
             }
-            deferred.resolve(data);
+        }
+
+        contentNodes.fetch({
+            //data: {page: 3},
+            success: successCallback,
+            error: errorCallback
         });
-        */
+
+    }.bind(this));
+
+    return promise;
 };
 
 /**
@@ -86,26 +80,37 @@ internals.ContentService.prototype.queryNodes = function(criteria)
  * @param uuid
  * @returns {Promise}
  */
-internals.ContentService.prototype.fetchNode = function(uuid) {
+internals.ContentService.prototype.fetchNode = function(uuid)
+{
 
-    var deferred = $.Deferred();
+    var promise = promiseutils.createPromise( function(resolve, reject) {
 
-    var contentNode = contentnodemodel.createContentNode(this.rootUrl + '/nodes', uuid);
+        var contentNode = contentnodemodel.createContentNode(this.rootUrl + '/nodes', uuid);
 
-    function successCallback(model, response, options) {
-        deferred.resolve(model);
-    }
+        function successCallback(model, response, options)
+        {
+            resolve(model);
+        }
 
-    function errorCallback(model, response, options) {
-        deferred.reject(model);
-    }
+        function errorCallback(model, response, options)
+        {
+            if (response.body)
+            {
+                reject(response);
+            } else {
+                var error = new Error('Communication error');
+                reject(error);
+            }
+        }
 
-    contentNode.fetch({
-        success: successCallback,
-        error: errorCallback
-    });
+        contentNode.fetch({
+            success: successCallback,
+            error: errorCallback
+        });
 
-    return deferred.promise();
+    }.bind(this));
+
+    return promise;
 };
 
 /**

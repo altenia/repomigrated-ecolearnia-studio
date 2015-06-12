@@ -88,27 +88,49 @@
     </div>
 </div>
 
+<div id="message-dialog"></div>
 
+<script src="/cohevium/public/foundation/js/foundation/foundation.reveal.js"></script>
 <script src='/cohevium/public/js/app.bundle.js'></script>
 
 <script>
     var Router = require('ampersand-router');
 
+    var clientapp = require('clientapp');
     var ContentService = require('content-service').ContentService;
 
     var ContentCollectionView = require('contentcollection-view').ContentCollectionView;
     var ContentTreeView = require('contenttree-view').ContentTreeView;
 
-    var contentService = new ContentService({rootUrl: 'http://localhost:9099'});
+    var appSettings = {
+        rootUrl: 'http://localhost:9099'
+    };
+    var clientApp = clientapp.init(appSettings);
+    //clientApp.initMessageDialog( document.getElementById('message-dialog'));
+
+    function openMessageModal(title, body)
+    {
+        $('#messageModalTitle').html(title);
+        $('#messageModalBody').html(body);
+        $('#messageModal').foundation('reveal', 'open');
+    }
+    //setTimeout(function(){ openMessageModal('Hello', 'test'); }, 2000);
+
+
+    var contentService = clientApp.getContentService();
 
     // Populate the root nodes
     contentService.queryNodes()
-            .done(function(data){
+            .then(function(data){
                 var contentRootTableEl = document.getElementById('content-root-table');
                 var contentTableView = new ContentCollectionView({collection: data, el:contentRootTableEl, componentType: 'table'});
                 contentTableView.render();
 
                 console.log('list:', data.toJSON());
+            })
+            .catch(function(error){
+                console.log(error);
+                openMessageModal('Error', JSON.stringify(error));
             });
 
 
@@ -143,3 +165,10 @@
     var router = new ContentBrowseRouter();
     var t = router.history.start({pushState: false});
 </script>
+
+
+<div id="messageModal" class="reveal-modal" data-reveal aria-labelledby="messageModalTitle" aria-hidden="true" role="dialog">
+    <h2 id="messageModalTitle"></h2>
+    <div id="messageModalBody"></div>
+    <a class="close-reveal-modal" aria-label="Close">&#215;</a>
+</div>

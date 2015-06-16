@@ -21,8 +21,6 @@ var ContentEditorComponent = require ('./contenteditor-component.jsx').ContentEd
 
 var internals = {};
 
-/** @jsx React.DOM */
-
 internals.ContentEditorView = AmpersandView.extend({
     // Not needed:
     template: '<div data-hook="content_editor" class="content-tree"></div>',

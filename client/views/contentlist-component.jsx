@@ -16,7 +16,6 @@
  */
 var React = require('react/addons');
 
-/** @jsx React.DOM */
 var internals = {};
 
 internals.ContentListItemComponent = React.createClass({

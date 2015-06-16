@@ -36,3 +36,14 @@ body {
   margin-right: auto;
   max-width: initial;
 }
+
+.eli-item-actions ul {
+  display: inline;
+}
+
+
+.eli-item-actions li {
+  display: inline;
+  list-style-type: none;
+  padding-right: 3px;
+}

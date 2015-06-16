@@ -17,8 +17,6 @@
  */
 var React = require('react/addons');
 
-/** @jsx React.DOM */
-
 var internals = {};
 
 internals.ContentItemComponent = React.createClass({
@@ -26,13 +24,21 @@ internals.ContentItemComponent = React.createClass({
     render: function()
     {
         var contentItem = this.props.item.item;
+
+        var domainCodeStyle = {
+            marginRight: '0.2em'
+        };
         return (
             <div>
-                <span>{contentItem.metadata.learningArea.domainCode}</span>
+                <span style={domainCodeStyle}>[{contentItem.metadata.learningArea.domainCode}]</span>
                 <span><a href={this.props.siteBaseUrl + "/content-edit.html/#item/"+contentItem.uuid}>{contentItem.metadata.title}</a></span>
-                <span title="bookmark"><i className="fa fa-bookmark"></i></span>
-                <span title="copy"><i className="fa fa-copy"></i></span>
-                <span title="add"><i className="fa fa-plus"></i></span>
+                 <span className="eli-item-actions">
+                    <ul>
+                        <li title="bookmark"><i className="fa fa-bookmark"></i></li>
+                        <li title="copy"><i className="fa fa-copy"></i></li>
+                        <li title="add"><i className="fa fa-plus"></i></li>
+                    </ul>
+                 </span>
             </div>
         )
     }
@@ -91,10 +97,21 @@ internals.ContentTreeNode = React.createClass({
                 <span onClick={this.toggle} className={React.addons.classSet(classObj)}>
                 {this.props.node.metadata.title} ({this.props.node.kind})
                 </span>
-                <span title="bookmark"><i className="fa fa-bookmark"></i></span>
-                <span title="edit"><i className="fa fa-edit"></i></span>
-                <span title="copy"><i className="fa fa-copy"></i></span>
-                <span title="add"><i className="fa fa-plus"></i></span>
+                <span className="eli-item-actions" >
+                    <ul >
+                        <li title="bookmark"><i className="fa fa-bookmark"></i></li>
+                        <li title="edit"><i className="fa fa-edit"></i></li>
+                        <li title="copy"><i className="fa fa-copy"></i></li>
+                        <li title="add">
+                            <a href="#" data-dropdown="hover1" data-options="is_hover:true; hover_timeout:5000"><i className="fa fa-plus"></i></a>
+                            <ul id="hover1" class="f-dropdown" data-dropdown-content>
+                                <li title="add">Before</li>
+                                <li title="add">After</li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                </span>
                 <ul style={style}>
                     {childNodes}
                 </ul>

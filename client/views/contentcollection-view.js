@@ -21,8 +21,6 @@ var ContentTableComponent = require ('./contenttable-component.jsx').ContentTabl
 
 var internals = {};
 
-/** @jsx React.DOM */
-
 
 internals.ContentCollectionView = AmpersandCollectionView.extend({
     //template: _.template(_.template($('#content-root-list-template').html()),

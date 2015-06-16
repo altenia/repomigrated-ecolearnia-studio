@@ -11,15 +11,18 @@
  * EcoLearnia v0.0.1
  *
  * @fileoverview
- *  This file includes the definition of ItemContext class.
+ *  This file includes the definition of Event constants.
  *
  * @author Young Suk Ahn Park
  * @date 6/06/15
  */
 
 var Events = {
+    // When user clicks 'submit' button
     ACTION_SUBMIT: 'action:submit',
+    // When AnswerModel request evaluation
     ANSWER_EVALUATE: 'answer:evaluate',
+    // WHen Evaluator completed evaluation
     ANSWER_EVALUATED: 'answer:evaluated'
 };
 

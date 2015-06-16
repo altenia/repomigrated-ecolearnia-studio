@@ -14,7 +14,8 @@
  * @author Young Suk Ahn Park
  * @date 4/7/15
  */
-var $ = require('jquery');
+//var $ = require('jquery');
+var promiseutils = require('../common/promiseutils');
 var contentnodemodel = require('../models/contentnode');
 var contentitemmodel = require('../models/contentitem');
 
@@ -33,6 +34,20 @@ internals.ContentService = function(config)
 };
 
 /**
+ * createNode
+ *
+ * Creates a node and its descendants
+ *
+ * @param parentUuid - parent UUID
+ * @returns {ContentNodeMode}
+ */
+internals.ContentService.prototype.createNode = function(parentUuid) {
+    var newNode = contentnodemodel.createContentNode(this.rootUrl + '/nodes');
+    newNode.set({parentUuid: parentUuid});
+    return newNode;
+};
+
+/**
  * queryNodes
  *
  * Retrieves content nodes
@@ -42,40 +57,33 @@ internals.ContentService = function(config)
  */
 internals.ContentService.prototype.queryNodes = function(criteria)
 {
+    var promise = promiseutils.createPromise( function(resolve, reject) {
 
-    var deferred = $.Deferred();
+        var contentNodes = contentnodemodel.createContentNodeCollection(this.rootUrl + '/nodes');
 
-    var contentNodes = contentnodemodel.createContentNodeCollection(this.rootUrl + '/nodes');
-    
-    function successCallback(collection, response, options) {
-        deferred.resolve(collection);
-    }
+        function successCallback(collection, response, options) {
+            resolve(collection);
+        }
 
-    function errorCallback(collection, response, options) {
-        deferred.reject(collection);
-    }
-
-    contentNodes.fetch({ 
-        //data: {page: 3},
-        success: successCallback,
-        error: errorCallback
-    });
-
-    return deferred.promise();
-
-    /*
-    // criteriaToQueryString(criteria);
-    return $.ajax({
-        url: this.rootUrl + '/nodes'
-    })
-        /*
-        .done(function( data ) {
-            if ( console && console.log ) {
-                console.log( data );
+        function errorCallback(collection, response, options) {
+            if (response.body)
+            {
+                reject(response);
+            } else {
+                var error = new Error('Communication error');
+                reject(error);
             }
-            deferred.resolve(data);
+        }
+
+        contentNodes.fetch({
+            //data: {page: 3},
+            success: successCallback,
+            error: errorCallback
         });
-        */
+
+    }.bind(this));
+
+    return promise;
 };
 
 /**
@@ -86,26 +94,188 @@ internals.ContentService.prototype.queryNodes = function(criteria)
  * @param uuid
  * @returns {Promise}
  */
-internals.ContentService.prototype.fetchNode = function(uuid) {
+internals.ContentService.prototype.fetchNode = function(uuid)
+{
 
-    var deferred = $.Deferred();
+    var promise = promiseutils.createPromise( function(resolve, reject) {
 
-    var contentNode = contentnodemodel.createContentNode(this.rootUrl + '/nodes', uuid);
+        var contentNode = contentnodemodel.createContentNode(this.rootUrl + '/nodes', uuid);
 
-    function successCallback(model, response, options) {
-        deferred.resolve(model);
-    }
+        function successCallback(model, response, options)
+        {
+            resolve(model);
+        }
 
-    function errorCallback(model, response, options) {
-        deferred.reject(model);
-    }
+        function errorCallback(model, response, options)
+        {
+            if (response.body)
+            {
+                reject(response);
+            } else {
+                var error = new Error('Communication error');
+                reject(error);
+            }
+        }
 
-    contentNode.fetch({
-        success: successCallback,
-        error: errorCallback
+        contentNode.fetch({
+            success: successCallback,
+            error: errorCallback
+        });
+
+    }.bind(this));
+
+    return promise;
+};
+
+
+/**
+ * createItem
+ *
+ * Creates an item
+ *
+ * @param parentUuid - parent UUID
+ * @returns {ContentItemModel}
+ */
+internals.ContentService.prototype.createItem = function(parentUuid) {
+    var baseUrl = this.getItemBaseUrl(parentUuid);
+    var newItem = contentitemmodel.createContentItem(baseUrl);
+    var metadata = {
+        "title": "My test",
+            "preRecommendations": [],
+            "authors": [],
+            "version": "0.0.1",
+            "learningArea": {
+            "subject": "math",
+                "subjectArea": "arithmetic",
+                "tags": [
+                "1G"
+            ],
+                "topicHierarchy": [
+                "addition",
+                "addition-2digits"
+            ]
+        }
+    };
+    var body = {
+        "definition": {
+            "question": {
+            "prompt": "Your question prompt",
+                "fields": [
+                    {
+                        "id": "field1",
+                        "type": "number",
+                        "required": true,
+                        "options": [
+                            {
+                                "key": "2",
+                                "value": "2"
+                            }
+
+                        ]
+                    }
+                ]
+            }
+        },
+        "components": [
+            {
+                "id": "my_question",
+                "type": "TemplateContainer",
+                "config": {
+                    "template": "<div>{{.definition.greet}}<br /> {{.components.selectquestion}} <br/> {{.components.actionbar}} <br/> {{.components.feedback}}</div>",
+                    "~doc": "Optionally:"
+                }
+            },
+            {
+                "id": "selectquestion",
+                "type": "SelectQuestion",
+                "config": {
+                    "question": { "_lref" : ".definition.question"},
+                    "layout": "flow"
+                }
+            },
+            {
+                "id": "actionbar",
+                "type": "ActionBar",
+                "config": {
+                    "items": [
+                        "tts","submit","reset","hint"
+                    ]
+                }
+            },
+            {
+                "id": "feedback",
+                "type": "Feedback",
+                "config": {
+                    "display": "list"
+                }
+            }
+        ],
+
+        "actions": {
+            "solution": "2 * 2 = 4; also -2 * -2 = 4",
+                "!doc": "hints is an array in the order that is shown per attemp failure",
+                "hints": [
+                "What multiplied twice gives 4?",
+                "Remember that multiplying two negatives yields positive."
+            ]
+        },
+        "processFlow": {
+            "beforeRender": {
+            },
+            "afterSumission": {
+            }
+        },
+        "policy": {
+            "maxAttempts": 3,
+            "!doc": "Optional - if present, each attempt will be timed in seconds",
+            "timed": 10,
+            "timeOverAction": "action to take when time is over"
+        },
+        "evalRule": {
+            "fieldRules": {
+                "field1": {
+                    "engine": "regex",
+                        "pattern": "(2|\\-2)"
+                }
+            },
+            "responses": [
+                {
+                    "case": { "condition": "incorrect", "field": "field1"},
+                    "feedback": {
+                        "field": "field1",
+                        "message":"Incorrect"
+                    }
+                },
+                {
+                    "case": "$field1 > 2",
+                    "feedback": {
+                        "field": "field1",
+                        "message": "Number too large"
+                    }
+                },
+                {
+                    "case": "__timeout__",
+                    "feedback": {
+                        "field": "__aggregate__",
+                        "message": "Sorry, timed out"
+                    }
+                },
+                {
+                    "case": "__past_due__",
+                    "feedback": {
+                        "field": "__aggregate__",
+                        "message": "Due date passed"
+                    }
+                }
+            ]
+        }
+    };
+    newItem.set({
+        parentUuid: parentUuid,
+        metadata: metadata,
+        body: body
     });
-
-    return deferred.promise();
+    return newItem;
 };
 
 /**
@@ -120,31 +290,34 @@ internals.ContentService.prototype.fetchNode = function(uuid) {
  */
 internals.ContentService.prototype.queryItems = function(criteria, parentNodeUuid)
 {
-    var deferred = $.Deferred();
+    var promise = promiseutils.createPromise( function(resolve, reject) {
 
-    var baseUrl;
-    if (parentNodeUuid) {
-        baseUrl = this.rootUrl + '/nodes' + parentNodeUuid + '/items';
-    } else {
-        baseUrl = this.rootUrl + '/contentitems';
-    }
+        var baseUrl = this.getItemBaseUrl(parentNodeUuid);
 
-    var contentItem = contentitemmodel.createContentItem(this.rootUrl + '/nodes', uuid);
+        var contentItem = contentitemmodel.createContentItemCollection(baseUrl);
 
-    function successCallback(model, response, options) {
-        deferred.resolve(model);
-    }
+        function successCallback(collection, response, options) {
+            resolve(collection);
+        }
 
-    function errorCallback(model, response, options) {
-        deferred.reject(model);
-    }
+        function errorCallback(collection, response, options) {
+            if (response.body)
+            {
+                reject(response);
+            } else {
+                var error = new Error('Communication error');
+                reject(error);
+            }
+        }
 
-    contentItem.fetch({
-        success: successCallback,
-        error: errorCallback
-    });
+        contentItem.fetch({
+            success: successCallback,
+            error: errorCallback
+        });
 
-    return deferred.promise();
+    }.bind(this));
+
+    return promise;
 };
 
 /**
@@ -159,30 +332,45 @@ internals.ContentService.prototype.queryItems = function(criteria, parentNodeUui
  */
 internals.ContentService.prototype.fetchItem = function(uuid, parentNodeUuid)
 {
-    var deferred = $.Deferred();
+    var promise = promiseutils.createPromise( function(resolve, reject) {
 
+        var baseUrl = this.getItemBaseUrl(parentNodeUuid);
+        var contentItem = contentitemmodel.createContentItem(baseUrl, uuid);
+
+        function successCallback(model, response, options)
+        {
+            resolve(model);
+        }
+
+        function errorCallback(model, response, options)
+        {
+            if (response.body)
+            {
+                reject(response);
+            } else {
+                var error = new Error('Communication error');
+                reject(error);
+            }
+        }
+
+        contentItem.fetch({
+            success: successCallback,
+            error: errorCallback
+        });
+
+    }.bind(this));
+
+    return promise;
+};
+
+internals.ContentService.prototype.getItemBaseUrl = function(parentNodeUuid) {
     var baseUrl;
     if (parentNodeUuid) {
-        baseUrl = this.rootUrl + '/nodes' + parentNodeUuid + '/items';
+        baseUrl = this.rootUrl + '/nodes/' + parentNodeUuid + '/items';
     } else {
         baseUrl = this.rootUrl + '/contentitems';
     }
-    var contentItem = contentitemmodel.createContentItem(baseUrl, uuid);
-
-    function successCallback(model, response, options) {
-        deferred.resolve(model);
-    }
-
-    function errorCallback(model, response, options) {
-        deferred.reject(model);
-    }
-
-    contentItem.fetch({
-        success: successCallback,
-        error: errorCallback
-    });
-
-    return deferred.promise();
-};
+    return baseUrl;
+}
 
 module.exports.ContentService = internals.ContentService;

@@ -23,7 +23,7 @@ internals.ContentItem = Model.extend({
     idAttribute: 'uuid',
     props: {
         realmUuid: { type: 'string', required: false }, // @todo turn this to requried
-        uuid: { type: 'string', required: true },
+        uuid: { type: 'string' },
         refName: { type: 'string', required: true }, // Reference Name of this content
         parent: { type: 'string' },
         parentUuid: { type: 'string' },

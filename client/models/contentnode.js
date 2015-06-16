@@ -24,7 +24,7 @@ internals.ContentNode = Model.extend({
     props: {
 
         realmUuid: { type: 'string', required: false }, // @todo turn this to requried
-        uuid: { type: 'string', required: true },
+        uuid: { type: 'string' },
         refName: { type: 'string', required: true }, // Reference Name of this content
         parent: { type: 'string' },
         parentUuid: { type: 'string' },
@@ -75,6 +75,13 @@ internals.ContentNodeCollection = Collection.extend({
     model: internals.ContentNode
 });
 
+/**
+ *
+ * @param urlRoot
+ * @param {?string} uuid - Optional uuid. If a new model is not provided with uuid
+ *                         The server will provide one.
+ * @returns {Object|*}
+ */
 internals.createContentNode = function(urlRoot, uuid)
 {
     var model = new internals.ContentNode({uuid: uuid});

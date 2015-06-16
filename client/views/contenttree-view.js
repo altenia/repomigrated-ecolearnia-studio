@@ -22,7 +22,6 @@ var ContentTreeComponent = require ('./contenttree-component.jsx').ContentTreeCo
 
 var internals = {};
 
-/** @jsx React.DOM */
 internals.ContentTreeView = AmpersandView.extend({
     // Not needed:
     template: '<div data-hook="content_tree" class="content-tree"></div>',

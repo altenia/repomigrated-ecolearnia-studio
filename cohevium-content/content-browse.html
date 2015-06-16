@@ -91,13 +91,11 @@
 <div id="message-dialog"></div>
 
 <script src="/cohevium/public/foundation/js/foundation/foundation.reveal.js"></script>
-<script src='/cohevium/public/js/app.bundle.js'></script>
+<script src='/cohevium/public/js/el-externdeps.bundle.min.js'></script>
+<script src='/cohevium/public/js/el-studio.bundle.js'></script>
 
 <script>
-    var Router = require('ampersand-router');
-
     var clientapp = require('clientapp');
-    var ContentService = require('content-service').ContentService;
 
     var ContentCollectionView = require('contentcollection-view').ContentCollectionView;
     var ContentTreeView = require('contenttree-view').ContentTreeView;
@@ -134,7 +132,7 @@
             });
 
 
-    var ContentBrowseRouter = Router.extend({
+    var router = clientApp.createRouter({
         routes: {
             '': 'home',
             'content/:uuid': 'content',
@@ -162,7 +160,6 @@
         }
     });
 
-    var router = new ContentBrowseRouter();
     var t = router.history.start({pushState: false});
 </script>
 

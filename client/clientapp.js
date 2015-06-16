@@ -3,6 +3,7 @@
  */
 
 var React = require('react/addons');
+var Router = require('ampersand-router');
 
 var PubSub = require('./common/pubsub').PubSub;
 
@@ -23,7 +24,13 @@ internals.App = function(settings)
     this.contentService_ = null;
 
     this.pubsub = new PubSub();
-}
+};
+
+internals.App.prototype.createRouter = function(extension)
+{
+    var RouterClass = Router.extend(extension);
+    return new RouterClass();
+};
 
 internals.App.prototype.initMessageDialog = function(el)
 {
@@ -51,6 +58,8 @@ internals.App.prototype.getContentService = function()
     }
     return this.contentService_;
 };
+
+/***** static functions *****/
 
 internals.init = function(settings)
 {

@@ -14,7 +14,6 @@
  * @author Young Suk Ahn Park
  * @date 4/7/15
  */
-//var $ = require('jquery');
 var promiseutils = require('../common/promiseutils');
 var contentnodemodel = require('../models/contentnode');
 var contentitemmodel = require('../models/contentitem');

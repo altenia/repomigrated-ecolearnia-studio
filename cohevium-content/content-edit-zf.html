@@ -31,6 +31,7 @@
     {
         $('#messageModalTitle').html(title);
         $('#messageModalBody').html(body);
+        $('#messageModal').foundation('reveal', 'open');
     }
 
     // @todo - Populate the breadcrumb
@@ -88,6 +89,10 @@
     });
 
     var t = router.history.start({pushState: false});
+
+    $(document).ready(function(){
+        $('ul.tabs').tabs();
+    });
 
 </script>
 

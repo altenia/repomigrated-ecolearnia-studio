@@ -1,0 +1,172 @@
+<!-- SECONDARY BAR { -->
+<div class="fixed second-top-bar">
+    <nav id="secondary-top-bar" class="top-bar" data-topbar role="navigation">
+        <ul class="title-area">
+            <li class="name">
+                <h1><a href="">Hello second</a></h1>
+            </li>
+        </ul>
+        <section class="top-bar-section">
+            <ul class="left">
+                <li>
+
+                </li>
+            </ul>
+            <ul class="right">
+                <li class="has-dropdown menu-icon">
+                    <a href="#"><i class="fa fa-link"></i></a>
+                </li>
+                <li class="has-dropdown "><a href="#"><i class="fa fa-bars"></i></a>
+                    <ul class="dropdown">
+                        <li><a href="#">Bookmark</a></li>
+                        <li><a href="#">Make copy</a></li>
+                        <li class="divider"></li>
+                        <li><a href="#">Rename</a></li>
+                        <li><a href="#">Move to</a></li>
+                    </ul>
+                </li>
+                <li class="divider"></li>
+
+                <li><a href=""><i class="fa fa-cog"></i></a> </li>
+            </ul>
+        </section>
+    </nav>
+</div>
+<!-- } SECONDARY BAR -->
+
+<div class="row full-width">
+    <div id="pane-menu" class="columns small-4 medium-4 hide-for-small-down" >
+
+        <ul class="accordion" data-accordion="myAccordionGroup">
+            <li class="accordion-navigation">
+                <a href="#panel1a">Favorites</a>
+                <div id="panel1a" class="content">
+                    Favorites
+                </div>
+            </li>
+            <li class="accordion-navigation">
+                <a href="#panel2a">Root Contents</a>
+                <div id="panel2a" class="content active">
+
+                    <!-- Filter -->
+                    <form>
+                        <div class="row collapse" >
+                            <div class="small-3 columns">
+                                <span class="prefix">Locale</span>
+                            </div>
+                            <div class="small-9 columns">
+                                <input type="text"  placeholder="Locale">
+                            </div>
+                        </div>
+                        <div class="row collapse">
+                            <div class="small-3 columns">
+                                <span class="prefix">Grade</span>
+                            </div>
+                            <div class="small-9 columns">
+                                <input type="text" placeholder="Grade">
+                            </div>
+                        </div>
+                    </form>
+
+                    <div id="content-root-table"></div>
+
+                </div>
+            </li>
+        </ul>
+
+    </div>
+
+    <div id="pane-content" class="columns small-12 medium-8">
+        <ul class="breadcrumbs">
+            <li><a href="#">Workspace A</a></li>
+            <li><a href="#">EN_US-MA</a></li>
+            <li class="unavailable"><a href="#">OA-2-3</a></li>
+            <li class="current"><a href="#">Problem 1a</a></li>
+        </ul>
+        <div id="content-tree"></div>
+
+    </div>
+</div>
+
+<div id="message-dialog"></div>
+
+<script src="/cohevium/public/foundation/js/foundation/foundation.dropdown.js"></script>
+<script src="/cohevium/public/foundation/js/foundation/foundation.reveal.js"></script>
+<script src='/cohevium/public/js/el-externdeps.bundle.min.js'></script>
+<script src='/cohevium/public/js/el-studio.bundle.js'></script>
+
+<script>
+    var clientapp = require('clientapp');
+
+    var ContentCollectionView = require('contentcollection-view').ContentCollectionView;
+    var ContentTreeView = require('contenttree-view').ContentTreeView;
+
+    var appSettings = {
+        rootUrl: 'http://localhost:9099'
+    };
+    var clientApp = clientapp.init(appSettings);
+    //clientApp.initMessageDialog( document.getElementById('message-dialog'));
+
+    function openMessageModal(title, body)
+    {
+        $('#messageModalTitle').html(title);
+        $('#messageModalBody').html(body);
+        $('#messageModal').foundation('reveal', 'open');
+    }
+    //setTimeout(function(){ openMessageModal('Hello', 'test'); }, 2000);
+
+
+    var contentService = clientApp.getContentService();
+
+    // Populate the root nodes
+    contentService.queryNodes()
+            .then(function(data){
+                var contentRootTableEl = document.getElementById('content-root-table');
+                var contentTableView = new ContentCollectionView({collection: data, el:contentRootTableEl, componentType: 'table'});
+                contentTableView.render();
+
+                console.log('list:', data.toJSON());
+            })
+            .catch(function(error){
+                console.log(error);
+                openMessageModal('Error', JSON.stringify(error));
+            });
+
+
+    var router = clientApp.createRouter({
+        routes: {
+            '': 'home',
+            'content/:uuid': 'content',
+        },
+
+        home: function() {
+            console.log('home');
+        },
+
+        content: function(uuid) {
+            console.log(uuid);
+            contentService.fetchNode(uuid)
+                    .done(function(data){
+                        var contentTreeEl = document.getElementById('content-tree');
+                        var contentTreeView = new ContentTreeView(
+                                {
+                                    model: data,
+                                    el: contentTreeEl,
+                                    siteBaseUrl: '/cohevium/content'
+                                }
+                        );
+                        contentTreeView.render();
+                        console.log('model:', data.toJSON());
+                    });
+        }
+    });
+
+    var t = router.history.start({pushState: false});
+</script>
+
+
+<div id="messageModal" class="reveal-modal" data-reveal aria-labelledby="messageModalTitle" aria-hidden="true" role="dialog">
+    <h2 id="messageModalTitle"></h2>
+    <div id="messageModalBody"></div>
+    <a class="close-reveal-modal" aria-label="Close">&#215;</a>
+</div>

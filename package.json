@@ -4,8 +4,8 @@
   "description": "EcoLearnia's content authoring studio",
   "main": "ecolearnia-studio.js",
   "scripts": {
-    "build-deps": "browserify -t babelify  -r bluebird -r jquery -r lodash -r react/addons | uglifyjs -c >  public/js/el-externdeps.bundle.min.js",
-    "build-inter": "browserify -t babelify -x bluebird -x jquery -x lodash -x react/addons -r ./client/interactives/interactives.js:interactives -r -o public/js/el-interactives.bundle.js -d",
+    "build-deps": "browserify -t babelify  -r bluebird -r lodash -r react/addons | uglifyjs -c >  public/js/el-externdeps.bundle.min.js",
+    "build-inter": "browserify -t babelify -x bluebird -x lodash -x react/addons -r ./client/interactives/interactives.js:interactives -r -o public/js/el-interactives.bundle.js -d",
     "watch-inter": "watchify   -t  babelify -x bluebird -x jquery -x lodash -x react/addons -r ./client/interactives/interactives.js:interactives -r -o public/js/el-interactives.bundle.js -d -v",
     "build-client": "browserify -t babelify -x bluebird -x jquery -x lodash -x react/addons -r ./client/clientapp:clientapp -r ./client/views/contentcollection-view:contentcollection-view -r ./client/views/contenttree-view:contenttree-view -r ./client/views/contenteditor-view:contenteditor-view -o public/js/el-studio.bundle.js -d",
     "watch-client": "watchify   -t babelify -x bluebird -x jquery -x lodash -x react/addons -r ./client/clientapp:clientapp -r ./client/views/contentcollection-view:contentcollection-view -r ./client/views/contenttree-view:contenttree-view -r ./client/views/contenteditor-view:contenteditor-view -o public/js/el-studio.bundle.js -d -v",
@@ -41,6 +41,7 @@
     "jquery": "^2.1.3",
     "lodash": "^3.2.0",
     "lout": "^6.1.0",
+    "materialize-css": "^0.96.1",
     "mathjs": "^1.7.0",
     "nconf": "^0.7.1",
     "node-uuid": "^1.4.2",

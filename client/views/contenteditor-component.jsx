@@ -109,24 +109,24 @@ internals.MetadataEditorComponent = React.createClass({
  * @todo - Disable navigating away when there is a syntax error in the source.
  */
 internals.SourceEditorComponent = React.createClass({
-    getInitialState: function () {
+    getInitialState: function ()
+    {
         console.log('getInitialState');
         return {
             contentText: JSON.stringify(this.props.content, null, 4)
         }
     },
 
-    componentWillReceiveProps: function(nextProps) {
+    componentWillReceiveProps: function(nextProps)
+    {
         // Update state when property change was propagated, even originated 
         // from this same compontent
         this.setState({contentText: JSON.stringify(nextProps.content, null, 4)});
         console.log('componentWillReceiveProps', nextProps);
     },
 
-    componentDidMount: function() {
-    },
-
-    render: function() {
+    render: function()
+    {
 
         var contentText = this.state.contentText;
 
@@ -218,19 +218,24 @@ internals.PreviewComponent = React.createClass({
             componentModule: interactives
         };
 
-        this.itemContext = interactives.createItemContext(settings);
-
         var el = document.getElementById('interactive-preview');
-        this.itemContext.render(el);
+        try {
+            this.itemContext = interactives.createItemContext(settings);
+            this.itemContext.render(el);
+        } catch (interactiveError) {
+            //el.innerHTML = 'Cannot preview: ' + interactiveError.toString();
+        }
     },
 
     componentWillReceiveProps: function(nextProps) {
-        this.itemContext.setContent(nextProps.content.body);
+        if (this.itemContext) {
+            this.itemContext.setContent(nextProps.content.body);
 
-        // This code syncs the React components but not BackboneView-based components
-        // @todo - fix BackboneView-based components to sync
-        var el = document.getElementById('interactive-preview');
-        this.itemContext.render(el);
+            // This code syncs the React components but not BackboneView-based components
+            // @todo - fix BackboneView-based components to sync
+            var el = document.getElementById('interactive-preview');
+            this.itemContext.render(el);
+        }
     },
 
     render: function() {
@@ -247,7 +252,8 @@ internals.PreviewComponent = React.createClass({
  * @class TabsComponent
  *
  * @classdesc
- *  Components that manages the tabs (Zurb's Foundation based)
+ *  Components that manages the tabs (Materialized-based)
+ *  @see http://materializecss.com/tabs.html
  *
  */
 internals.TabsComponent = React.createClass({
@@ -258,8 +264,23 @@ internals.TabsComponent = React.createClass({
         }
     },
 
-    additionalClassForTab: function(tabName) {
+    componentDidMount: function()
+    {
+        // @todo - insteadn of using selector, obtain the dom object directly from React
+        //var el = this.getDOMNode();
+        var tabsUl = $('ul.tabs');
+        tabsUl.tabs();
+    },
+
+    additionalClassForTab_: function(tabName) {
         return (this.state.activeTab === tabName) ? ' active' : '';
+    },
+
+    styleForTabContent_: function(tabName) {
+        var style = {
+            display: (this.state.activeTab === tabName) ? 'block' : 'none'
+        };
+        return style;
     },
 
     handleClick: function(activateTab)
@@ -274,26 +295,26 @@ internals.TabsComponent = React.createClass({
         // This is needed, otherwise the method will actually be called inline
         // instead of passing the function reference
         return (
-            <div>
-                <dl className="tabs">
-                    <dd className={ 'tab-title' + this.additionalClassForTab('metadata')}><a href role="tab" onClick={this.handleClick.bind(this, 'metadata')} >Metadata</a></dd>
-                    <dd className={ 'tab-title' + this.additionalClassForTab('source')}><a href  role="tab" onClick={this.handleClick.bind(this, 'source')} >Source</a></dd>
-                    <dd className={ 'tab-title' + this.additionalClassForTab('form')}><a href={null} role="tab" onClick={this.handleClick.bind(this, 'form')} >Form</a></dd>
-                    <dd className={ 'tab-title' + this.additionalClassForTab('preview')}><a href role="tab" onClick={this.handleClick.bind(this, 'preview')} >Preview</a></dd>
-                </dl>
-                <div className="tabs-content">
-                    <div className={ 'content' + this.additionalClassForTab('metadata')} id="panel_metadata">
-                        <internals.MetadataEditorComponent content={this.props.content} onContentUpdate={this.props.onContentUpdate} />
-                    </div>
-                    <div className={ 'content' + this.additionalClassForTab('source')} id="panel_source">
-                        <internals.SourceEditorComponent content={this.props.content} onContentUpdate={this.props.onContentUpdate}  />
-                    </div>
-                    <div className={ 'content' + this.additionalClassForTab('form')} id="panel_form">
-                        <internals.FormEditorComponent content={this.props.content} onContentUpdate={this.props.onContentUpdate}  />
-                    </div>
-                    <div className={ 'content' + this.additionalClassForTab('preview')} id="panel_preview">
-                        <internals.PreviewComponent content={this.props.content}  />
-                    </div>
+            <div className="row">
+                <div className="col s12">
+                    <ul className="tabs">
+                        <li className={ 'tab ' + this.additionalClassForTab_('metadata')}><a href  role="tab" onClick={this.handleClick.bind(this, 'metadata')} >Metadata</a></li>
+                        <li className={ 'tab ' + this.additionalClassForTab_('source')}><a href  role="tab" onClick={this.handleClick.bind(this, 'source')} >Source</a></li>
+                        <li className={ 'tab ' + this.additionalClassForTab_('form')}><a href={null} role="tab" onClick={this.handleClick.bind(this, 'form')} >Form</a></li>
+                        <li className={ 'tab ' + this.additionalClassForTab_('preview')}><a href role="tab" onClick={this.handleClick.bind(this, 'preview')} >Preview</a></li>
+                    </ul>
+                </div>
+                <div className="col s12" id="panel_metadata" style={this.styleForTabContent_('metadata')} >
+                    <internals.MetadataEditorComponent content={this.props.content} onContentUpdate={this.props.onContentUpdate} />
+                </div>
+                <div className="col s12" id="panel_source" style={this.styleForTabContent_('source')}>
+                    <internals.SourceEditorComponent content={this.props.content} onContentUpdate={this.props.onContentUpdate}  />
+                </div>
+                <div className="col s12" id="panel_form" style={this.styleForTabContent_('form')}>
+                    <internals.FormEditorComponent content={this.props.content} onContentUpdate={this.props.onContentUpdate}  />
+                </div>
+                <div className="col s12" id="panel_preview" style={this.styleForTabContent_('preview')}>
+                    <internals.PreviewComponent content={this.props.content}  />
                 </div>
             </div>
         );

@@ -15,7 +15,7 @@
  * @date 6/12/15
  */
 var React = require('react/addons');
-var $ = require('jquery');
+//var $ = require('jquery');
 
 
 export class DialogComponent extends React.Component
@@ -64,6 +64,10 @@ export class DialogComponent extends React.Component
         if (this.state.show) {
             $('#messageModal').foundation('reveal', 'open');
         }
+    }
+
+    componentWillUnmount () {
+        this.props.pubsub.unsubscribe('dialog');
     }
 
     render()

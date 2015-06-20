@@ -2,35 +2,185 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-    <script src='js/app.bundle.js'></script>
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.96.1/css/materialize.min.css">
+    <link rel="stylesheet" href="css/app.css">
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.96.1/js/materialize.min.js"></script>
+
     <title></title>
 </head>
 <body>
 
-<div id="placeholder"></div>
+<div class="navbar-fixed">
+    <nav>
+        <div class="black nav-wrapper">
+            <a href="#!" class="">EcoLearnia Studio</a>
+
+            <ul class="right">
+                <li class="hide-on-small-and-down">
+                    <form>
+                        <div class="input-field">
+                            <input id="search" type="search" required>
+                            <label for="search"><i class="mdi-action-search"></i></label>
+                            <i class="mdi-navigation-close"></i>
+                        </div>
+                    </form>
+                </li>
+                <li><a href="components.html"><i style="font-size: 1.5rem" class="tiny mdi-social-notifications"></i></a></li>
+                <li><a href="components.html">Account</a></li>
+                <li><a href="components.html"><i  style="font-size: 1.5rem" class="tiny mdi-action-settings"></i></a></li>
+            </ul>
+        </div>
+    </nav>
+</div>
+
+
+<div class="row">
+    <div class="col s3">
+
+        <!-- Dropdown Trigger -->
+        <a class='dropdown-button btn' href='#' data-activates='workspace-el'>Workspaces!</a>
+        <!-- Dropdown Structure -->
+        <ul id='workspace-el' class='dropdown-content'>
+            <li><a href="#!">Korean</a></li>
+            <li><a href="#!">US-West Coast</a></li>
+            <li class="divider"></li>
+            <li><a href="#!">Chinese</a></li>
+        </ul>
+
+
+        <ul class="collapsible" data-collapsible="accordion">
+            <li>
+                <div class="collapsible-header"><i class="mdi-action-bookmark"></i>Favorite</div>
+                <div class="collapsible-body"><p>Lorem ipsum dolor sit amet.</p></div>
+            </li>
+            <li>
+                <div class="collapsible-header active"><i class="mdi-file-folder"></i>Root contents</div>
+                <div class="collapsible-body">
+
+                    <div class="row">
+                        <form class="col s12">
+                                <div class="input-field tight">
+                                    <input id="code" type="text" >
+                                    <label for="title">Code</label>
+                                </div>
+                                <div class="input-field tight">
+                                    <input id="title" type="text" class="validate">
+                                    <label for="title">Title</label>
+                                </div>
+                        </form>
+                    </div>
+
+                    <table>
+                        <thead>
+                        <tr>
+                            <th data-field="id">Locale</th>
+                            <th data-field="name">ID</th>
+                            <th data-field="price">Title</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        <tr>
+                            <td>KO-kr</td>
+                            <td>test-node.01r</td>
+                            <td>Korea first grade, standard 2015</td>
+                        </tr>
+                        <tr>
+                            <td>KO-kr</td>
+                            <td>test-node.012</td>
+                            <td>Korea first grade, standard 2015</td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <div class="col s9">
+        <!-- nav bar -->
+        <nav class="light-blue lighten-1">
+            <div class="nav-wrapper">
+                <!--<a href="#" class="brand-logo">test / </a>-->
+
+                <ul class="breadcrumbs">
+                    <li class=""><a href="#!">Korean Book</a></li>
+                    <li class=""><a href="#!">Common Core</a></li>
+                    <li class=""><a href="#!">OA23.12</a></li>
+                    <li class=""><a href="#!">Assignment1</a></li>
+                    <li class=""><a href="#!">Adding two digit numbers</a></li>
+                </ul>
+
+                <ul id="nav-mobile" class="right">
+                    <li><a href="#link"><i class="mdi-content-link"></i></a></li>
+                    <li>
+                        <a class="dropdown-button" data-hover="true" href='#' data-activates='action-el'><i style="font-size: 1.5rem" class="mdi-navigation-menu"></i></a>
+                        <ul id='action-el' class='dropdown-content'>
+                            <li><a href="#!">Bookmark</a></li>
+                            <li><a href="#!">Make copy</a></li>
+                            <li class="divider"></li>
+                            <li><a href="#!">Rename</a></li>
+                            <li><a href="#!">Moveto</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- tab -->
+        <div class="row">
+            <div class="col s12">
+                <ul class="tabs">
+                    <li class="tab col s3"><a class="active" href="#test1">Metadata</a></li>
+                    <li class="tab col s3"><a href="#test2">Source</a></li>
+                    <li class="tab col s3"><a href="#test3">Form</a></li>
+                    <li class="tab col s3"><a href="#test4">Preview</a></li>
+                </ul>
+            </div>
+            <div id="test1" class="col s12">
+
+                <ul class="hierarchical">
+                    <li>Title 1
+                        <ul class="hierarchical">
+                            <li>Title 2
+                            </li>
+                            <li>Title 3
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+
+            </div>
+            <div id="test2" class="col s12">Test source</div>
+            <div id="test3" class="col s12">Test form</div>
+            <div id="test4" class="col s12">Test 4</div>
+        </div>
+    </div>
+</div>
+
+<footer class="page-footer">
+    <div class="container">
+        EcoLearnia
+    </div>
+    <div class="footer-copyright">
+        <div class="container">
+            © 2014 Copyright Text
+            <a class="grey-text text-lighten-4 right" href="https://github.com/altenia/ecolearnia">Github</a>
+        </div>
+    </div>
+</footer>
 
 
 <script>
-    var Router = require('ampersand-router');
-
-    var MyRouter = Router.extend({
-        routes: {
-            '': 'home',
-            'content/:uuid': 'content',
-        },
-
-        home: function() {
-            alert('home');
-        },
-
-        content: function(uuid) {
-            alert(uuid);
-        }
-    });
-
-    var router = new MyRouter();
-    router.on('route', function(event){
-        console.log('hello');
+    $(document).ready(function(){
+        $('.collapsible').collapsible({
+            accordion : false // A setting that changes the collapsible behavior to expandable instead of the default accordion style
+        });
     });
 
 </script>

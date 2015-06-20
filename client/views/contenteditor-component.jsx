@@ -134,7 +134,7 @@ internals.SourceEditorComponent = React.createClass({
             display: 'block',
             margin: 'auto',
             width: '100%',
-            height: '300px',
+            height: '150px',
             border: '1px solid #888'
         };
 
@@ -186,7 +186,7 @@ internals.FormEditorComponent = React.createClass({
 
         var textAreaStyle = {
             height: '10em'
-        }
+        };
         return (
             <div>
                 <textarea style={textAreaStyle} onBlur={this.handleChange} value={JSON.stringify(body, null, 4)} />
@@ -215,15 +215,20 @@ internals.PreviewComponent = React.createClass({
     componentDidMount: function() {
         var settings = {
             content: this.props.content.body,
-            componentModule: interactives
+            componentModule: interactives,
+            pubsub: new interactives.PubSub()
         };
+
+        var evaluator = new interactives.LocalEvaluator(settings);
+        interactives.evaluation.registerEvalEngines(evaluator);
 
         var el = document.getElementById('interactive-preview');
         try {
+
             this.itemContext = interactives.createItemContext(settings);
             this.itemContext.render(el);
         } catch (interactiveError) {
-            //el.innerHTML = 'Cannot preview: ' + interactiveError.toString();
+            el.innerHTML = 'Cannot preview: ' + interactiveError.toString();
         }
     },
 
@@ -343,7 +348,8 @@ internals.ContentEditorComponent = React.createClass({
             <div>
                 <internals.TabsComponent content={this.state.content} onContentUpdate={this.updateContent} />
                 <div>
-                    <a href="#" className="button" onClick={this.handleClickSave}>Save</a> <a href="#" className="button">Revert</a>
+                    <a href="#" className="btn" onClick={this.handleClickSave}>Save</a>
+                    <a href="#" className="btn">Revert</a>
                 </div>
             </div>
         );

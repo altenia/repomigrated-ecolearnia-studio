@@ -3,7 +3,7 @@
     <div class="col s3"> <!-- SIDE MENU { -->
 
         <!-- Dropdown Trigger -->
-        <a class='dropdown-button btn' href='#' data-activates='workspace-el'>Workspaces!</a>
+        <a class='dropdown-button btn' href='#' data-activates='workspace-el' style="width:100%">Workspaces!</a>
         <!-- Dropdown Structure -->
         <ul id='workspace-el' class='dropdown-content'>
             <li><a href="#!">Korean</a></li>
@@ -16,7 +16,11 @@
         <ul class="collapsible" data-collapsible="accordion">
             <li>
                 <div class="collapsible-header"><i class="mdi-action-bookmark"></i>Favorite</div>
-                <div class="collapsible-body"><p>Lorem ipsum dolor sit amet.</p></div>
+                <div class="collapsible-body">
+                    <ul>
+                        <li>My Favorite content</li>
+                    </ul>
+                </div>
             </li>
             <li>
                 <div class="collapsible-header active"><i class="mdi-file-folder"></i>Root contents</div>
@@ -46,12 +50,7 @@
         <!-- TOOLBAR { -->
         <nav class="light-blue lighten-1">
             <div class="nav-wrapper">
-                <ul class="breadcrumbs">
-                    <li><a href="#">Workspace A</a></li>
-                    <li><a href="#">EN_US-MA</a></li>
-                    <li class="unavailable"><a href="#">OA-2-3</a></li>
-                    <li class="current"><a href="#">Problem 1a</a></li>
-                </ul>
+                <div id="breadcrumbs-component"></div>
 
                 <ul id="nav-mobile" class="right">
                     <li><a href="#link"><i class="mdi-content-link"></i></a></li>
@@ -82,6 +81,7 @@
 <script src='/cohevium/public/js/el-studio.bundle.js'></script>
 
 <script>
+    var React = require('react/addons');
     var clientapp = require('clientapp');
 
     var ContentCollectionView = require('contentcollection-view').ContentCollectionView;
@@ -133,6 +133,17 @@
             console.log(uuid);
             contentService.fetchNode(uuid)
                     .done(function(data){
+                        var breadcrubmItems = breadcrumbItemsFromContent(data.toJSON());
+                        // Breadcrumbs
+                        var breadcrumbsEl = document.getElementById('breadcrumbs-component');
+                        clientApp.createBreadcrumbs(breadcrumbsEl,
+                                [
+                                    { name: ' Workspace A', href:'#', },
+                                    { name: ' EN_US-MA', href:'#', },
+                                    { name: ' OA-213', href:'#', }
+                                ]
+                        );
+
                         var contentTreeEl = document.getElementById('content-tree');
                         var contentTreeView = new ContentTreeView(
                                 {
@@ -148,6 +159,12 @@
     });
 
     var t = router.history.start({pushState: false});
+
+    function breadcrumbItemsFromContent(content)
+    {
+        content
+    }
+
 </script>
 
 

@@ -7,6 +7,7 @@ var Router = require('ampersand-router');
 
 var PubSub = require('./common/pubsub').PubSub;
 
+var BreadcrumbsComponent = require('./views/breadcrumbs-component.jsx').BreadcrumbsComponent;
 var DialogComponent = require('./views/dialog-component.jsx').DialogComponent;
 var ContentService = require('./services/content-service').ContentService;
 
@@ -49,6 +50,17 @@ internals.App.prototype.showMessageDialog = function(title, body)
 internals.App.prototype.hideMessageDialog = function()
 {
     this.pubsub.publishRaw('dialog', {show:false});
+};
+
+internals.App.prototype.createBreadcrumbs = function(el, items)
+{
+    var breadcrumbsComponent = React.createElement(
+        BreadcrumbsComponent,
+        {
+            items: items
+        }
+    );
+    React.render(breadcrumbsComponent, el);
 };
 
 internals.App.prototype.getContentService = function()

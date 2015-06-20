@@ -6,12 +6,12 @@
   max-width: initial;
 }
 
-.eli-item-actions ul {
+ul.eli-item-actions  {
   display: inline;
 }
 
 
-.eli-item-actions li {
+ul.eli-item-actions>li {
   display: inline;
   list-style-type: none;
   padding-right: 3px;

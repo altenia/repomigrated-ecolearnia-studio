@@ -29,21 +29,38 @@ class ContentItemComponent extends React.Component
         var domainCodeStyle = {
             marginRight: '0.2em'
         };
+
+        // For the submenu target name generation
+        //var objUuid = contentItem.uuid;
+        var objUuid = (Math.floor((Math.random() * 1000) + 1)).toString();
+
         return (
             <div>
                 <span style={domainCodeStyle}>[{contentItem.metadata.learningArea.domainCode}]</span>
-                <span><a href={this.props.siteBaseUrl + "/content-edit.html/#item/"+contentItem.uuid}>{contentItem.metadata.title}</a></span>
-                 <span className="eli-item-actions">
-                    <ul>
-                        <li title="bookmark"><i className="fa fa-bookmark"></i></li>
-                        <li title="copy"><i className="fa fa-copy"></i></li>
-                        <li title="add"><i className="fa fa-plus"></i></li>
+                <span><a href={this.props.siteBaseUrl + "/content-edit.html#item/"+contentItem.uuid}>{contentItem.metadata.title}</a></span>
+                    <ul className="eli-item-actions">
+                        <li title="bookmark"><i className={this.props.iconBookmark}></i></li>
+                        <li title="edit"><i className={this.props.iconEdit}></i></li>
+                        <li title="copy"><i className={this.props.iconCopy}></i></li>
+                        <li title="add" >
+                            <a href="#" className="dropdown-button" data-activates={"add-submenu" + objUuid}><i className={this.props.iconAdd}></i></a>
+                            <ul id={"add-submenu" + objUuid} className="dropdown-content" >
+                                <li title="add before"><a href={"content-edit.html#item/_new_/" + this.props.parent.uuid}>Before</a></li>
+                                <li title="add after"><a href={"content-edit.html#item/_new_/" + this.props.parent.uuid}>After</a></li>
+                            </ul>
+                        </li>
                     </ul>
-                 </span>
             </div>
         )
     }
 };
+ContentItemComponent.defaultProps = {
+    iconBookmark: 'mdi-action-bookmark',
+    iconEdit: 'mdi-content-create',
+    iconCopy: 'mdi-content-content-copy',
+    iconAdd: 'mdi-content-add'
+};
+
 
 export class ContentTreeComponent extends React.Component
 {
@@ -75,8 +92,9 @@ export class ContentTreeComponent extends React.Component
         var childNodes;
         var classObj;
 
-        if (this.props.node.body.subnodes != null) {
-            childNodes = this.props.node.body.subnodes.map(function(node, index) {
+        var currNode = this.props.node;
+        if (currNode.body.subnodes != null) {
+            childNodes = currNode.body.subnodes.map(function(node, index) {
                 return (
                     <li key={index}>
                         <ContentTreeComponent node={node} siteBaseUrl={this.props.siteBaseUrl} />
@@ -91,10 +109,10 @@ export class ContentTreeComponent extends React.Component
             };
         }
 
-        if (this.props.node.body.items != null &&
-            this.props.node.body.items.length > 0) {
-            childNodes = this.props.node.body.items.map(function(item, index) {
-                return <li key={index} ><ContentItemComponent item={item} siteBaseUrl={this.props.siteBaseUrl} /></li>
+        if (currNode.body.items != null &&
+            currNode.body.items.length > 0) {
+            childNodes = currNode.body.items.map(function(item, index) {
+                return <li key={index} ><ContentItemComponent parent={currNode} item={item} siteBaseUrl={this.props.siteBaseUrl} /></li>
             }.bind(this));
 
             classObj = {
@@ -109,32 +127,49 @@ export class ContentTreeComponent extends React.Component
             style = {display: "none"};
         }
 
+        // For the submenu target name generation
+        //var objUuid = this.props.node.uuid;
+        var objUuid = (Math.floor((Math.random() * 1000) + 1)).toString();
 
-        return (
-            <div>
-                <span onClick={this.toggle_.bind(this)} className={React.addons.classSet(classObj)}>
-                {this.props.node.metadata.title} ({this.props.node.kind})
-                </span>
-                <span className="eli-item-actions" >
-                    <ul >
+        if (!currNode.parentUuid) {
+            // Root node is not contractable
+            return (
+                <div>
+                    <span >
+                    [{currNode.uuid}] {currNode.metadata.title} (Root)
+                    </span>
+                    <ul style={style} className="hierarchical" >
+                        {childNodes}
+                    </ul>
+                </div>
+            );
+        } else {
+            // Inner nodes are contractable
+            return (
+                <div>
+                    <span onClick={this.toggle_.bind(this)} className={React.addons.classSet(classObj)}>
+                    [{currNode.uuid}] {currNode.metadata.title} ({currNode.kind})
+                    </span>
+                    <ul className="eli-item-actions">
                         <li title="bookmark"><i className={this.props.iconBookmark}></i></li>
                         <li title="edit"><i className={this.props.iconEdit}></i></li>
                         <li title="copy"><i className={this.props.iconCopy}></i></li>
                         <li title="add" >
-                            <a href="#" className="dropdown-button" data-activates='add-submenu'><i className={this.props.iconAdd}></i></a>
-                            <ul id="add-submenu" className="dropdown-content" >
-                                <li title="add before"><a href="#">Before</a></li>
-                                <li title="add after"><a href="#">After</a></li>
+                            <a href="#" className="dropdown-button" data-activates={"add-submenu" + objUuid}><i className={this.props.iconAdd}></i></a>
+                            <ul id={"add-submenu" + objUuid} className="dropdown-content" >
+                                <li title="add before"><a href={"#node/_new_/" + currNode.parentUuid}>Before</a></li>
+                                <li title="add after"><a href={"#node/_new_/" + currNode.parentUuid}>After</a></li>
                             </ul>
                         </li>
                     </ul>
 
-                </span>
-                <ul style={style} className="hierarchical" >
-                    {childNodes}
-                </ul>
-            </div>
-        );
+                    <ul style={style} className="hierarchical" >
+                        {childNodes}
+                    </ul>
+                </div>
+            );
+        }
+
     }
 
     /**
@@ -145,6 +180,7 @@ export class ContentTreeComponent extends React.Component
     {
         this.setState({visible: !this.state.visible});
     }
+
 };
 
 ContentTreeComponent.defaultProps = {

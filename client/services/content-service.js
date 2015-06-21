@@ -126,6 +126,46 @@ internals.ContentService.prototype.fetchNode = function(uuid)
     return promise;
 };
 
+/**
+ * deleteNode
+ *
+ * Deletes a node and its descendants
+ *
+ * @param uuid
+ * @returns {Promise}
+ */
+internals.ContentService.prototype.deleteNode = function(uuid)
+{
+
+    var promise = promiseutils.createPromise( function(resolve, reject) {
+
+        var contentNode = contentnodemodel.createContentNode(this.rootUrl + '/nodes', uuid);
+
+        function successCallback(model, response, options)
+        {
+            resolve(model);
+        }
+
+        function errorCallback(model, response, options)
+        {
+            if (response.body)
+            {
+                reject(response);
+            } else {
+                var error = new Error('Communication error');
+                reject(error);
+            }
+        }
+
+        contentNode.destroy({
+            success: successCallback,
+            error: errorCallback
+        });
+
+    }.bind(this));
+
+    return promise;
+};
 
 /**
  * createItem
@@ -155,6 +195,7 @@ internals.ContentService.prototype.createItem = function(parentUuid) {
             ]
         }
     };
+    // @todo - Body part assigned from re-defined template
     var body = {
         "definition": {
             "question": {
@@ -353,6 +394,50 @@ internals.ContentService.prototype.fetchItem = function(uuid, parentNodeUuid)
         }
 
         contentItem.fetch({
+            success: successCallback,
+            error: errorCallback
+        });
+
+    }.bind(this));
+
+    return promise;
+};
+
+
+/**
+ * deleteItem
+ *
+ * Removes an item
+ *
+ * @param {string} uuid
+ * @param {!string} parentNodeUuid
+ * @returns {Promise}
+ */
+internals.ContentService.prototype.deleteItem = function(uuid, parentNodeUuid)
+{
+
+    var promise = promiseutils.createPromise( function(resolve, reject) {
+
+        var baseUrl = this.getItemBaseUrl(parentNodeUuid);
+        var contentItem = contentitemmodel.createContentItem(baseUrl, uuid);
+
+        function successCallback(model, response, options)
+        {
+            resolve(model);
+        }
+
+        function errorCallback(model, response, options)
+        {
+            if (response.body)
+            {
+                reject(response);
+            } else {
+                var error = new Error('Communication error');
+                reject(error);
+            }
+        }
+
+        contentItem.destroy({
             success: successCallback,
             error: errorCallback
         });

@@ -93,14 +93,6 @@
     var clientApp = clientapp.init(appSettings);
     //clientApp.initMessageDialog( document.getElementById('message-dialog'));
 
-    function openMessageModal(title, body)
-    {
-        $('#messageModalTitle').html(title);
-        $('#messageModalBody').html(body);
-        $('#messageModal').foundation('reveal', 'open');
-    }
-    //setTimeout(function(){ openMessageModal('Hello', 'test'); }, 2000);
-
 
     var contentService = clientApp.getContentService();
 
@@ -115,7 +107,7 @@
             })
             .catch(function(error){
                 console.log(error);
-                openMessageModal('Error', JSON.stringify(error));
+                Materialize.toast('Error while querying nodes: ' + JSON.stringify(error), 4000);
             });
 
 
@@ -136,20 +128,15 @@
                         var breadcrubmItems = breadcrumbItemsFromContent(data.toJSON());
                         // Breadcrumbs
                         var breadcrumbsEl = document.getElementById('breadcrumbs-component');
-                        clientApp.createBreadcrumbs(breadcrumbsEl,
-                                [
-                                    { name: ' Workspace A', href:'#', },
-                                    { name: ' EN_US-MA', href:'#', },
-                                    { name: ' OA-213', href:'#', }
-                                ]
-                        );
+                        clientApp.createBreadcrumbs(breadcrumbsEl, breadcrubmItems);
 
                         var contentTreeEl = document.getElementById('content-tree');
                         var contentTreeView = new ContentTreeView(
                                 {
-                                    model: data,
                                     el: contentTreeEl,
-                                    siteBaseUrl: '/cohevium/content'
+                                    model: data,
+                                    siteBaseUrl: '/cohevium/content',
+                                    service: contentService
                                 }
                         );
                         contentTreeView.render();
@@ -162,7 +149,11 @@
 
     function breadcrumbItemsFromContent(content)
     {
-        content
+        return [
+            { name: ' Workspace A', href:'#', },
+            { name: ' EN_US-MA', href:'#', },
+            { name: ' OA-213', href:'#', }
+        ];
     }
 
 </script>

@@ -100,7 +100,7 @@ export class ContentTreeComponent extends React.Component
             childNodes = currNode.body.subnodes.map(function(node, index) {
                 return (
                     <li key={index}>
-                        <ContentTreeComponent node={node} siteBaseUrl={this.props.siteBaseUrl} />
+                        <ContentTreeComponent node={node} siteBaseUrl={this.props.siteBaseUrl} service={this.props.service}/>
                     </li>
                 )
             }.bind(this));
@@ -119,7 +119,9 @@ export class ContentTreeComponent extends React.Component
                     <li key={index} >
                         <ContentItemComponent parent={currNode} item={item}
                                               siteBaseUrl={this.props.siteBaseUrl}
-                                              onDelete={this.deleteItem_.bind(this, currNode, item)} />
+                                              service={this.props.service}
+                                              onDelete={this.deleteItem_.bind(this, currNode, item)}
+                            />
                     </li>
                 );
             }.bind(this));
@@ -200,10 +202,18 @@ export class ContentTreeComponent extends React.Component
             {
                 parent.body.items.splice(i, 1);
 
-                // @todo - use ContentService to delete the item,
-                // When delete is successful, do the line below
-                // To trigger re-rendering;
-                this.forceUpdate();
+                this.props.service.deleteItem(item.item.uuid, parent.uuid)
+                .then(function(result){
+                        // @todo - use ContentService to delete the item,
+                        // When delete is successful, do the line below
+                        // To trigger re-rendering;
+                        this.forceUpdate();
+                    }.bind(this))
+                .catch(function(error){
+                        // @todo - publish error message
+                        Materialize.toast('Error while deleting: ' + JSON.stringify(error), 4000);
+                    }.bind(this));
+
 
                 return;
             }

@@ -22,6 +22,7 @@ var internals = {};
 
 class ContentItemComponent extends React.Component
 {
+
     render ()
     {
         var contentItem = this.props.item.item;
@@ -42,6 +43,7 @@ class ContentItemComponent extends React.Component
                         <li title="bookmark"><i className={this.props.iconBookmark}></i></li>
                         <li title="edit"><i className={this.props.iconEdit}></i></li>
                         <li title="copy"><i className={this.props.iconCopy}></i></li>
+                        <li title="delete"><a  onClick={this.props.onDelete}><i className={this.props.iconDelete}></i></a></li>
                         <li title="add" >
                             <a href="#" className="dropdown-button" data-activates={"add-submenu" + objUuid}><i className={this.props.iconAdd}></i></a>
                             <ul id={"add-submenu" + objUuid} className="dropdown-content" >
@@ -58,7 +60,8 @@ ContentItemComponent.defaultProps = {
     iconBookmark: 'mdi-action-bookmark',
     iconEdit: 'mdi-content-create',
     iconCopy: 'mdi-content-content-copy',
-    iconAdd: 'mdi-content-add'
+    iconAdd: 'mdi-content-add',
+    iconDelete: 'mdi-action-delete',
 };
 
 
@@ -112,7 +115,13 @@ export class ContentTreeComponent extends React.Component
         if (currNode.body.items != null &&
             currNode.body.items.length > 0) {
             childNodes = currNode.body.items.map(function(item, index) {
-                return <li key={index} ><ContentItemComponent parent={currNode} item={item} siteBaseUrl={this.props.siteBaseUrl} /></li>
+                return (
+                    <li key={index} >
+                        <ContentItemComponent parent={currNode} item={item}
+                                              siteBaseUrl={this.props.siteBaseUrl}
+                                              onDelete={this.deleteItem_.bind(this, currNode, item)} />
+                    </li>
+                );
             }.bind(this));
 
             classObj = {
@@ -154,6 +163,7 @@ export class ContentTreeComponent extends React.Component
                         <li title="bookmark"><i className={this.props.iconBookmark}></i></li>
                         <li title="edit"><i className={this.props.iconEdit}></i></li>
                         <li title="copy"><i className={this.props.iconCopy}></i></li>
+                        <li title="delete"><i className={this.props.iconDelete}></i></li>
                         <li title="add" >
                             <a href="#" className="dropdown-button" data-activates={"add-submenu" + objUuid}><i className={this.props.iconAdd}></i></a>
                             <ul id={"add-submenu" + objUuid} className="dropdown-content" >
@@ -181,11 +191,31 @@ export class ContentTreeComponent extends React.Component
         this.setState({visible: !this.state.visible});
     }
 
+    deleteItem_(parent, item)
+    {
+        //alert("deleting " + parent.uuid + '/' + item.item.uuid);
+        for(var i=0; i < parent.body.items.length; i++)
+        {
+            if (parent.body.items[i].itemUuid === item.item.uuid)
+            {
+                parent.body.items.splice(i, 1);
+
+                // @todo - use ContentService to delete the item,
+                // When delete is successful, do the line below
+                // To trigger re-rendering;
+                this.forceUpdate();
+
+                return;
+            }
+        }
+    }
+
 };
 
 ContentTreeComponent.defaultProps = {
     iconBookmark: 'mdi-action-bookmark',
     iconEdit: 'mdi-content-create',
     iconCopy: 'mdi-content-content-copy',
-    iconAdd: 'mdi-content-add'
+    iconAdd: 'mdi-content-add',
+    iconDelete: 'mdi-action-delete'
 };

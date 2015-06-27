@@ -10,6 +10,7 @@
  *
  * @fileoverview
  *  This file includes definition of ContentItemComponent.
+ *  It displays a content in a collapsible tree form.
  * @see http://jsfiddle.net/ssorallen/XX8mw/
  *
  * @author Young Suk Ahn Park
@@ -35,20 +36,21 @@ class ContentItemComponent extends React.Component
         //var objUuid = contentItem.uuid;
         var objUuid = (Math.floor((Math.random() * 1000) + 1)).toString();
 
+        var displayHandle = contentItem.metadata.learningArea.domainCode || contentItem.uuid.substring(0,8);
         return (
             <div>
-                <span style={domainCodeStyle}>[{contentItem.metadata.learningArea.domainCode}]</span>
-                <span><a href={this.props.siteBaseUrl + "/content-edit.html#item/"+contentItem.uuid}>{contentItem.metadata.title}</a></span>
+                <span style={domainCodeStyle}>[{displayHandle}]</span>
+                <span><a href={this.props.siteBaseUrl + "content-edit.html#item/"+contentItem.uuid}>{contentItem.metadata.title}</a></span>
                     <ul className="eli-item-actions">
                         <li title="bookmark"><i className={this.props.iconBookmark}></i></li>
-                        <li title="edit"><i className={this.props.iconEdit}></i></li>
-                        <li title="copy"><i className={this.props.iconCopy}></i></li>
+                        <li title="edit"><a href={this.props.siteBaseUrl + "/content-edit.html#item/"+contentItem.uuid}><i className={this.props.iconEdit}></i></a></li>
+                        <li title="copy"><a href={"content-edit.html#item/_new_/parent=" + this.props.parent.uuid + ';copyOf=' + contentItem.uuid}><i className={this.props.iconCopy}></i></a></li>
                         <li title="delete"><a  onClick={this.props.onDelete}><i className={this.props.iconDelete}></i></a></li>
                         <li title="add" >
                             <a href="#" className="dropdown-button" data-activates={"add-submenu" + objUuid}><i className={this.props.iconAdd}></i></a>
                             <ul id={"add-submenu" + objUuid} className="dropdown-content" >
-                                <li title="add before"><a href={"content-edit.html#item/_new_/" + this.props.parent.uuid}>Before</a></li>
-                                <li title="add after"><a href={"content-edit.html#item/_new_/" + this.props.parent.uuid}>After</a></li>
+                                <li title="add before"><a href={"content-edit.html#item/_new_/parent=" + this.props.parent.uuid}>Before</a></li>
+                                <li title="add after"><a href={"content-edit.html#item/_new_/parent=" + this.props.parent.uuid}>After</a></li>
                             </ul>
                         </li>
                     </ul>
@@ -163,7 +165,7 @@ export class ContentTreeComponent extends React.Component
                     </span>
                     <ul className="eli-item-actions">
                         <li title="bookmark"><i className={this.props.iconBookmark}></i></li>
-                        <li title="edit"><i className={this.props.iconEdit}></i></li>
+                        <li title="edit"><a href={this.props.siteBaseUrl + "/content-edit.html#node/"+currNode.uuid}><i className={this.props.iconEdit}></i></a></li>
                         <li title="copy"><i className={this.props.iconCopy}></i></li>
                         <li title="delete"><i className={this.props.iconDelete}></i></li>
                         <li title="add" >

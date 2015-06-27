@@ -17,7 +17,8 @@
 var AmpersandView = require ('ampersand-view');
 //var React = require('react');
 var React = require('react/addons');
-var ContentEditorComponent = require ('./contenteditor-component.jsx').ContentEditorComponent;
+var ContentItemEditorComponent = require ('./contentitemeditor-component.jsx').ContentItemEditorComponent;
+var ContentNodeEditorComponent = require ('./contentnodeeditor-component.jsx').ContentNodeEditorComponent;
 
 var internals = {};
 
@@ -33,15 +34,30 @@ internals.ContentEditorView = AmpersandView.extend({
 
     render: function ()
     {
-        //this.renderWithTemplate(this);
-        var component = React.createElement(
-            ContentEditorComponent,
-            {
-                content: this.model.toJSON(),
-                siteBaseUrl: this.siteBaseUrl,
-                onSaveContent: this.saveContent.bind(this)
-            }
-        );
+        var content =  this.model.toJSON();
+
+        var component;
+        if (content === 'Assignment')
+        {
+            component = React.createElement(
+                ContentNodeEditorComponent,
+                {
+                    content: this.model.toJSON(),
+                    siteBaseUrl: this.siteBaseUrl,
+                    onSaveContent: this.saveContent.bind(this)
+                }
+            );
+        } else {
+            component = React.createElement(
+                ContentItemEditorComponent,
+                {
+                    content: this.model.toJSON(),
+                    siteBaseUrl: this.siteBaseUrl,
+                    onSaveContent: this.saveContent.bind(this)
+                }
+            );
+        }
+
         React.render(component, this.el);
         return this;
     },

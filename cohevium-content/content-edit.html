@@ -16,6 +16,7 @@
 <!-- <script src="/cohevium/public/ace-editor/ace.js" type="text/javascript" charset="utf-8"></script> -->
 
 <script>
+    var promiseutils = require('promiseutils');
     var clientapp = require('clientapp');
 
     var ContentEditorView = require('contenteditor-view').ContentEditorView;
@@ -29,8 +30,7 @@
 
     function openMessageModal(title, body)
     {
-        $('#messageModalTitle').html(title);
-        $('#messageModalBody').html(body);
+        Materialize.toast(title + ': ' + body, 4000);
     }
 
     // @todo - Populate the breadcrumb
@@ -40,9 +40,9 @@
         routes: {
             '': 'home',
             'item/:uuid': 'item',
-            'item/:uuid/:parentUuid': 'item',
+            'item/:uuid/:params': 'item',
             'node/:uuid': 'node',
-            'node/:uuid/:parentUuid': 'node',
+            'node/:uuid/:params': 'node',
         },
 
         home: function() {
@@ -51,12 +51,44 @@
 
 
         // Route for editing an item
-        item: function(uuid, parentUuid) {
+        item: function(uuid, params) {
             console.log(uuid);
             if (uuid == '_new_') {
-                var contentItem = contentService.createItem(parentUuid);
-                var contentEditorView = new ContentEditorView({model: contentItem, el: contentEditorEl});
-                contentEditorView.render();
+                var paramsObj = parseParams(params);
+                if (!paramsObj.parent) {
+                    openMessageModal('Error', 'Parent uuid was not provided');
+                    return;
+                }
+
+                var promise = function(){
+                    if (paramsObj.copyOf) {
+                        // @todo retrieve
+                        return contentService.fetchItem(paramsObj.copyOf);
+                    } else {
+                        return promiseutils.createPromise( function(resolve, reject) {
+                                resolve(null);
+                        });
+                    }
+                }();
+
+                promise.then(function(originalContent) {
+                    var contentItem = contentService.createItem(paramsObj.parent);
+                    if (originalContent) {
+                        var origContenObj = originalContent.toJSON();
+                        origContenObj.metadata.title = 'Copy of: ' + origContenObj.metadata.title;
+                        contentItem.set({
+                            metadata: origContenObj.metadata,
+                            body: origContenObj.body
+                        });
+                    }
+                    var contentEditorView = new ContentEditorView({model: contentItem, el: contentEditorEl});
+                    contentEditorView.render();
+                })
+                .catch(function(error){
+                    openMessageModal('Error', JSON.stringify(error));
+                });
+
+
             } else {
                 contentService.fetchItem(uuid)
                         .then(function (contentItem) {
@@ -88,6 +120,27 @@
     });
 
     var t = router.history.start({pushState: false});
+
+    /**
+     * Parses p1=A;p2=B into
+     * { p1: 'A', p2: 'B'}
+     */
+    function parseParams(params)
+    {
+        var paramsObj = {};
+        var paramItems = params.split(';');
+
+        for (var i=0; i < paramItems.length; i++)
+        {
+            var tokens = paramItems[i].split('=');
+            if (tokens.length < 2)
+            {
+                throw Error('Parse error')
+            }
+            paramsObj[tokens[0]] = tokens[1]; // tokenp[1] may be undefined
+        }
+        return paramsObj;
+    }
 
 </script>
 

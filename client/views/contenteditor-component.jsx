@@ -171,6 +171,15 @@ internals.MetadataEditorComponent = React.createClass({
         return '';
     },
 
+    /**
+     * Handles changes on form field
+     * Propagate chantes to the other components
+     *
+     * @param isArray  - Whehter or not the field is of type array
+     * @param propName  - The name of the property within metadata, dot notation
+     * @param event  - The Javascript event
+     * @private
+     */
     handleChange_: function(isArray, propName, event)
     {
         var metadata = this.state.metadata;
@@ -195,10 +204,10 @@ internals.MetadataEditorComponent = React.createClass({
     },
 
     /**
-     *
+     * @deprecated
      * @param {Event} event
      */
-    handleChange: function(event)
+    handleChangeText_: function(event)
     {
         var metadataText = event.target.value;
         this.setState({metadataText: metadataText });
@@ -214,10 +223,10 @@ internals.MetadataEditorComponent = React.createClass({
     },
 
     /**
-     *
+     * @deprecated
      * @param {Event} event
      */
-    handleBlur: function(event)
+    handleTextBlur_: function(event)
     {
         var content = {
             metadata: JSON.parse(event.target.value)

@@ -108,7 +108,6 @@ internals.TabsComponent = React.createClass({
                         <li className={ 'tab ' + this.additionalClassForTab_('metadata')}><a href  role="tab" onClick={this.handleClick.bind(this, 'metadata')} >Metadata</a></li>
                         <li className={ 'tab ' + this.additionalClassForTab_('source')}><a href  role="tab" onClick={this.handleClick.bind(this, 'source')} >Source</a></li>
                         <li className={ 'tab ' + this.additionalClassForTab_('form')}><a href={null} role="tab" onClick={this.handleClick.bind(this, 'form')} >Form</a></li>
-                        <li className={ 'tab ' + this.additionalClassForTab_('preview')}><a href role="tab" onClick={this.handleClick.bind(this, 'preview')} >Preview</a></li>
                     </ul>
                 </div>
                 <div className="col s12" id="panel_metadata" style={this.styleForTabContent_('metadata')} >
@@ -126,7 +125,7 @@ internals.TabsComponent = React.createClass({
 });
 
 /**
- * @class ContentEditorComponent
+ * @class ContentNodeEditorComponent
  *
  * @classdesc
  *  Component that encapsulates the overall content editing capabilities
@@ -134,7 +133,7 @@ internals.TabsComponent = React.createClass({
  *
  * @type {*|Function}
  */
-internals.ContentItemEditorComponent = React.createClass({
+internals.ContentNodeEditorComponent = React.createClass({
     getInitialState: function () {
         return {
             content: this.props.content
@@ -186,4 +185,4 @@ internals.ContentItemEditorComponent = React.createClass({
 
 });
 
-module.exports.ContentItemEditorComponent = internals.ContentItemEditorComponent;
+module.exports.ContentNodeEditorComponent = internals.ContentNodeEditorComponent;

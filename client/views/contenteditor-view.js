@@ -29,7 +29,8 @@ internals.ContentEditorView = AmpersandView.extend({
     initialize: function(options)
     {
         console.log("ContentEditorView options are:", options);
-        this.siteBaseUrl = options.siteBaseUrl
+        this.app = options.app;
+        this.siteBaseUrl = options.siteBaseUrl;
     },
 
     render: function ()
@@ -37,11 +38,12 @@ internals.ContentEditorView = AmpersandView.extend({
         var content =  this.model.toJSON();
 
         var component;
-        if (content === 'Assignment')
+        if (content.kind === 'Assignment')
         {
             component = React.createElement(
                 ContentNodeEditorComponent,
                 {
+                    app: this.app,
                     content: this.model.toJSON(),
                     siteBaseUrl: this.siteBaseUrl,
                     onSaveContent: this.saveContent.bind(this)
@@ -51,6 +53,7 @@ internals.ContentEditorView = AmpersandView.extend({
             component = React.createElement(
                 ContentItemEditorComponent,
                 {
+                    app: this.app,
                     content: this.model.toJSON(),
                     siteBaseUrl: this.siteBaseUrl,
                     onSaveContent: this.saveContent.bind(this)
@@ -64,8 +67,16 @@ internals.ContentEditorView = AmpersandView.extend({
 
     saveContent: function(content)
     {
-        this.model.set(content);
-        this.model.save();
+        //this.model.set(content);
+        this.model.save(content, {
+            success: function(result) {
+                    this.app.showMessage('Save', 'Successful');
+                }.bind(this),
+
+            error: function(error) {
+                    this.app.showMessage('Save Error', JSON.stringify(error));
+                }.bind(this)
+        });
     }
 
 });

@@ -21,6 +21,22 @@ var contentitemmodel = require('../models/contentitem');
 /** Declaration of internal namespace */
 var internals = {};
 
+internals.metadataTemplate = {
+    "title": "My test",
+    "preRecommendations": [],
+    "authors": [],
+    "version": "0.0.1",
+    "learningArea": {
+        "subject": "math",
+        "subjectArea": "arithmetic",
+        "topicHierarchy": [
+            "addition",
+            "addition-2digits"
+        ]
+    },
+    "tags": []
+}
+
 /**
  *
  * @param config
@@ -38,11 +54,18 @@ internals.ContentService = function(config)
  * Creates a node and its descendants
  *
  * @param parentUuid - parent UUID
- * @returns {ContentNodeMode}
+ * @returns {ContentNodeModel}
  */
 internals.ContentService.prototype.createNode = function(parentUuid) {
+
     var newNode = contentnodemodel.createContentNode(this.rootUrl + '/nodes');
-    newNode.set({parentUuid: parentUuid});
+    newNode.set({
+        parentUuid: parentUuid,
+        metadata: internals.metadataTemplate,
+        body: {
+            items: []
+        }
+    });
     return newNode;
 };
 
@@ -93,7 +116,7 @@ internals.ContentService.prototype.queryNodes = function(criteria)
  * @param uuid
  * @returns {Promise}
  */
-internals.ContentService.prototype.fetchNode = function(uuid)
+internals.ContentService.prototype.fetchNode = function(uuid, fetchItems, depth)
 {
 
     var promise = promiseutils.createPromise( function(resolve, reject) {
@@ -116,7 +139,15 @@ internals.ContentService.prototype.fetchNode = function(uuid)
             }
         }
 
+        var fetchParams = {
+            _depth: depth || 10
+        };
+        if (fetchItems) {
+            fetchParams._fetchItems = true;
+        }
         contentNode.fetch({
+            // These are passed as query string
+            data: fetchParams,
             success: successCallback,
             error: errorCallback
         });
@@ -178,23 +209,6 @@ internals.ContentService.prototype.deleteNode = function(uuid)
 internals.ContentService.prototype.createItem = function(parentUuid) {
     var baseUrl = this.getItemBaseUrl(parentUuid);
     var newItem = contentitemmodel.createContentItem(baseUrl);
-    var metadata = {
-        "title": "My test",
-            "preRecommendations": [],
-            "authors": [],
-            "version": "0.0.1",
-            "learningArea": {
-            "subject": "math",
-                "subjectArea": "arithmetic",
-                "tags": [
-                "1G"
-            ],
-                "topicHierarchy": [
-                "addition",
-                "addition-2digits"
-            ]
-        }
-    };
     // @todo - Body part assigned from re-defined template
     var body = {
         "definition": {
@@ -312,7 +326,7 @@ internals.ContentService.prototype.createItem = function(parentUuid) {
     };
     newItem.set({
         parentUuid: parentUuid,
-        metadata: metadata,
+        metadata: internals.metadataTemplate,
         body: body
     });
     return newItem;

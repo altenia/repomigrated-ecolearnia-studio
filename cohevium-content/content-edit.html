@@ -28,10 +28,12 @@
 
     var contentService = clientApp.getContentService();
 
-    function openMessageModal(title, body)
-    {
-        Materialize.toast(title + ': ' + body, 4000);
-    }
+    clientApp.registerMessageRenderer(
+            function(title, body, params)
+        {
+            Materialize.toast(title + ': ' + body, 4000);
+        }
+    );
 
     // @todo - Populate the breadcrumb
 
@@ -56,7 +58,7 @@
             if (uuid == '_new_') {
                 var paramsObj = parseParams(params);
                 if (!paramsObj.parent) {
-                    openMessageModal('Error', 'Parent uuid was not provided');
+                    clientApp.showMessage('Error', 'Parent uuid was not provided');
                     return;
                 }
 
@@ -81,48 +83,42 @@
                             body: origContenObj.body
                         });
                     }
-                    var contentEditorView = new ContentEditorView({model: contentItem, el: contentEditorEl});
+                    var contentEditorView = new ContentEditorView({
+                        app: clientApp, model: contentItem, el: contentEditorEl
+                            });
                     contentEditorView.render();
                 })
                 .catch(function(error){
-                    openMessageModal('Error', JSON.stringify(error));
+                            clientApp.showMessage('Error', JSON.stringify(error));
                 });
 
 
             } else {
                 contentService.fetchItem(uuid)
                         .then(function (contentItem) {
-                            var contentEditorView = new ContentEditorView({model: contentItem, el: contentEditorEl});
+                            var contentEditorView = new ContentEditorView({
+                                app: clientApp, model: contentItem, el: contentEditorEl
+                            });
                             contentEditorView.render();
                             console.log('model:', contentItem.toJSON());
                         })
                         .catch(function (error) {
                             console.log(error);
-                            openMessageModal('Error', JSON.stringify(error));
+                            clientApp.showMessage('Error', JSON.stringify(error));
                         });
             }
         },
 
         // Route for editing a node
         node: function(uuid, parentUuid) {
-            console.log(uuid);
-            contentService.fetchNode(uuid)
-                    .then(function(contentNode){
-                        var contentEditorView = new ContentEditorView({model: contentNode, el:contentEditorEl});
-                        contentEditorView.render();
-                        console.log('model:', contentNode.toJSON());
-                    })
-                    .catch(function (error) {
-                        console.log(error);
-                        openMessageModal('Error', JSON.stringify(error));
-                    });
+            handleRoute('Node', uuid, parentUuid);
         }
     });
 
     var t = router.history.start({pushState: false});
 
     /**
-     * Parses p1=A;p2=B into
+     * Parses p1=A; p2=B into
      * { p1: 'A', p2: 'B'}
      */
     function parseParams(params)
@@ -140,6 +136,68 @@
             paramsObj[tokens[0]] = tokens[1]; // tokenp[1] may be undefined
         }
         return paramsObj;
+    }
+
+    /**
+     * Handles route
+     */
+    function handleRoute(type, uuid, params)
+    {
+        if (uuid == '_new_') {
+            var paramsObj = parseParams(params);
+            if (!paramsObj.parent) {
+                clientApp.showMessage('Error', 'Parent uuid was not provided');
+                return;
+            }
+
+            var promise = function(){
+                if (paramsObj.copyOf) {
+                    // @todo retrieve
+                    return contentService['fetch' + type](paramsObj.copyOf);
+                } else {
+                    // Nothing to do, just return a proise and resolve it
+                    return promiseutils.createPromise( function(resolve, reject) {
+                        resolve(null);
+                    });
+                }
+            }();
+
+            promise.then(function(originalContent) {
+                var content = contentService['create' +  type](paramsObj.parent);
+
+                // Copying
+                if (originalContent) {
+                    var origContenObj = originalContent.toJSON();
+                    origContenObj.metadata.title = 'Copy of: ' + origContenObj.metadata.title;
+                    content.set({
+                        metadata: origContenObj.metadata,
+                        body: origContenObj.body
+                    });
+                }
+                var contentEditorView = new ContentEditorView({
+                    app: clientApp, model: content, el: contentEditorEl
+                });
+                contentEditorView.render();
+            })
+            .catch(function(error){
+                clientApp.showMessage('Error', JSON.stringify(error));
+            });
+
+
+        } else {
+            contentService['fetch' +  type](uuid)
+            .then(function (content) {
+                var contentEditorView = new ContentEditorView({
+                    app: clientApp, model: content, el: contentEditorEl
+                });
+                contentEditorView.render();
+                console.log('model:', content.toJSON());
+            })
+            .catch(function (error) {
+                console.log(error);
+                clientApp.showMessage('Error', JSON.stringify(error));
+            });
+        }
     }
 
 </script>

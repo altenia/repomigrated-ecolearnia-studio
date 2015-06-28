@@ -123,7 +123,7 @@
 
         content: function(uuid) {
             console.log(uuid);
-            contentService.fetchNode(uuid)
+            contentService.fetchNode(uuid, true)
                     .done(function(data){
                         var breadcrubmItems = breadcrumbItemsFromContent(data.toJSON());
                         // Breadcrumbs
@@ -157,10 +157,3 @@
     }
 
 </script>
-
-
-<div id="messageModal" class="reveal-modal" data-reveal aria-labelledby="messageModalTitle" aria-hidden="true" role="dialog">
-    <h2 id="messageModalTitle"></h2>
-    <div id="messageModalBody"></div>
-    <a class="close-reveal-modal" aria-label="Close">&#215;</a>
-</div>

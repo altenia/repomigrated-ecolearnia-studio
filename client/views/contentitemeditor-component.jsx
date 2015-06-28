@@ -180,7 +180,7 @@ internals.TabsComponent = React.createClass({
 });
 
 /**
- * @class ContentEditorComponent
+ * @class ContentItemEditorComponent
  *
  * @classdesc
  *  Component that encapsulates the overall content editing capabilities

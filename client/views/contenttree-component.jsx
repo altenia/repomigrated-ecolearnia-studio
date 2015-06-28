@@ -144,6 +144,7 @@ export class ContentTreeComponent extends React.Component
         //var objUuid = this.props.node.uuid;
         var objUuid = (Math.floor((Math.random() * 1000) + 1)).toString();
 
+        var displayHandle = currNode.metadata.learningArea.domainCode || currNode.uuid.substring(0,8);
         if (!currNode.parentUuid) {
             // Root node is not contractable
             return (
@@ -161,7 +162,7 @@ export class ContentTreeComponent extends React.Component
             return (
                 <div>
                     <span onClick={this.toggle_.bind(this)} className={React.addons.classSet(classObj)}>
-                    [{currNode.uuid}] {currNode.metadata.title} ({currNode.kind})
+                    [{displayHandle}] {currNode.metadata.title} ({currNode.kind})
                     </span>
                     <ul className="eli-item-actions">
                         <li title="bookmark"><i className={this.props.iconBookmark}></i></li>
@@ -171,7 +172,7 @@ export class ContentTreeComponent extends React.Component
                         <li title="add" >
                             <a href="#" className="dropdown-button" data-activates={"add-submenu" + objUuid}><i className={this.props.iconAdd}></i></a>
                             <ul id={"add-submenu" + objUuid} className="dropdown-content" >
-                                <li title="add before"><a href={"#node/_new_/" + currNode.parentUuid}>Before</a></li>
+                                <li title="add before"><a href={"content-edit.html#node/_new_/parent=" + currNode.parentUuid}>Before</a></li>
                                 <li title="add after"><a href={"#node/_new_/" + currNode.parentUuid}>After</a></li>
                             </ul>
                         </li>

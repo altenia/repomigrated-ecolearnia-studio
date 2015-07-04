@@ -10,6 +10,7 @@
  *
  * @fileoverview
  *  This file includes definition of ContentEditorView.
+ * @deprecated use conenteditorpante-component instead
  *
  * @author Young Suk Ahn Park
  * @date 4/29/15
@@ -17,6 +18,9 @@
 var AmpersandView = require ('ampersand-view');
 //var React = require('react');
 var React = require('react/addons');
+
+var lodash = require ('lodash');
+
 var ContentItemEditorComponent = require ('./contentitemeditor-component.jsx').ContentItemEditorComponent;
 var ContentNodeEditorComponent = require ('./contentnodeeditor-component.jsx').ContentNodeEditorComponent;
 
@@ -44,7 +48,7 @@ internals.ContentEditorView = AmpersandView.extend({
                 ContentNodeEditorComponent,
                 {
                     app: this.app,
-                    content: this.model.toJSON(),
+                    content: content,
                     siteBaseUrl: this.siteBaseUrl,
                     onSaveContent: this.saveContent.bind(this)
                 }
@@ -54,7 +58,7 @@ internals.ContentEditorView = AmpersandView.extend({
                 ContentItemEditorComponent,
                 {
                     app: this.app,
-                    content: this.model.toJSON(),
+                    content: content,
                     siteBaseUrl: this.siteBaseUrl,
                     onSaveContent: this.saveContent.bind(this)
                 }
@@ -67,8 +71,14 @@ internals.ContentEditorView = AmpersandView.extend({
 
     saveContent: function(content)
     {
-        //this.model.set(content);
-        this.model.save(content, {
+        var normalizedContent = lodash.cloneDeep(content);
+        if (typeof normalizedContent.parent === 'object')
+        {
+            delete normalizedContent.parent;
+            delete normalizedContent.__parentObject;
+        }
+        this.model.set(normalizedContent);
+        this.model.save(normalizedContent, {
             success: function(result) {
                     this.app.showMessage('Save', 'Successful');
                 }.bind(this),

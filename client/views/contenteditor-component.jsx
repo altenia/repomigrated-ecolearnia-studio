@@ -18,12 +18,77 @@
  */
 var React = require('react/addons');
 var deepEqual = require('deep-equal');
+var lodash = require('lodash');
+
 var utils = require('../common/utils');
 
 var AceEditorComponent = require('./aceeditor-component.jsx').AceEditorComponent;
 var interactives = require('../interactives/interactives');
 
 var internals = {};
+
+function contentPath(content) {
+    var path = [];
+    var currNode = content;
+    do {
+        path.unshift(currNode.metadata.title);
+        currNode = currNode.__parentObject;
+    } while (currNode);
+    return path.join(' / ');
+}
+
+/**
+ * @class ParentChangerDialog
+ *
+ * @classdesc
+ *  React based class for changing parent
+ *
+ * @todo - Make it a form based with validation
+ */
+internals.ParentChangerDialog = React.createClass({
+    getInitialState: function ()
+    {
+        return {
+            parentUuid: this.props.parentUuid
+        };
+    },
+
+    render: function() {
+        return (
+            <div id="parent-changer-dialog" className="modal">
+                <div className="modal-content">
+                    <h4>Change Parent</h4>
+
+                    <form className="col s12">
+                        <div className="row">
+                            <div className="input-field col s12">
+                                <input value={this.state.parentUuid} type="text" onChange={this.handleChange_}
+                                       className="validate" placeholder="Parent" />
+                                <label for="Subject" className="active" >Parent</label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div className="modal-footer">
+                    <a className="modal-action modal-close waves-effect waves-green btn-flat ">Cancel</a>
+                    <a className="modal-action waves-effect waves-green btn-flat"
+                        onClick={this.handleClickChange_}>Change</a>
+                </div>
+            </div>
+        );
+    },
+
+    handleChange_: function()
+    {
+        this.setState({parentUuid: event.target.value});
+    },
+
+    handleClickChange_: function() {
+        this.props.parentChange(this.state.parentUuid, function(){
+            //$('#parent-changer-dialog').closeModal();
+        })
+    }
+});
 
 /**
  * @class MetadataEditorComponent
@@ -47,19 +112,34 @@ internals.MetadataEditorComponent = React.createClass({
     componentWillReceiveProps: function(nextProps)
     {
         // Update state when property change was propagated from outside
-        this.setState({metadataText: JSON.stringify(nextProps.content.metadata, null, 4)});
+        //this.setState({metadataText: JSON.stringify(nextProps.content.metadata, null, 4)});
+        this.setState({structural: nextProps.content.structural});
+
         this.setState({metadata: nextProps.content.metadata});
         console.log('componentWillReceiveProps', nextProps);
     },
 
+    componentDidMount()
+    {
+        $('.collapsible').collapsible({
+            accordion : false // A setting that changes the collapsible behavior to expandable instead of the default accordion style
+        });
+    },
+
     render: function()
     {
+        var structural = this.props.content.structural || {};
+        if (!deepEqual(this.state.structural, this.props.content.structural))
+        {
+            metadata = this.state.structural;
+        }
         var metadata = this.props.content.metadata || {};
         if (!deepEqual(this.state.metadata, this.props.content.metadata))
         {
             metadata = this.state.metadata;
         }
 
+        // @deprecated
         var metadataText = JSON.stringify(this.props.content.metadata, null, 4);
         // Keep the edited metadata
         if (this.state.metadataText !== metadataText)
@@ -72,86 +152,144 @@ internals.MetadataEditorComponent = React.createClass({
             border: '1px solid #888'
         };
 
+        var parentPath = this.props.content.__parentObject ? contentPath(this.props.content.__parentObject) : '';
+
         return (
             <div className="row">
                 <h4>{metadata.title}</h4>
-                <form className="col s12">
-                    <div className="row">
-                        <div className="input-field col s12">
-                            <input value={metadata.title} type="text" onChange={this.handleChange_.bind(this, false, 'title')}
-                                   className="validate" placeholder="The title of the content" />
-                            <label for="title" className={this.activeLabel_('title')} >Title</label>
-                        </div>
-                    </div>
-                    <div className="row">
-                        <div className="input-field col s6">
-                            <input value={metadata.license} type="text" onChange={this.handleChange_.bind(this, false, 'license')}
-                                   className="validate" placeholder="License" />
-                            <label for="license" className={this.activeLabel_('license')} >License</label>
-                        </div>
-                        <div className="input-field col s6">
-                            <input value={metadata.locale} type="text" onChange={this.handleChange_.bind(this, false, 'locale')}
-                                   className="validate" placeholder="Locale"/>
-                            <label for="locale" className={this.activeLabel_('locale')} >Locale</label>
-                        </div>
-                    </div>
-                    <div className="row">
-                        <div className="input-field col s12">
-                            <input value={metadata.authors} type="text" onChange={this.handleChange_.bind(this, true, 'authors')}
-                                   className="validate" placeholder="Authors of this content" />
-                            <label for="authors" className={this.activeLabel_('authors')} >Authors of this content</label>
-                        </div>
-                    </div>
-                    <div className="row">
-                        <div className="input-field col s12">
-                            <input value={metadata.tags} type="text" onChange={this.handleChange_.bind(this, true, 'tags')}
-                                   className="validate" placeholder="Tags" />
-                            <label for="tags" className={this.activeLabel_('tags')} >Tags</label>
-                        </div>
-                    </div>
-                    <div className="row">
-                        <div className="input-field col s12">
-                            <input value={metadata.preRecommendations} type="email" onChange={this.handleChange_.bind(this, true, 'preRecommendations')}
-                                   className="validate" placeholder="Pre Requisites" />
-                            <label for="preRequisites" className={this.activeLabel_('preRecommendations')} >Pre Requisites</label>
-                        </div>
-                    </div>
+                <ul className="collapsible" data-collapsible="accordion">
 
-                    <hr />
-                    <div className="row">
-                        <div className="input-field col s6">
-                            <input value={metadata.learningArea.subject} type="text" onChange={this.handleChange_.bind(this, false, 'learningArea.subject')}
-                                   className="validate" placeholder="Subject" />
-                            <label for="Subject" className={this.activeLabel_('learningArea.subject')} >Subject</label>
+                    <li>
+                        <div className="collapsible-header">Structural</div>
+                        <div className="collapsible-body">
+                            <div className="row">
+                                <div className="input-field col s6">
+                                    <input value={this.props.content.uuid} type="text"
+                                            />
+                                    <label for="uuid" className="active" >Uuid</label>
+                                </div>
+                                <div className="input-field col s6">
+                                    <input value={this.props.content.refName} type="text"
+                                           />
+                                    <label for="refName" className="active" >refName</label>
+                                </div>
+                            </div>
+                            <div className="row">
+                                <div className="input-field col s6">
+                                    <input value={this.props.content.createdBy} type="text"
+                                        />
+                                    <label for="createdBy" className="active" >createdBy</label>
+                                </div>
+                                <div className="input-field col s6">
+                                    <input value={this.props.content.createdAt} type="text"
+                                        />
+                                    <label for="createdAt" className="active" >createdAt</label>
+                                </div>
+                            </div>
+                            <div className="row">
+                                <div className="input-field col s12">
+                                    <input value={parentPath} type="text" onClick={this.handleParentClick_}
+                                        />
+                                    <label for="parent" className="active" >parent</label>
+                                </div>
+                            </div>
                         </div>
-                        <div className="input-field col s6">
-                            <input value={metadata.learningArea.subjectArea} type="text" onChange={this.handleChange_.bind(this, false, 'learningArea.subjectArea')}
-                                   className="validate" placeholder="Area within the subject" />
-                            <label for="subjectArea" className={this.activeLabel_('learningArea.subjectArea')} >Area within the subject</label>
-                        </div>
-                    </div>
+                    </li>
 
-                    <div className="row">
-                        <div className="input-field col s6">
-                            <input value={metadata.learningArea.domainCodeSource} type="text" onChange={this.handleChange_.bind(this, false, 'learningArea.domainCodeSource')}
-                                   className="validate" placeholder="Source of Domain Code (e.g. Common Core)" />
-                            <label for="domainCodeSource" className={this.activeLabel_('learningArea.domainCodeSource')} >Source of Domain Code (e.g. Common Core)</label>
-                        </div>
-                        <div className="input-field col s6">
-                            <input value={metadata.learningArea.domainCode} type="text" onChange={this.handleChange_.bind(this, false, 'learningArea.domainCode')}
-                                   className="validate" placeholder="Domain Code" />
-                            <label for="domainCode" className={this.activeLabel_('learningArea.domainCode')} >Domain Code</label>
-                        </div>
-                    </div>
-                    <div className="row">
-                        <div className="input-field col s12">
-                            <input value={metadata.learningArea.topicHierarchy} type="text" onChange={this.handleChange_.bind(this, true, 'learningArea.topicHierarchy')}
-                                   className="validate" />
-                            <label for="topicHierarchy" className={this.activeLabel_('learningArea.topicHierarchy')} >Pre topicHierarchy</label>
-                        </div>
-                    </div>
+                    <li>
+                        <div className="collapsible-header">Metadata</div>
+                        <div className="collapsible-body">
+                            <form className="col s12">
+                                <div className="row">
+                                    <div className="input-field col s12">
+                                        <input value={metadata.title} type="text" onChange={this.handleChange_.bind(this, false, 'metadata', 'title')}
+                                               className="validate" placeholder="The title of the content" />
+                                        <label for="title" className={this.activeLabel_('metadata', 'title')} >Title</label>
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="input-field col s6">
+                                        <input value={metadata.license} type="text" onChange={this.handleChange_.bind(this, false, 'metadata', 'license')}
+                                               className="validate" placeholder="License" />
+                                        <label for="license" className={this.activeLabel_('metadata', 'license')} >License</label>
+                                    </div>
+                                    <div className="input-field col s6">
+                                        <input value={metadata.locale} type="text" onChange={this.handleChange_.bind(this, false, 'metadata', 'locale')}
+                                               className="validate" placeholder="Locale"/>
+                                        <label for="locale" className={this.activeLabel_('metadata', 'locale')} >Locale</label>
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="input-field col s12">
+                                        <input value={metadata.authors} type="text" onChange={this.handleChange_.bind(this, true, 'metadata', 'authors')}
+                                               className="validate" placeholder="Authors of this content" />
+                                        <label for="authors" className={this.activeLabel_('metadata', 'authors')} >Authors of this content</label>
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="input-field col s12">
+                                        <input value={metadata.tags} type="text" onChange={this.handleChange_.bind(this, true, 'tags')}
+                                               className="validate" placeholder="Tags" />
+                                        <label for="tags" className={this.activeLabel_('metadata', 'tags')} >Tags</label>
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="input-field col s12">
+                                        <input value={metadata.preRecommendations} type="email" onChange={this.handleChange_.bind(this, true, 'metadata', 'preRecommendations')}
+                                               className="validate" placeholder="Pre Requisites" />
+                                        <label for="preRequisites" className={this.activeLabel_('metadata', 'preRecommendations')} >Pre Requisites</label>
+                                    </div>
+                                </div>
 
-                </form>
+                            </form>
+                        </div>
+                    </li>
+
+                    <li>
+                        <div className="collapsible-header">Learn Area</div>
+                        <div className="collapsible-body">
+                            <form className="col s12">
+
+                                <div className="row">
+                                    <div className="input-field col s6">
+                                        <input value={metadata.learningArea.subject} type="text" onChange={this.handleChange_.bind(this, false, 'metadata', 'learningArea.subject')}
+                                               className="validate" placeholder="Subject" />
+                                        <label for="Subject" className={this.activeLabel_('metadata', 'learningArea.subject')} >Subject</label>
+                                    </div>
+                                    <div className="input-field col s6">
+                                        <input value={metadata.learningArea.subjectArea} type="text" onChange={this.handleChange_.bind(this, false, 'metadata', 'learningArea.subjectArea')}
+                                               className="validate" placeholder="Area within the subject" />
+                                        <label for="subjectArea" className={this.activeLabel_('metadata', 'learningArea.subjectArea')} >Area within the subject</label>
+                                    </div>
+                                </div>
+
+                                <div className="row">
+                                    <div className="input-field col s6">
+                                        <input value={metadata.learningArea.domainCodeSource} type="text" onChange={this.handleChange_.bind(this, false, 'metadata', 'learningArea.domainCodeSource')}
+                                               className="validate" placeholder="Source of Domain Code (e.g. Common Core)" />
+                                        <label for="domainCodeSource" className={this.activeLabel_('metadata', 'learningArea.domainCodeSource')} >Source of Domain Code (e.g. Common Core)</label>
+                                    </div>
+                                    <div className="input-field col s6">
+                                        <input value={metadata.learningArea.domainCode} type="text" onChange={this.handleChange_.bind(this, false, 'metadata', 'learningArea.domainCode')}
+                                               className="validate" placeholder="Domain Code" />
+                                        <label for="domainCode" className={this.activeLabel_('metadata', 'learningArea.domainCode')} >Domain Code</label>
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="input-field col s12">
+                                        <input value={metadata.learningArea.topicHierarchy} type="text" onChange={this.handleChange_.bind(this, true, 'metadata', 'learningArea.topicHierarchy')}
+                                               className="validate" />
+                                        <label for="topicHierarchy" className={this.activeLabel_('metadata', 'learningArea.topicHierarchy')} >Pre topicHierarchy</label>
+                                    </div>
+                                </div>
+
+                            </form>
+                        </div>
+                    </li>
+                </ul>
+
+                <internals.ParentChangerDialog parentUuid={this.props.content.parentUuid}
+                                               parentChange={this.props.onChangeParent} />
             </div>
             /*
             <div>
@@ -162,9 +300,23 @@ internals.MetadataEditorComponent = React.createClass({
         )
     },
 
-    activeLabel_(propName)
+    // Called by DialogComponent
+    /*
+    parentChange_(parentUuid)
     {
-        if (utils.dotAccess(this.state.metadata, propName))
+        alert('changing [' +this.props.content.uuid + '] to parent : ' + parentUuid);
+        //this.props.onChangeParent(parentUuid);
+    },*/
+
+    handleParentClick_()
+    {
+        // @todo - pass the id as parameter to the component
+        $('#parent-changer-dialog').openModal();
+    },
+
+    activeLabel_(part, propName)
+    {
+        if (utils.dotAccess(this.state[part], propName))
         {
             return 'active';
         }
@@ -173,28 +325,28 @@ internals.MetadataEditorComponent = React.createClass({
 
     /**
      * Handles changes on form field
-     * Propagate chantes to the other components
+     * Propagate changes to the other components
      *
-     * @param isArray  - Whehter or not the field is of type array
+     * @param isArray  - Whether or not the field is of type array
+     * @param part  - The part within the content construct: structual, metadata, body
      * @param propName  - The name of the property within metadata, dot notation
      * @param event  - The Javascript event
      * @private
      */
-    handleChange_: function(isArray, propName, event)
+    handleChange_: function(isArray, part, propName, event)
     {
-        var metadata = this.state.metadata;
+        var partObj = this.state[part];
         var value = event.target.value;
         if (isArray)
         {
             value = value.split(',');
         }
-        utils.dotAccess(metadata, propName, value);
+        utils.dotAccess(partObj, propName, value);
 
-        this.setState({ metadata: metadata }, function(){
+        this.setState({ metadata: partObj }, function(){
             try {
-                var content = {
-                    metadata: this.state.metadata
-                };
+                var content = {};
+                content[part] = partObj;
                 this.props.onContentUpdate(content);
             } catch (ex) {
                 console.log(ex);
@@ -248,8 +400,11 @@ internals.SourceEditorComponent = React.createClass({
     getInitialState: function ()
     {
         console.log('getInitialState');
+        // Is cloning really necessary?
+        var normalizedContent =  lodash.cloneDeep(this.props.content);
+        delete normalizedContent.__parentObject;
         return {
-            contentText: JSON.stringify(this.props.content, null, 4)
+            contentText: JSON.stringify(normalizedContent, null, 4)
         }
     },
 

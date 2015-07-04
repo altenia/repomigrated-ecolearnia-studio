@@ -40,7 +40,7 @@ class ContentItemComponent extends React.Component
         return (
             <div>
                 <span style={domainCodeStyle}>[{displayHandle}]</span>
-                <span><a href={this.props.siteBaseUrl + "content-edit.html#item/"+contentItem.uuid}>{contentItem.metadata.title}</a></span>
+                <span><a href={this.props.siteBaseUrl + "/content-edit.html#item/"+contentItem.uuid}>{contentItem.metadata.title}</a></span>
                     <ul className="eli-item-actions">
                         <li title="bookmark"><i className={this.props.iconBookmark}></i></li>
                         <li title="edit"><a href={this.props.siteBaseUrl + "/content-edit.html#item/"+contentItem.uuid}><i className={this.props.iconEdit}></i></a></li>

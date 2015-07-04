@@ -111,7 +111,9 @@ internals.TabsComponent = React.createClass({
                     </ul>
                 </div>
                 <div className="col s12" id="panel_metadata" style={this.styleForTabContent_('metadata')} >
-                    <contenteditor.MetadataEditorComponent content={this.props.content} onContentUpdate={this.props.onContentUpdate} />
+                    <contenteditor.MetadataEditorComponent content={this.props.content}
+                                                           onContentUpdate={this.props.onContentUpdate}
+                                                           onChangeParent={this.props.onChangeParent} />
                 </div>
                 <div className="col s12" id="panel_source" style={this.styleForTabContent_('source')}>
                     <contenteditor.SourceEditorComponent content={this.props.content} onContentUpdate={this.props.onContentUpdate}  />
@@ -144,7 +146,9 @@ internals.ContentNodeEditorComponent = React.createClass({
 
         return (
             <div>
-                <internals.TabsComponent content={this.state.content} onContentUpdate={this.updateContent} />
+                <internals.TabsComponent content={this.state.content}
+                                         onContentUpdate={this.updateContent}
+                                         onChangeParent={this.props.onChangeParent} />
                 <div>
                     <a href="#" className="btn" onClick={this.handleClickSave}>Save</a>
                     <a href="#" className="btn">Revert</a>

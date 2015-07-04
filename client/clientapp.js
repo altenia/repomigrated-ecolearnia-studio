@@ -88,19 +88,30 @@ internals.App.prototype.hideMessage = function()
 };
 
 /**
- * Cretaes breadcrumb component with given array of items
+ * Creates and renders component with given array of items
+ * @param el
+ * @param {Array<Object>} items
+ */
+internals.App.prototype.createAndRenderComponent = function(Component, el, props)
+{
+    var component = React.createElement(
+        Component, props
+    );
+    React.render(component, el);
+};
+
+
+/**
+ * Creates and renders component with given array of items
  * @param el
  * @param {Array<Object>} items
  */
 internals.App.prototype.createBreadcrumbs = function(el, items)
 {
-    var breadcrumbsComponent = React.createElement(
-        BreadcrumbsComponent,
-        {
-            items: items
-        }
-    );
-    React.render(breadcrumbsComponent, el);
+    var props = {
+        items: items
+    };
+    this.createAndRenderComponent(BreadcrumbsComponent, el, props);
 };
 
 /**

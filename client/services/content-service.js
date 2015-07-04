@@ -48,6 +48,10 @@ internals.ContentService = function(config)
 
 };
 
+internals.ContentService.prototype.getNodeBaseUrl = function() {
+    return this.rootUrl + '/nodes';
+};
+
 /**
  * createNode
  *
@@ -140,6 +144,7 @@ internals.ContentService.prototype.fetchNode = function(uuid, fetchItems, depth)
         }
 
         var fetchParams = {
+            _fetchAncestors: true,
             _depth: depth || 10
         };
         if (fetchItems) {
@@ -197,6 +202,36 @@ internals.ContentService.prototype.deleteNode = function(uuid)
 
     return promise;
 };
+
+
+/**
+ * modeNode
+ *
+ * Deletes a node and its descendants
+ *
+ * @param uuid
+ * @returns {Promise}
+ */
+internals.ContentService.prototype.moveNode = function(uuid, to)
+{
+    var promise = promiseutils.createPromise( function(resolve, reject) {
+
+        var url = this.getNodeBaseUrl() + '/' + uuid + '/move';
+
+
+        $.ajax({
+            url: url
+        }).done(function() {
+            $( this ).addClass( "done" );
+        });
+
+
+    }.bind(this));
+
+    return promise;
+};
+
+
 
 /**
  * createItem
@@ -408,6 +443,7 @@ internals.ContentService.prototype.fetchItem = function(uuid, parentNodeUuid)
         }
 
         contentItem.fetch({
+            data: {_fetchAncestors: true},
             success: successCallback,
             error: errorCallback
         });
@@ -461,6 +497,42 @@ internals.ContentService.prototype.deleteItem = function(uuid, parentNodeUuid)
     return promise;
 };
 
+
+/**
+ * modeNode
+ *
+ * Deletes a node and its descendants
+ *
+ * @param {string} uuid  - the parent's uuid
+ * @returns {Promise}
+ */
+internals.ContentService.prototype.moveItem = function(uuid, to)
+{
+    var promise = promiseutils.createPromise( function(resolve, reject) {
+
+        var url = this.rootUrl + '/contentitems/' + uuid + '/move';
+
+        var body = {
+            parentUuid: to.parentUuid,
+            position: to.position,
+        };
+
+        $.ajax({
+            method: 'PUT',
+            url: url,
+            data: body
+        }).done(function(data, textStatus, jqXHR) {
+            resolve(data);
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            reject(errorThrown);
+        });
+
+    }.bind(this));
+
+    return promise;
+};
+
+
 internals.ContentService.prototype.getItemBaseUrl = function(parentNodeUuid) {
     var baseUrl;
     if (parentNodeUuid) {
@@ -469,6 +541,23 @@ internals.ContentService.prototype.getItemBaseUrl = function(parentNodeUuid) {
         baseUrl = this.rootUrl + '/contentitems';
     }
     return baseUrl;
+};
+
+internals.ContentService.prototype.getBreadcrumbItems = function(content)
+{
+    var breadcrumbItems = [];
+
+    var currNode = content;
+    do {
+        breadcrumbItems.unshift({
+            name: currNode.metadata.title,
+            href: 'content-browse.html#' + 'content/' + currNode.uuid
+        });
+        currNode = currNode.__parentObject;
+
+    } while (currNode);
+
+    return breadcrumbItems;
 }
 
 module.exports.ContentService = internals.ContentService;

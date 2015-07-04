@@ -125,10 +125,10 @@
             console.log(uuid);
             contentService.fetchNode(uuid, true)
                     .done(function(data){
-                        var breadcrubmItems = breadcrumbItemsFromContent(data.toJSON());
+                        var breadcrumbItems = contentService.getBreadcrumbItems(data.toJSON());
                         // Breadcrumbs
                         var breadcrumbsEl = document.getElementById('breadcrumbs-component');
-                        clientApp.createBreadcrumbs(breadcrumbsEl, breadcrubmItems);
+                        clientApp.createBreadcrumbs(breadcrumbsEl, breadcrumbItems);
 
                         var contentTreeEl = document.getElementById('content-tree');
                         var contentTreeView = new ContentTreeView(
@@ -147,13 +147,6 @@
 
     var t = router.history.start({pushState: false});
 
-    function breadcrumbItemsFromContent(content)
-    {
-        return [
-            { name: ' Workspace A', href:'#', },
-            { name: ' EN_US-MA', href:'#', },
-            { name: ' OA-213', href:'#', }
-        ];
-    }
+
 
 </script>

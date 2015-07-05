@@ -14,7 +14,7 @@
  * @author Young Suk Ahn Park
  * @date 5/13/15
  */
-var React = require('react/addons');
+var React = require('react');
 var AbstractQuestionComponent = require('./question.jsx').AbstractQuestionComponent;
 
 var internals = {};

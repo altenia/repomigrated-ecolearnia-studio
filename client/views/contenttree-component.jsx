@@ -16,7 +16,8 @@
  * @author Young Suk Ahn Park
  * @date 4/13/15
  */
-var React = require('react/addons');
+var React = require('react');
+var classNames = require('classnames');
 //var $ = require('jquery');
 
 var internals = {};
@@ -161,7 +162,7 @@ export class ContentTreeComponent extends React.Component
             // Inner nodes are contractable
             return (
                 <div>
-                    <span onClick={this.toggle_.bind(this)} className={React.addons.classSet(classObj)}>
+                    <span onClick={this.toggle_.bind(this)} className={classNames(classObj)}>
                     [{displayHandle}] {currNode.metadata.title} ({currNode.kind})
                     </span>
                     <ul className="eli-item-actions">

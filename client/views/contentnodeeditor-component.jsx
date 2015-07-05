@@ -15,10 +15,11 @@
  * @author Young Suk Ahn Park
  * @date 6/27/15
  */
-var React = require('react/addons');
+var React = require('react');
 var AceEditorComponent = require('./aceeditor-component.jsx').AceEditorComponent;
 
 var contenteditor = require('./contenteditor-component.jsx');
+var ChildrenEditor = require('./contentchildreneditor-component.jsx');
 
 var interactives = require('../interactives/interactives');
 
@@ -119,11 +120,13 @@ internals.TabsComponent = React.createClass({
                     <contenteditor.SourceEditorComponent content={this.props.content} onContentUpdate={this.props.onContentUpdate}  />
                 </div>
                 <div className="col s12" id="panel_form" style={this.styleForTabContent_('form')}>
-                    <internals.FormEditorComponent content={this.props.content} onContentUpdate={this.props.onContentUpdate}  />
+                    <ChildrenEditor items={this.props.content.body.items} onSort={this.props.onItemSort}/>
                 </div>
             </div>
         );
-    }
+    },
+
+
 });
 
 /**
@@ -148,11 +151,13 @@ internals.ContentNodeEditorComponent = React.createClass({
             <div>
                 <internals.TabsComponent content={this.state.content}
                                          onContentUpdate={this.updateContent}
-                                         onChangeParent={this.props.onChangeParent} />
+                                         onChangeParent={this.props.onChangeParent}
+                                         onItemSort={this.props.onItemSort}/>
                 <div>
                     <a href="#" className="btn" onClick={this.handleClickSave}>Save</a>
                     <a href="#" className="btn">Revert</a>
                 </div>
+
             </div>
         );
     },
@@ -188,5 +193,6 @@ internals.ContentNodeEditorComponent = React.createClass({
     }
 
 });
+
 
 module.exports.ContentNodeEditorComponent = internals.ContentNodeEditorComponent;

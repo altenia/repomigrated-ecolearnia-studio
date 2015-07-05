@@ -14,7 +14,7 @@
  * @author Young Suk Ahn Park
  * @date 6/12/15
  */
-var React = require('react/addons');
+var React = require('react');
 //var $ = require('jquery');
 
 

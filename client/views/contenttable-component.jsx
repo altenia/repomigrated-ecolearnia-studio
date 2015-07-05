@@ -15,7 +15,7 @@
  * @author Young Suk Ahn Park
  * @date 4/13/15
  */
-var React = require('react/addons');
+var React = require('react');
 
 var internals = {};
 

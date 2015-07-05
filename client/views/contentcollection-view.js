@@ -15,7 +15,7 @@
  * @date 4/9/15
  */
 var AmpersandCollectionView = require ('ampersand-collection-view');
-var React = require('react/addons');
+var React = require('react');
 var ContentListComponent = require ('./contentlist-component.jsx').ContentListComponent;
 var ContentTableComponent = require ('./contenttable-component.jsx').ContentTableComponent;
 

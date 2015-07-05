@@ -15,7 +15,7 @@
  * @author Young Suk Ahn Park
  * @date 4/29/15
  */
-var React = require('react/addons');
+var React = require('react');
 var AceEditorComponent = require('./aceeditor-component.jsx').AceEditorComponent;
 
 var contenteditor = require('./contenteditor-component.jsx');

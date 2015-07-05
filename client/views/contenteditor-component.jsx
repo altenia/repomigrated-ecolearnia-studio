@@ -16,7 +16,7 @@
  * @author Young Suk Ahn Park
  * @date 4/29/15
  */
-var React = require('react/addons');
+var React = require('react');
 var deepEqual = require('deep-equal');
 var lodash = require('lodash');
 

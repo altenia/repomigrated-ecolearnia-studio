@@ -16,7 +16,7 @@
  */
 var AmpersandView = require ('ampersand-view');
 //var React = require('react');
-var React = require('react/addons');
+var React = require('react');
 
 var lodash = require ('lodash');
 
@@ -53,7 +53,8 @@ export class ContentEditorPaneComponent extends React.Component
             content: this.state.content,
             siteBaseUrl: this.props.siteBaseUrl,
             onSaveContent: this.saveContent_.bind(this),
-            onChangeParent: this.changeParent_.bind(this)
+            onChangeParent: this.changeParent_.bind(this),
+            onItemSort: this.itemSort_.bind(this)
         };
         var component;
         // @todo - change comparison to 'node'
@@ -136,5 +137,17 @@ export class ContentEditorPaneComponent extends React.Component
                 self.props.app.showMessage('Change parent Error', JSON.stringify(error));
         });
 
+    }
+
+    itemSort_(oldIndex, newIndex)
+    {
+        var items = this.state.content.body.items;
+
+        // Swap
+        var itemHolder = items[newIndex];
+        items[newIndex] = items[oldIndex];
+        items[oldIndex] = itemHolder;
+
+        this.setState({content: this.state.content});
     }
 };

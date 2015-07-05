@@ -17,7 +17,7 @@
  */
 var AmpersandView = require ('ampersand-view');
 //var React = require('react');
-var React = require('react/addons');
+var React = require('react');
 
 var lodash = require ('lodash');
 

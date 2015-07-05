@@ -2,7 +2,7 @@
  * Created by ysahn on 4/7/15.
  */
 
-var React = require('react/addons');
+var React = require('react');
 var Router = require('ampersand-router');
 
 var PubSub = require('./common/pubsub').PubSub;

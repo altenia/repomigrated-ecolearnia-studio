@@ -10,14 +10,19 @@
  *
  * @fileoverview
  *  This file includes definition of ContentEditorView.
+ * @deprecated use conenteditorpante-component instead
  *
  * @author Young Suk Ahn Park
  * @date 4/29/15
  */
 var AmpersandView = require ('ampersand-view');
 //var React = require('react');
-var React = require('react/addons');
-var ContentEditorComponent = require ('./contenteditor-component.jsx').ContentEditorComponent;
+var React = require('react');
+
+var lodash = require ('lodash');
+
+var ContentItemEditorComponent = require ('./contentitemeditor-component.jsx').ContentItemEditorComponent;
+var ContentNodeEditorComponent = require ('./contentnodeeditor-component.jsx').ContentNodeEditorComponent;
 
 var internals = {};
 
@@ -28,28 +33,60 @@ internals.ContentEditorView = AmpersandView.extend({
     initialize: function(options)
     {
         console.log("ContentEditorView options are:", options);
-        this.siteBaseUrl = options.siteBaseUrl
+        this.app = options.app;
+        this.siteBaseUrl = options.siteBaseUrl;
     },
 
     render: function ()
     {
-        //this.renderWithTemplate(this);
-        var component = React.createElement(
-            ContentEditorComponent,
-            {
-                content: this.model.toJSON(),
-                siteBaseUrl: this.siteBaseUrl,
-                onSaveContent: this.saveContent.bind(this)
-            }
-        );
+        var content =  this.model.toJSON();
+
+        var component;
+        if (content.kind === 'Assignment')
+        {
+            component = React.createElement(
+                ContentNodeEditorComponent,
+                {
+                    app: this.app,
+                    content: content,
+                    siteBaseUrl: this.siteBaseUrl,
+                    onSaveContent: this.saveContent.bind(this)
+                }
+            );
+        } else {
+            component = React.createElement(
+                ContentItemEditorComponent,
+                {
+                    app: this.app,
+                    content: content,
+                    siteBaseUrl: this.siteBaseUrl,
+                    onSaveContent: this.saveContent.bind(this)
+                }
+            );
+        }
+
         React.render(component, this.el);
         return this;
     },
 
     saveContent: function(content)
     {
-        this.model.set(content);
-        this.model.save();
+        var normalizedContent = lodash.cloneDeep(content);
+        if (typeof normalizedContent.parent === 'object')
+        {
+            delete normalizedContent.parent;
+            delete normalizedContent.__parentObject;
+        }
+        this.model.set(normalizedContent);
+        this.model.save(normalizedContent, {
+            success: function(result) {
+                    this.app.showMessage('Save', 'Successful');
+                }.bind(this),
+
+            error: function(error) {
+                    this.app.showMessage('Save Error', JSON.stringify(error));
+                }.bind(this)
+        });
     }
 
 });

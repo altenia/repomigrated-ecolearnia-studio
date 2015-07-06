@@ -22,20 +22,25 @@ var internals = {};
 internals.ContentNode = Model.extend({
     idAttribute: 'uuid',
     props: {
-
-        realmUuid: { type: 'string', required: false }, // @todo turn this to requried
         uuid: { type: 'string' },
-        refName: { type: 'string', required: true }, // Reference Name of this content
-        parent: { type: 'string' },
-        parentUuid: { type: 'string' },
-        ordering: { type: 'number' }, // Ordering position within it's parent
 
         createdBy: { type: 'string' },
         createdAt: { type: 'date' },
         modifiedBy: { type: 'string' },
         modifiedAt: { type: 'date' },
+
         copiedFrom: { type: 'string' },
-        kind: { type: 'string', required: true }, // <CourseTemplate|Assignment>,
+        kind: { type: 'string', required: true }, // <root|container|item>,
+
+        //structural : {
+            realmUuid: { type: 'string', required: false }, // @todo turn this to requried
+            refName: { type: 'string', required: true }, // Reference Name of this content
+            parent: { type: 'string' },
+            parentUuid: { type: 'string' },
+            ordering: { type: 'number' }, // Index within it's parent
+        //},
+        __parentObject: { type: 'object' }, // This is generated, not saved
+
         metadata: {
             // The area in which the learner is engaged",
             learningArea: {

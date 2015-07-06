@@ -1,0 +1,103 @@
+
+<div class="row full-width">
+    <div class="columns small-12" >
+
+        <div id="content-editor"></div>
+
+    </div>
+
+</div>
+
+<script src='/cohevium/public/js/el-externdeps.bundle.min.js'></script>
+<script src='/cohevium/public/js/el-studio.bundle.js'></script>
+<script src='/cohevium/public/js/el-interactives.bundle.js'></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.1.9/ace.js" type="text/javascript" charset="utf-8"></script>
+<!-- <script src="/cohevium/public/ace-editor/ace.js" type="text/javascript" charset="utf-8"></script> -->
+
+<script>
+    var clientapp = require('clientapp');
+
+    var ContentEditorView = require('contenteditor-view').ContentEditorView;
+
+    var appSettings = {
+        rootUrl: 'http://localhost:9099'
+    };
+    var clientApp = clientapp.init(appSettings);
+
+    var contentService = clientApp.getContentService();
+
+    function openMessageModal(title, body)
+    {
+        $('#messageModalTitle').html(title);
+        $('#messageModalBody').html(body);
+        $('#messageModal').foundation('reveal', 'open');
+    }
+
+    // @todo - Populate the breadcrumb
+
+    var contentEditorEl = document.getElementById('content-editor');
+    var router = clientApp.createRouter({
+        routes: {
+            '': 'home',
+            'item/:uuid': 'item',
+            'item/:uuid/:parentUuid': 'item',
+            'node/:uuid': 'node',
+            'node/:uuid/:parentUuid': 'node',
+        },
+
+        home: function() {
+            console.log('home');
+        },
+
+
+        // Route for editing an item
+        item: function(uuid, parentUuid) {
+            console.log(uuid);
+            if (uuid == '_new_') {
+                var contentItem = contentService.createItem(parentUuid);
+                var contentEditorView = new ContentEditorView({model: contentItem, el: contentEditorEl});
+                contentEditorView.render();
+            } else {
+                contentService.fetchItem(uuid)
+                        .then(function (contentItem) {
+                            var contentEditorView = new ContentEditorView({model: contentItem, el: contentEditorEl});
+                            contentEditorView.render();
+                            console.log('model:', contentItem.toJSON());
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                            openMessageModal('Error', JSON.stringify(error));
+                        });
+            }
+        },
+
+        // Route for editing a node
+        node: function(uuid, parentUuid) {
+            console.log(uuid);
+            contentService.fetchNode(uuid)
+                    .then(function(contentNode){
+                        var contentEditorView = new ContentEditorView({model: contentNode, el:contentEditorEl});
+                        contentEditorView.render();
+                        console.log('model:', contentNode.toJSON());
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                        openMessageModal('Error', JSON.stringify(error));
+                    });
+        }
+    });
+
+    var t = router.history.start({pushState: false});
+
+    $(document).ready(function(){
+        $('ul.tabs').tabs();
+    });
+
+</script>
+
+<div id="messageModal" class="reveal-modal" data-reveal aria-labelledby="messageModalTitle" aria-hidden="true" role="dialog">
+    <h2 id="messageModalTitle"></h2>
+    <div id="messageModalBody"></div>
+    <a class="close-reveal-modal" aria-label="Close">&#215;</a>
+</div>

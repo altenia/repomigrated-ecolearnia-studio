@@ -1,34 +1,3 @@
-/* Move down content because we have a fixed navbar that is 50px tall */
-body {
-  padding-top: 95px;
-  padding-bottom: 20px;
-}
-
-/* Secondary top bar */
-.second-top-bar {
-  z-index: 9;
-}
-#secondary-top-bar {
-
-  margin-top: 45px;
-  background-color: #fafafa;
-  color: black;
-}
-
-#secondary-top-bar  .name h1 a, .top-bar .name h2 a, .top-bar .name h3 a, .top-bar .name h4 a, .top-bar .name p a, .top-bar .name span a
-{
-  color: darkorange !important;
-}
-
-#secondary-top-bar .top-bar-section li a:not(.button) {
-  background-color: #fafafa ;
-  color: orange;
-}
-
-#secondary-top-bar .top-bar-section li a:not(.button):hover {
-  background-color: #fafafa ;
-  color: olive;
-}
 
 .full-width {
   width: 100%;
@@ -37,13 +6,57 @@ body {
   max-width: initial;
 }
 
-.eli-item-actions ul {
+ul.eli-item-actions  {
   display: inline;
 }
 
 
-.eli-item-actions li {
+ul.eli-item-actions>li {
   display: inline;
   list-style-type: none;
   padding-right: 3px;
+}
+
+.input-field.tight {
+  margin-top: 0.5rem;
+}
+
+.input-field.tight label {
+  top: 1.5rem;
+  left: 0.75rem;
+}
+
+ul.hierarchical {
+  display: list-item;
+  list-style-type: circle;
+  margin-left: 1rem;
+  margin-top: 0px;
+}
+
+ul.hierarchical li {
+  list-style-type: circle;
+}
+ul.hierarchical li:before {
+  /*
+  content: '\2022';
+  padding-right: 5px;
+  */
+}
+
+ul.breadcrumbs {
+  display: inline;
+  list-style-type: circle;
+  margin-left: 1rem;
+}
+ul.breadcrumbs a {
+  display: inline;
+}
+ul.breadcrumbs li:before {
+  display: inline;
+  content: "/";
+  /*padding-right: 5px;*/
+}
+
+.collapsible-header {
+  background: #FAFAFA;
 }

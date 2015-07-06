@@ -17,7 +17,7 @@
  */
 var AmpersandView = require ('ampersand-view');
 //var React = require('react');
-var React = require('react/addons');
+var React = require('react');
 var ContentTreeComponent = require ('./contenttree-component.jsx').ContentTreeComponent;
 
 var internals = {};
@@ -28,7 +28,8 @@ internals.ContentTreeView = AmpersandView.extend({
 
     initialize: function(options) {
         console.log("ContentTreeView options are:", options);
-        this.siteBaseUrl = options.siteBaseUrl
+        this.siteBaseUrl = options.siteBaseUrl;
+        this.service = options.service
     },
 
     render: function ()
@@ -38,7 +39,8 @@ internals.ContentTreeView = AmpersandView.extend({
             ContentTreeComponent,
             {
                 node: this.model.toJSON(),
-                siteBaseUrl: this.siteBaseUrl
+                siteBaseUrl: this.siteBaseUrl,
+                service: this.service
             }
         );
         React.render(contentComponent, this.el);

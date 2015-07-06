@@ -28,3 +28,7 @@ node_modules
 
 # IDE
 .idea
+
+#build
+public/js/*.bundle.js
+public/js/*.bundle.min.js

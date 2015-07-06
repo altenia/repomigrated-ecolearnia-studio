@@ -14,7 +14,7 @@
  * @author Young Suk Ahn Park
  * @date 6/02/15
  */
-var React = require('react/addons');
+var React = require('react');
 var EliReactComponent = require('../elireactcomponent').EliReactComponent;
 var Events = require('../../core/events').Events;
 

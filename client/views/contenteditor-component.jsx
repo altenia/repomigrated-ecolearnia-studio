@@ -9,17 +9,86 @@
  * EcoLearnia v0.0.1
  *
  * @fileoverview
- *  This file includes ContentEditorComponent and its dependent components.
- *  The ContentEditorComponent is used to author (create/edit) a content
+ *  This file includes MetadataEditorComponent and SourceEditorComponent.
+ *  These components are shared used by ContentItemEditor and ContentNodeEditor
+ *  components.
  *
  * @author Young Suk Ahn Park
  * @date 4/29/15
  */
-var React = require('react/addons');
+var React = require('react');
+var deepEqual = require('deep-equal');
+var lodash = require('lodash');
+
+var utils = require('../common/utils');
+
 var AceEditorComponent = require('./aceeditor-component.jsx').AceEditorComponent;
 var interactives = require('../interactives/interactives');
 
 var internals = {};
+
+function contentPath(content) {
+    var path = [];
+    var currNode = content;
+    do {
+        path.unshift(currNode.metadata.title);
+        currNode = currNode.__parentObject;
+    } while (currNode);
+    return path.join(' / ');
+}
+
+/**
+ * @class ParentChangerDialog
+ *
+ * @classdesc
+ *  React based class for changing parent
+ *
+ * @todo - Make it a form based with validation
+ */
+internals.ParentChangerDialog = React.createClass({
+    getInitialState: function ()
+    {
+        return {
+            parentUuid: this.props.parentUuid
+        };
+    },
+
+    render: function() {
+        return (
+            <div id="parent-changer-dialog" className="modal">
+                <div className="modal-content">
+                    <h4>Change Parent</h4>
+
+                    <form className="col s12">
+                        <div className="row">
+                            <div className="input-field col s12">
+                                <input value={this.state.parentUuid} type="text" onChange={this.handleChange_}
+                                       className="validate" placeholder="Parent" />
+                                <label for="Subject" className="active" >Parent</label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div className="modal-footer">
+                    <a className="modal-action modal-close waves-effect waves-green btn-flat ">Cancel</a>
+                    <a className="modal-action waves-effect waves-green btn-flat"
+                        onClick={this.handleClickChange_}>Change</a>
+                </div>
+            </div>
+        );
+    },
+
+    handleChange_: function()
+    {
+        this.setState({parentUuid: event.target.value});
+    },
+
+    handleClickChange_: function() {
+        this.props.parentChange(this.state.parentUuid, function(){
+            //$('#parent-changer-dialog').closeModal();
+        })
+    }
+});
 
 /**
  * @class MetadataEditorComponent
@@ -35,21 +104,44 @@ internals.MetadataEditorComponent = React.createClass({
     getInitialState: function ()
     {
         return {
+            metadata: this.props.content.metadata,
             metadataText: JSON.stringify(this.props.content.metadata, null, 4)
         };
     },
 
     componentWillReceiveProps: function(nextProps)
     {
-        // Update state when property change was propagated
-        this.setState({metadataText: JSON.stringify(nextProps.content.metadata, null, 4)});
+        // Update state when property change was propagated from outside
+        //this.setState({metadataText: JSON.stringify(nextProps.content.metadata, null, 4)});
+        this.setState({structural: nextProps.content.structural});
+
+        this.setState({metadata: nextProps.content.metadata});
         console.log('componentWillReceiveProps', nextProps);
+    },
+
+    componentDidMount()
+    {
+        $('.collapsible').collapsible({
+            accordion : false // A setting that changes the collapsible behavior to expandable instead of the default accordion style
+        });
     },
 
     render: function()
     {
+        var structural = this.props.content.structural || {};
+        if (!deepEqual(this.state.structural, this.props.content.structural))
+        {
+            metadata = this.state.structural;
+        }
+        var metadata = this.props.content.metadata || {};
+        if (!deepEqual(this.state.metadata, this.props.content.metadata))
+        {
+            metadata = this.state.metadata;
+        }
 
+        // @deprecated
         var metadataText = JSON.stringify(this.props.content.metadata, null, 4);
+        // Keep the edited metadata
         if (this.state.metadataText !== metadataText)
         {
             metadataText = this.state.metadataText;
@@ -60,18 +152,214 @@ internals.MetadataEditorComponent = React.createClass({
             border: '1px solid #888'
         };
 
+        var parentPath = this.props.content.__parentObject ? contentPath(this.props.content.__parentObject) : '';
+
         return (
+            <div className="row">
+                <h4>{metadata.title}</h4>
+                <ul className="collapsible" data-collapsible="accordion">
+
+                    <li>
+                        <div className="collapsible-header">Structural</div>
+                        <div className="collapsible-body">
+                            <div className="row">
+                                <div className="input-field col s6">
+                                    <input value={this.props.content.uuid} type="text"
+                                            />
+                                    <label for="uuid" className="active" >Uuid</label>
+                                </div>
+                                <div className="input-field col s6">
+                                    <input value={this.props.content.refName} type="text"
+                                           />
+                                    <label for="refName" className="active" >refName</label>
+                                </div>
+                            </div>
+                            <div className="row">
+                                <div className="input-field col s6">
+                                    <input value={this.props.content.createdBy} type="text"
+                                        />
+                                    <label for="createdBy" className="active" >createdBy</label>
+                                </div>
+                                <div className="input-field col s6">
+                                    <input value={this.props.content.createdAt} type="text"
+                                        />
+                                    <label for="createdAt" className="active" >createdAt</label>
+                                </div>
+                            </div>
+                            <div className="row">
+                                <div className="input-field col s12">
+                                    <input value={parentPath} type="text" onClick={this.handleParentClick_}
+                                        />
+                                    <label for="parent" className="active" >parent</label>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li>
+                        <div className="collapsible-header">Metadata</div>
+                        <div className="collapsible-body">
+                            <form className="col s12">
+                                <div className="row">
+                                    <div className="input-field col s12">
+                                        <input value={metadata.title} type="text" onChange={this.handleChange_.bind(this, false, 'metadata', 'title')}
+                                               className="validate" placeholder="The title of the content" />
+                                        <label for="title" className={this.activeLabel_('metadata', 'title')} >Title</label>
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="input-field col s6">
+                                        <input value={metadata.license} type="text" onChange={this.handleChange_.bind(this, false, 'metadata', 'license')}
+                                               className="validate" placeholder="License" />
+                                        <label for="license" className={this.activeLabel_('metadata', 'license')} >License</label>
+                                    </div>
+                                    <div className="input-field col s6">
+                                        <input value={metadata.locale} type="text" onChange={this.handleChange_.bind(this, false, 'metadata', 'locale')}
+                                               className="validate" placeholder="Locale"/>
+                                        <label for="locale" className={this.activeLabel_('metadata', 'locale')} >Locale</label>
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="input-field col s12">
+                                        <input value={metadata.authors} type="text" onChange={this.handleChange_.bind(this, true, 'metadata', 'authors')}
+                                               className="validate" placeholder="Authors of this content" />
+                                        <label for="authors" className={this.activeLabel_('metadata', 'authors')} >Authors of this content</label>
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="input-field col s12">
+                                        <input value={metadata.tags} type="text" onChange={this.handleChange_.bind(this, true, 'tags')}
+                                               className="validate" placeholder="Tags" />
+                                        <label for="tags" className={this.activeLabel_('metadata', 'tags')} >Tags</label>
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="input-field col s12">
+                                        <input value={metadata.preRecommendations} type="email" onChange={this.handleChange_.bind(this, true, 'metadata', 'preRecommendations')}
+                                               className="validate" placeholder="Pre Requisites" />
+                                        <label for="preRequisites" className={this.activeLabel_('metadata', 'preRecommendations')} >Pre Requisites</label>
+                                    </div>
+                                </div>
+
+                            </form>
+                        </div>
+                    </li>
+
+                    <li>
+                        <div className="collapsible-header">Learn Area</div>
+                        <div className="collapsible-body">
+                            <form className="col s12">
+
+                                <div className="row">
+                                    <div className="input-field col s6">
+                                        <input value={metadata.learningArea.subject} type="text" onChange={this.handleChange_.bind(this, false, 'metadata', 'learningArea.subject')}
+                                               className="validate" placeholder="Subject" />
+                                        <label for="Subject" className={this.activeLabel_('metadata', 'learningArea.subject')} >Subject</label>
+                                    </div>
+                                    <div className="input-field col s6">
+                                        <input value={metadata.learningArea.subjectArea} type="text" onChange={this.handleChange_.bind(this, false, 'metadata', 'learningArea.subjectArea')}
+                                               className="validate" placeholder="Area within the subject" />
+                                        <label for="subjectArea" className={this.activeLabel_('metadata', 'learningArea.subjectArea')} >Area within the subject</label>
+                                    </div>
+                                </div>
+
+                                <div className="row">
+                                    <div className="input-field col s6">
+                                        <input value={metadata.learningArea.domainCodeSource} type="text" onChange={this.handleChange_.bind(this, false, 'metadata', 'learningArea.domainCodeSource')}
+                                               className="validate" placeholder="Source of Domain Code (e.g. Common Core)" />
+                                        <label for="domainCodeSource" className={this.activeLabel_('metadata', 'learningArea.domainCodeSource')} >Source of Domain Code (e.g. Common Core)</label>
+                                    </div>
+                                    <div className="input-field col s6">
+                                        <input value={metadata.learningArea.domainCode} type="text" onChange={this.handleChange_.bind(this, false, 'metadata', 'learningArea.domainCode')}
+                                               className="validate" placeholder="Domain Code" />
+                                        <label for="domainCode" className={this.activeLabel_('metadata', 'learningArea.domainCode')} >Domain Code</label>
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="input-field col s12">
+                                        <input value={metadata.learningArea.topicHierarchy} type="text" onChange={this.handleChange_.bind(this, true, 'metadata', 'learningArea.topicHierarchy')}
+                                               className="validate" />
+                                        <label for="topicHierarchy" className={this.activeLabel_('metadata', 'learningArea.topicHierarchy')} >Pre topicHierarchy</label>
+                                    </div>
+                                </div>
+
+                            </form>
+                        </div>
+                    </li>
+                </ul>
+
+                <internals.ParentChangerDialog parentUuid={this.props.content.parentUuid}
+                                               parentChange={this.props.onChangeParent} />
+            </div>
+            /*
             <div>
                 <textarea style={elStyle} onChange={this.handleChange} onBlur={this.handleBlur}  value={metadataText} />
             </div>
+            */
+
         )
     },
 
+    // Called by DialogComponent
+    /*
+    parentChange_(parentUuid)
+    {
+        alert('changing [' +this.props.content.uuid + '] to parent : ' + parentUuid);
+        //this.props.onChangeParent(parentUuid);
+    },*/
+
+    handleParentClick_()
+    {
+        // @todo - pass the id as parameter to the component
+        $('#parent-changer-dialog').openModal();
+    },
+
+    activeLabel_(part, propName)
+    {
+        if (utils.dotAccess(this.state[part], propName))
+        {
+            return 'active';
+        }
+        return '';
+    },
+
     /**
+     * Handles changes on form field
+     * Propagate changes to the other components
      *
+     * @param isArray  - Whether or not the field is of type array
+     * @param part  - The part within the content construct: structual, metadata, body
+     * @param propName  - The name of the property within metadata, dot notation
+     * @param event  - The Javascript event
+     * @private
+     */
+    handleChange_: function(isArray, part, propName, event)
+    {
+        var partObj = this.state[part];
+        var value = event.target.value;
+        if (isArray)
+        {
+            value = value.split(',');
+        }
+        utils.dotAccess(partObj, propName, value);
+
+        this.setState({ metadata: partObj }, function(){
+            try {
+                var content = {};
+                content[part] = partObj;
+                this.props.onContentUpdate(content);
+            } catch (ex) {
+                console.log(ex);
+                return false;
+            }
+        });
+    },
+
+    /**
+     * @deprecated
      * @param {Event} event
      */
-    handleChange: function(event)
+    handleChangeText_: function(event)
     {
         var metadataText = event.target.value;
         this.setState({metadataText: metadataText });
@@ -87,10 +375,10 @@ internals.MetadataEditorComponent = React.createClass({
     },
 
     /**
-     *
+     * @deprecated
      * @param {Event} event
      */
-    handleBlur: function(event)
+    handleTextBlur_: function(event)
     {
         var content = {
             metadata: JSON.parse(event.target.value)
@@ -109,24 +397,27 @@ internals.MetadataEditorComponent = React.createClass({
  * @todo - Disable navigating away when there is a syntax error in the source.
  */
 internals.SourceEditorComponent = React.createClass({
-    getInitialState: function () {
+    getInitialState: function ()
+    {
         console.log('getInitialState');
+        // Is cloning really necessary?
+        var normalizedContent =  lodash.cloneDeep(this.props.content);
+        delete normalizedContent.__parentObject;
         return {
-            contentText: JSON.stringify(this.props.content, null, 4)
+            contentText: JSON.stringify(normalizedContent, null, 4)
         }
     },
 
-    componentWillReceiveProps: function(nextProps) {
+    componentWillReceiveProps: function(nextProps)
+    {
         // Update state when property change was propagated, even originated 
         // from this same compontent
         this.setState({contentText: JSON.stringify(nextProps.content, null, 4)});
         console.log('componentWillReceiveProps', nextProps);
     },
 
-    componentDidMount: function() {
-    },
-
-    render: function() {
+    render: function()
+    {
 
         var contentText = this.state.contentText;
 
@@ -134,7 +425,7 @@ internals.SourceEditorComponent = React.createClass({
             display: 'block',
             margin: 'auto',
             width: '100%',
-            height: '300px',
+            height: '150px',
             border: '1px solid #888'
         };
 
@@ -172,192 +463,6 @@ internals.SourceEditorComponent = React.createClass({
 
 });
 
-/**
- * @class FormEditorComponent
- *
- * @classdesc
- *  React based compontent for editing using forms (Visual editor).
- *
- * @todo - Implement the form.
- */
-internals.FormEditorComponent = React.createClass({
-    render: function() {
-        var body = this.props.content.body;
 
-        var textAreaStyle = {
-            height: '10em'
-        }
-        return (
-            <div>
-                <textarea style={textAreaStyle} onBlur={this.handleChange} value={JSON.stringify(body, null, 4)} />
-            </div>
-        )
-    },
-    handleChange: function(event) {
-        var content = {
-            body: JSON.parse(event.target.value)
-        }
-        this.props.onContentUpdate(content);
-    }
-
-});
-
-/**
- * @class PreviewComponent
- *
- * @classdesc
- *  Component for previewing the Interactive UI
- *
- * @todo - Fix so the Backbone view based components are correctly synced.
- */
-internals.PreviewComponent = React.createClass({
-
-    componentDidMount: function() {
-        var settings = {
-            content: this.props.content.body,
-            componentModule: interactives
-        };
-
-        this.itemContext = interactives.createItemContext(settings);
-
-        var el = document.getElementById('interactive-preview');
-        this.itemContext.render(el);
-    },
-
-    componentWillReceiveProps: function(nextProps) {
-        this.itemContext.setContent(nextProps.content.body);
-
-        // This code syncs the React components but not BackboneView-based components
-        // @todo - fix BackboneView-based components to sync
-        var el = document.getElementById('interactive-preview');
-        this.itemContext.render(el);
-    },
-
-    render: function() {
-        return (
-            <div>
-                <div id="interactive-preview"></div>
-            </div>
-        )
-    }
-
-});
-
-/**
- * @class TabsComponent
- *
- * @classdesc
- *  Components that manages the tabs (Zurb's Foundation based)
- *
- */
-internals.TabsComponent = React.createClass({
-
-    getInitialState: function () {
-        return {
-            activeTab: this.props.activeTab ? this.props.activeTab : 'metadata'
-        }
-    },
-
-    additionalClassForTab: function(tabName) {
-        return (this.state.activeTab === tabName) ? ' active' : '';
-    },
-
-    handleClick: function(activateTab)
-    {
-        this.setState({activeTab: activateTab});
-        return false;
-    },
-
-    render: function() {
-
-        // Notice binding in onClick={this.handleClick.bind(this, 'metadata')
-        // This is needed, otherwise the method will actually be called inline
-        // instead of passing the function reference
-        return (
-            <div>
-                <dl className="tabs">
-                    <dd className={ 'tab-title' + this.additionalClassForTab('metadata')}><a href role="tab" onClick={this.handleClick.bind(this, 'metadata')} >Metadata</a></dd>
-                    <dd className={ 'tab-title' + this.additionalClassForTab('source')}><a href  role="tab" onClick={this.handleClick.bind(this, 'source')} >Source</a></dd>
-                    <dd className={ 'tab-title' + this.additionalClassForTab('form')}><a href={null} role="tab" onClick={this.handleClick.bind(this, 'form')} >Form</a></dd>
-                    <dd className={ 'tab-title' + this.additionalClassForTab('preview')}><a href role="tab" onClick={this.handleClick.bind(this, 'preview')} >Preview</a></dd>
-                </dl>
-                <div className="tabs-content">
-                    <div className={ 'content' + this.additionalClassForTab('metadata')} id="panel_metadata">
-                        <internals.MetadataEditorComponent content={this.props.content} onContentUpdate={this.props.onContentUpdate} />
-                    </div>
-                    <div className={ 'content' + this.additionalClassForTab('source')} id="panel_source">
-                        <internals.SourceEditorComponent content={this.props.content} onContentUpdate={this.props.onContentUpdate}  />
-                    </div>
-                    <div className={ 'content' + this.additionalClassForTab('form')} id="panel_form">
-                        <internals.FormEditorComponent content={this.props.content} onContentUpdate={this.props.onContentUpdate}  />
-                    </div>
-                    <div className={ 'content' + this.additionalClassForTab('preview')} id="panel_preview">
-                        <internals.PreviewComponent content={this.props.content}  />
-                    </div>
-                </div>
-            </div>
-        );
-    }
-});
-
-/**
- * @class ContentEditorComponent
- *
- * @classdesc
- *  Component that encapsulates the overall content editing capabilities
- *  presented in different tabs.
- *
- * @type {*|Function}
- */
-internals.ContentEditorComponent = React.createClass({
-    getInitialState: function () {
-        return {
-            content: this.props.content
-        }
-    },
-
-    render: function() {
-
-        return (
-            <div>
-                <internals.TabsComponent content={this.state.content} onContentUpdate={this.updateContent} />
-                <div>
-                    <a href="#" className="button" onClick={this.handleClickSave}>Save</a> <a href="#" className="button">Revert</a>
-                </div>
-            </div>
-        );
-    },
-
-    /* Content related event handlers: */
-
-    /**
-     * Update content in the state.
-     */
-    updateContent: function(partialContent)
-    {
-        // You may add callback as las parameter
-        var content = this.state.content;
-
-        for(var key in partialContent) {
-            if (partialContent[key] !== undefined && partialContent[key] !== null) {
-                content[key] = partialContent[key];
-            }
-        }
-
-        this.setState({content: content});
-    },
-
-    /**
-     * Handle "save" button click 
-     */
-    handleClickSave: function(e)
-    {
-        e.preventDefault();
-        //var temp = this.props.contentModel.toJSON();
-        //this.props.contentModel.save();
-        this.props.onSaveContent(this.state.content);
-    }
-
-});
-
-module.exports.ContentEditorComponent = internals.ContentEditorComponent;
+module.exports.MetadataEditorComponent = internals.MetadataEditorComponent;
+module.exports.SourceEditorComponent = internals.SourceEditorComponent;

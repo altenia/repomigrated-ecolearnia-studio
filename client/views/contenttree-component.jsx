@@ -10,59 +10,100 @@
  *
  * @fileoverview
  *  This file includes definition of ContentItemComponent.
+ *  It displays a content in a collapsible tree form.
  * @see http://jsfiddle.net/ssorallen/XX8mw/
  *
  * @author Young Suk Ahn Park
  * @date 4/13/15
  */
-var React = require('react/addons');
+var React = require('react');
+var classNames = require('classnames');
+//var $ = require('jquery');
 
 var internals = {};
 
-internals.ContentItemComponent = React.createClass({
+class ContentItemComponent extends React.Component
+{
 
-    render: function()
+    render ()
     {
         var contentItem = this.props.item.item;
 
         var domainCodeStyle = {
             marginRight: '0.2em'
         };
+
+        // For the submenu target name generation
+        //var objUuid = contentItem.uuid;
+        var objUuid = (Math.floor((Math.random() * 1000) + 1)).toString();
+
+        var displayHandle = contentItem.metadata.learningArea.domainCode || contentItem.uuid.substring(0,8);
         return (
             <div>
-                <span style={domainCodeStyle}>[{contentItem.metadata.learningArea.domainCode}]</span>
-                <span><a href={this.props.siteBaseUrl + "/content-edit.html/#item/"+contentItem.uuid}>{contentItem.metadata.title}</a></span>
-                 <span className="eli-item-actions">
-                    <ul>
-                        <li title="bookmark"><i className="fa fa-bookmark"></i></li>
-                        <li title="copy"><i className="fa fa-copy"></i></li>
-                        <li title="add"><i className="fa fa-plus"></i></li>
+                <span style={domainCodeStyle}>[{displayHandle}]</span>
+                <span><a href={this.props.siteBaseUrl + "/content-edit.html#item/"+contentItem.uuid}>{contentItem.metadata.title}</a></span>
+                    <ul className="eli-item-actions">
+                        <li title="bookmark"><i className={this.props.iconBookmark}></i></li>
+                        <li title="edit"><a href={this.props.siteBaseUrl + "/content-edit.html#item/"+contentItem.uuid}><i className={this.props.iconEdit}></i></a></li>
+                        <li title="copy"><a href={"content-edit.html#item/_new_/parent=" + this.props.parent.uuid + ';copyOf=' + contentItem.uuid}><i className={this.props.iconCopy}></i></a></li>
+                        <li title="delete"><a  onClick={this.props.onDelete}><i className={this.props.iconDelete}></i></a></li>
+                        <li title="add" >
+                            <a href="#" className="dropdown-button" data-activates={"add-submenu" + objUuid}><i className={this.props.iconAdd}></i></a>
+                            <ul id={"add-submenu" + objUuid} className="dropdown-content" >
+                                <li title="add before"><a href={"content-edit.html#item/_new_/parent=" + this.props.parent.uuid}>Before</a></li>
+                                <li title="add after"><a href={"content-edit.html#item/_new_/parent=" + this.props.parent.uuid}>After</a></li>
+                            </ul>
+                        </li>
                     </ul>
-                 </span>
             </div>
         )
     }
-});
+};
+ContentItemComponent.defaultProps = {
+    iconBookmark: 'mdi-action-bookmark',
+    iconEdit: 'mdi-content-create',
+    iconCopy: 'mdi-content-content-copy',
+    iconAdd: 'mdi-content-add',
+    iconDelete: 'mdi-action-delete',
+};
 
-internals.ContentTreeNode = React.createClass({
 
-    getInitialState: function ()
+export class ContentTreeComponent extends React.Component
+{
+    constructor(props) {
+        super(props);
+        this.state = {visible: true};
+    }
+
+    /***** React Lifecycle *****/
+
+    componentDidMount()
     {
-        return {
-            visible: true
-        };
-    },
+        // @todo - insteadn of using selector, obtain the dom object directly from React
+        //var el = this.getDOMNode();
 
-    render: function()
+        $('.dropdown-button').dropdown({
+                inDuration: 300,
+                outDuration: 225,
+                constrain_width: false, // Does not change width of dropdown to that of the activator
+                hover: true, // Activate on hover
+                gutter: 0, // Spacing from edge
+                belowOrigin: false // Displays dropdown below the button
+            }
+        );
+    }
+
+    render()
     {
         var childNodes;
         var classObj;
 
-        if (this.props.node.body.subnodes != null) {
-            childNodes = this.props.node.body.subnodes.map(function(node, index) {
+        var currNode = this.props.node;
+        if (currNode.body.subnodes != null) {
+            childNodes = currNode.body.subnodes.map(function(node, index) {
                 return (
                     <li key={index}>
-                        <internals.ContentTreeNode node={node} siteBaseUrl={this.props.siteBaseUrl} />
+                        <ContentTreeComponent node={node} siteBaseUrl={this.props.siteBaseUrl} service={this.props.service}/>
                     </li>
                 )
             }.bind(this));
@@ -74,10 +115,18 @@ internals.ContentTreeNode = React.createClass({
             };
         }
 
-        if (this.props.node.body.items != null &&
-            this.props.node.body.items.length > 0) {
-            childNodes = this.props.node.body.items.map(function(item, index) {
-                return <li key={index}><internals.ContentItemComponent item={item} siteBaseUrl={this.props.siteBaseUrl} /></li>
+        if (currNode.body.items != null &&
+            currNode.body.items.length > 0) {
+            childNodes = currNode.body.items.map(function(item, index) {
+                return (
+                    <li key={index} >
+                        <ContentItemComponent parent={currNode} item={item}
+                                              siteBaseUrl={this.props.siteBaseUrl}
+                                              service={this.props.service}
+                                              onDelete={this.deleteItem_.bind(this, currNode, item)}
+                            />
+                    </li>
+                );
             }.bind(this));
 
             classObj = {
@@ -92,37 +141,95 @@ internals.ContentTreeNode = React.createClass({
             style = {display: "none"};
         }
 
-        return (
-            <div>
-                <span onClick={this.toggle} className={React.addons.classSet(classObj)}>
-                {this.props.node.metadata.title} ({this.props.node.kind})
-                </span>
-                <span className="eli-item-actions" >
-                    <ul >
-                        <li title="bookmark"><i className="fa fa-bookmark"></i></li>
-                        <li title="edit"><i className="fa fa-edit"></i></li>
-                        <li title="copy"><i className="fa fa-copy"></i></li>
-                        <li title="add">
-                            <a href="#" data-dropdown="hover1" data-options="is_hover:true; hover_timeout:5000"><i className="fa fa-plus"></i></a>
-                            <ul id="hover1" class="f-dropdown" data-dropdown-content>
-                                <li title="add">Before</li>
-                                <li title="add">After</li>
+        // For the submenu target name generation
+        //var objUuid = this.props.node.uuid;
+        var objUuid = (Math.floor((Math.random() * 1000) + 1)).toString();
+
+        var displayHandle = currNode.metadata.learningArea.domainCode || currNode.uuid.substring(0,8);
+        if (!currNode.parentUuid) {
+            // Root node is not contractable
+            return (
+                <div>
+                    <span >
+                    [{currNode.uuid}] {currNode.metadata.title} (Root)
+                    </span>
+                    <ul style={style} className="hierarchical" >
+                        {childNodes}
+                    </ul>
+                </div>
+            );
+        } else {
+            // Inner nodes are contractable
+            return (
+                <div>
+                    <span onClick={this.toggle_.bind(this)} className={classNames(classObj)}>
+                    [{displayHandle}] {currNode.metadata.title} ({currNode.kind})
+                    </span>
+                    <ul className="eli-item-actions">
+                        <li title="bookmark"><i className={this.props.iconBookmark}></i></li>
+                        <li title="edit"><a href={this.props.siteBaseUrl + "/content-edit.html#node/"+currNode.uuid}><i className={this.props.iconEdit}></i></a></li>
+                        <li title="copy"><i className={this.props.iconCopy}></i></li>
+                        <li title="delete"><i className={this.props.iconDelete}></i></li>
+                        <li title="add" >
+                            <a href="#" className="dropdown-button" data-activates={"add-submenu" + objUuid}><i className={this.props.iconAdd}></i></a>
+                            <ul id={"add-submenu" + objUuid} className="dropdown-content" >
+                                <li title="add before"><a href={"content-edit.html#node/_new_/parent=" + currNode.parentUuid}>Before</a></li>
+                                <li title="add after"><a href={"#node/_new_/" + currNode.parentUuid}>After</a></li>
                             </ul>
                         </li>
                     </ul>
 
-                </span>
-                <ul style={style}>
-                    {childNodes}
-                </ul>
-            </div>
-        );
-    },
+                    <ul style={style} className="hierarchical" >
+                        {childNodes}
+                    </ul>
+                </div>
+            );
+        }
 
-    toggle: function()
+    }
+
+    /**
+     * Toggles the expand/contract of the hierarchical tree node elements
+     * @private
+     */
+    toggle_()
     {
         this.setState({visible: !this.state.visible});
     }
-});
 
-module.exports.ContentTreeComponent = internals.ContentTreeNode;
+    deleteItem_(parent, item)
+    {
+        //alert("deleting " + parent.uuid + '/' + item.item.uuid);
+        for(var i=0; i < parent.body.items.length; i++)
+        {
+            if (parent.body.items[i].itemUuid === item.item.uuid)
+            {
+                parent.body.items.splice(i, 1);
+
+                this.props.service.deleteItem(item.item.uuid, parent.uuid)
+                .then(function(result){
+                        // @todo - use ContentService to delete the item,
+                        // When delete is successful, do the line below
+                        // To trigger re-rendering;
+                        this.forceUpdate();
+                    }.bind(this))
+                .catch(function(error){
+                        // @todo - publish error message
+                        Materialize.toast('Error while deleting: ' + JSON.stringify(error), 4000);
+                    }.bind(this));
+
+
+                return;
+            }
+        }
+    }
+
+};
+
+ContentTreeComponent.defaultProps = {
+    iconBookmark: 'mdi-action-bookmark',
+    iconEdit: 'mdi-content-create',
+    iconCopy: 'mdi-content-content-copy',
+    iconAdd: 'mdi-content-add',
+    iconDelete: 'mdi-action-delete'
+};

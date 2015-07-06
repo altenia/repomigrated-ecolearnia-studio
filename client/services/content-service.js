@@ -14,13 +14,28 @@
  * @author Young Suk Ahn Park
  * @date 4/7/15
  */
-//var $ = require('jquery');
 var promiseutils = require('../common/promiseutils');
 var contentnodemodel = require('../models/contentnode');
 var contentitemmodel = require('../models/contentitem');
 
 /** Declaration of internal namespace */
 var internals = {};
+
+internals.metadataTemplate = {
+    "title": "My test",
+    "preRecommendations": [],
+    "authors": [],
+    "version": "0.0.1",
+    "learningArea": {
+        "subject": "math",
+        "subjectArea": "arithmetic",
+        "topicHierarchy": [
+            "addition",
+            "addition-2digits"
+        ]
+    },
+    "tags": []
+}
 
 /**
  *
@@ -33,17 +48,28 @@ internals.ContentService = function(config)
 
 };
 
+internals.ContentService.prototype.getNodeBaseUrl = function() {
+    return this.rootUrl + '/nodes';
+};
+
 /**
  * createNode
  *
  * Creates a node and its descendants
  *
  * @param parentUuid - parent UUID
- * @returns {ContentNodeMode}
+ * @returns {ContentNodeModel}
  */
 internals.ContentService.prototype.createNode = function(parentUuid) {
+
     var newNode = contentnodemodel.createContentNode(this.rootUrl + '/nodes');
-    newNode.set({parentUuid: parentUuid});
+    newNode.set({
+        parentUuid: parentUuid,
+        metadata: internals.metadataTemplate,
+        body: {
+            items: []
+        }
+    });
     return newNode;
 };
 
@@ -94,7 +120,7 @@ internals.ContentService.prototype.queryNodes = function(criteria)
  * @param uuid
  * @returns {Promise}
  */
-internals.ContentService.prototype.fetchNode = function(uuid)
+internals.ContentService.prototype.fetchNode = function(uuid, fetchItems, depth)
 {
 
     var promise = promiseutils.createPromise( function(resolve, reject) {
@@ -117,7 +143,16 @@ internals.ContentService.prototype.fetchNode = function(uuid)
             }
         }
 
+        var fetchParams = {
+            _fetchAncestors: true,
+            _depth: depth || 10
+        };
+        if (fetchItems) {
+            fetchParams._fetchItems = true;
+        }
         contentNode.fetch({
+            // These are passed as query string
+            data: fetchParams,
             success: successCallback,
             error: errorCallback
         });
@@ -126,6 +161,76 @@ internals.ContentService.prototype.fetchNode = function(uuid)
 
     return promise;
 };
+
+/**
+ * deleteNode
+ *
+ * Deletes a node and its descendants
+ *
+ * @param uuid
+ * @returns {Promise}
+ */
+internals.ContentService.prototype.deleteNode = function(uuid)
+{
+
+    var promise = promiseutils.createPromise( function(resolve, reject) {
+
+        var contentNode = contentnodemodel.createContentNode(this.rootUrl + '/nodes', uuid);
+
+        function successCallback(model, response, options)
+        {
+            resolve(model);
+        }
+
+        function errorCallback(model, response, options)
+        {
+            if (response.body)
+            {
+                reject(response);
+            } else {
+                var error = new Error('Communication error');
+                reject(error);
+            }
+        }
+
+        contentNode.destroy({
+            success: successCallback,
+            error: errorCallback
+        });
+
+    }.bind(this));
+
+    return promise;
+};
+
+
+/**
+ * modeNode
+ *
+ * Deletes a node and its descendants
+ *
+ * @param uuid
+ * @returns {Promise}
+ */
+internals.ContentService.prototype.moveNode = function(uuid, to)
+{
+    var promise = promiseutils.createPromise( function(resolve, reject) {
+
+        var url = this.getNodeBaseUrl() + '/' + uuid + '/move';
+
+
+        $.ajax({
+            url: url
+        }).done(function() {
+            $( this ).addClass( "done" );
+        });
+
+
+    }.bind(this));
+
+    return promise;
+};
+
 
 
 /**
@@ -139,23 +244,7 @@ internals.ContentService.prototype.fetchNode = function(uuid)
 internals.ContentService.prototype.createItem = function(parentUuid) {
     var baseUrl = this.getItemBaseUrl(parentUuid);
     var newItem = contentitemmodel.createContentItem(baseUrl);
-    var metadata = {
-        "title": "My test",
-            "preRecommendations": [],
-            "authors": [],
-            "version": "0.0.1",
-            "learningArea": {
-            "subject": "math",
-                "subjectArea": "arithmetic",
-                "tags": [
-                "1G"
-            ],
-                "topicHierarchy": [
-                "addition",
-                "addition-2digits"
-            ]
-        }
-    };
+    // @todo - Body part assigned from re-defined template
     var body = {
         "definition": {
             "question": {
@@ -272,7 +361,7 @@ internals.ContentService.prototype.createItem = function(parentUuid) {
     };
     newItem.set({
         parentUuid: parentUuid,
-        metadata: metadata,
+        metadata: internals.metadataTemplate,
         body: body
     });
     return newItem;
@@ -354,6 +443,7 @@ internals.ContentService.prototype.fetchItem = function(uuid, parentNodeUuid)
         }
 
         contentItem.fetch({
+            data: {_fetchAncestors: true},
             success: successCallback,
             error: errorCallback
         });
@@ -363,6 +453,86 @@ internals.ContentService.prototype.fetchItem = function(uuid, parentNodeUuid)
     return promise;
 };
 
+
+/**
+ * deleteItem
+ *
+ * Removes an item
+ *
+ * @param {string} uuid
+ * @param {!string} parentNodeUuid
+ * @returns {Promise}
+ */
+internals.ContentService.prototype.deleteItem = function(uuid, parentNodeUuid)
+{
+
+    var promise = promiseutils.createPromise( function(resolve, reject) {
+
+        var baseUrl = this.getItemBaseUrl(parentNodeUuid);
+        var contentItem = contentitemmodel.createContentItem(baseUrl, uuid);
+
+        function successCallback(model, response, options)
+        {
+            resolve(model);
+        }
+
+        function errorCallback(model, response, options)
+        {
+            if (response.body)
+            {
+                reject(response);
+            } else {
+                var error = new Error('Communication error');
+                reject(error);
+            }
+        }
+
+        contentItem.destroy({
+            success: successCallback,
+            error: errorCallback
+        });
+
+    }.bind(this));
+
+    return promise;
+};
+
+
+/**
+ * modeNode
+ *
+ * Deletes a node and its descendants
+ *
+ * @param {string} uuid  - the parent's uuid
+ * @returns {Promise}
+ */
+internals.ContentService.prototype.moveItem = function(uuid, to)
+{
+    var promise = promiseutils.createPromise( function(resolve, reject) {
+
+        var url = this.rootUrl + '/contentitems/' + uuid + '/move';
+
+        var body = {
+            parentUuid: to.parentUuid,
+            position: to.position,
+        };
+
+        $.ajax({
+            method: 'PUT',
+            url: url,
+            data: body
+        }).done(function(data, textStatus, jqXHR) {
+            resolve(data);
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            reject(errorThrown);
+        });
+
+    }.bind(this));
+
+    return promise;
+};
+
+
 internals.ContentService.prototype.getItemBaseUrl = function(parentNodeUuid) {
     var baseUrl;
     if (parentNodeUuid) {
@@ -371,6 +541,23 @@ internals.ContentService.prototype.getItemBaseUrl = function(parentNodeUuid) {
         baseUrl = this.rootUrl + '/contentitems';
     }
     return baseUrl;
+};
+
+internals.ContentService.prototype.getBreadcrumbItems = function(content)
+{
+    var breadcrumbItems = [];
+
+    var currNode = content;
+    do {
+        breadcrumbItems.unshift({
+            name: currNode.metadata.title,
+            href: 'content-browse.html#' + 'content/' + currNode.uuid
+        });
+        currNode = currNode.__parentObject;
+
+    } while (currNode);
+
+    return breadcrumbItems;
 }
 
 module.exports.ContentService = internals.ContentService;

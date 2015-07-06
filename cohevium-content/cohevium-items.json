@@ -7,7 +7,7 @@
             "logoUrl": "/cohevium/public/images/logo.png",
             "description": "Content authoring studio"
         },
-    "!doc": "theme is combinatin of template and items, it can be configured per path_prefix",
+    "!doc": "theme is combination of template and items, it can be configured per path_prefix",
     "theme": {
             "common_items": ["content", "side_menu"],
             "default_template": "default",

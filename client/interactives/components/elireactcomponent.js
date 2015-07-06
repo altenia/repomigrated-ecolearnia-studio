@@ -15,7 +15,7 @@
  * @date 5/15/15
  */
 
-var React = require('react/addons');
+var React = require('react');
 
 var internals = {};
 

@@ -18,7 +18,7 @@
  */
 
 var _ = require('lodash');
-var React = require('react/addons');
+var React = require('react');
 
 var utils = require('../../common/utils');
 var logger = require('../../common/logger');

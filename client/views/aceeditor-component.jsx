@@ -14,7 +14,7 @@
  * @author Young Suk Ahn Park
  * @date 5/18/15
  */
-var React = require('react/addons');
+var React = require('react');
 // Depends on ace, make sure that the hosting page has link to the ace editor js file
 
 var internals = {};

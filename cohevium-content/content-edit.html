@@ -1,3 +1,11 @@
+<!--
+<div class="navbar-fixed">
+    <nav>
+        <div class="nav-wrapper" id="breadcrumbs-component">
+
+        </div>
+    </nav>
+</div>
 
 <div class="row full-width">
     <div class="columns small-12" >
@@ -5,23 +13,25 @@
         <div id="content-editor"></div>
 
     </div>
-
 </div>
+-->
+<div id="content-editor-pane"></div>
 
-
-<script src="/cohevium/public/foundation/js/foundation/foundation.tab.js"></script>
-<script src="/cohevium/public/foundation/js/foundation/foundation.dropdown.js"></script>
 <script src='/cohevium/public/js/el-externdeps.bundle.min.js'></script>
 <script src='/cohevium/public/js/el-studio.bundle.js'></script>
 <script src='/cohevium/public/js/el-interactives.bundle.js'></script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.1.9/ace.js" type="text/javascript" charset="utf-8"></script>
 <!-- <script src="/cohevium/public/ace-editor/ace.js" type="text/javascript" charset="utf-8"></script> -->
+<script src="/cohevium/public/js/extern/Sortable.min.js"></script>
+<script src="/cohevium/public/js/extern/react-sortable-mixin.js"></script>
 
 <script>
+    var promiseutils = require('promiseutils');
     var clientapp = require('clientapp');
 
-    var ContentEditorView = require('contenteditor-view').ContentEditorView;
+    //var ContentEditorView = require('contenteditor-view').ContentEditorView;
+    var ContentEditorPane = require('contenteditorpane-component').ContentEditorPaneComponent;
 
     var appSettings = {
         rootUrl: 'http://localhost:9099'
@@ -30,23 +40,23 @@
 
     var contentService = clientApp.getContentService();
 
-    function openMessageModal(title, body)
-    {
-        $('#messageModalTitle').html(title);
-        $('#messageModalBody').html(body);
-        $('#messageModal').foundation('reveal', 'open');
-    }
+    clientApp.registerMessageRenderer(
+            function(title, body, params)
+        {
+            Materialize.toast(title + ': ' + body, 4000);
+        }
+    );
 
     // @todo - Populate the breadcrumb
 
-    var contentEditorEl = document.getElementById('content-editor');
+    var contentEditorEl = document.getElementById('content-editor-pane');
     var router = clientApp.createRouter({
         routes: {
             '': 'home',
             'item/:uuid': 'item',
-            'item/:uuid/:parentUuid': 'item',
+            'item/:uuid/:params': 'item',
             'node/:uuid': 'node',
-            'node/:uuid/:parentUuid': 'node',
+            'node/:uuid/:params': 'node',
         },
 
         home: function() {
@@ -55,48 +65,103 @@
 
 
         // Route for editing an item
-        item: function(uuid, parentUuid) {
-            console.log(uuid);
-            if (uuid == '_new_') {
-                var contentItem = contentService.createItem(parentUuid);
-                var contentEditorView = new ContentEditorView({model: contentItem, el: contentEditorEl});
-                contentEditorView.render();
-            } else {
-                contentService.fetchItem(uuid)
-                        .then(function (contentItem) {
-                            var contentEditorView = new ContentEditorView({model: contentItem, el: contentEditorEl});
-                            contentEditorView.render();
-                            console.log('model:', contentItem.toJSON());
-                        })
-                        .catch(function (error) {
-                            console.log(error);
-                            openMessageModal('Error', JSON.stringify(error));
-                        });
-            }
+        item: function(uuid, params) {
+            handleRoute('Item', uuid, params);
         },
 
         // Route for editing a node
-        node: function(uuid, parentUuid) {
-            console.log(uuid);
-            contentService.fetchNode(uuid)
-                    .then(function(contentNode){
-                        var contentEditorView = new ContentEditorView({model: contentNode, el:contentEditorEl});
-                        contentEditorView.render();
-                        console.log('model:', contentNode.toJSON());
-                    })
-                    .catch(function (error) {
-                        console.log(error);
-                        openMessageModal('Error', JSON.stringify(error));
-                    });
+        node: function(uuid, params) {
+            handleRoute('Node', uuid, params);
         }
     });
 
     var t = router.history.start({pushState: false});
 
-</script>
+    /**
+     * Parses p1=A; p2=B into
+     * { p1: 'A', p2: 'B'}
+     */
+    function parseParams(params)
+    {
+        var paramsObj = {};
+        var paramItems = params.split(';');
 
-<div id="messageModal" class="reveal-modal" data-reveal aria-labelledby="messageModalTitle" aria-hidden="true" role="dialog">
-    <h2 id="messageModalTitle"></h2>
-    <div id="messageModalBody"></div>
-    <a class="close-reveal-modal" aria-label="Close">&#215;</a>
-</div>
+        for (var i=0; i < paramItems.length; i++)
+        {
+            var tokens = paramItems[i].split('=');
+            if (tokens.length < 2)
+            {
+                throw Error('Parse error')
+            }
+            paramsObj[tokens[0]] = tokens[1]; // tokenp[1] may be undefined
+        }
+        return paramsObj;
+    }
+
+    /**
+     * Handles route
+     */
+    function handleRoute(type, uuid, params)
+    {
+        if (uuid == '_new_') {
+            var paramsObj = parseParams(params);
+            if (!paramsObj.parent) {
+                clientApp.showMessage('Error', 'Parent uuid was not provided');
+                return;
+            }
+
+            var promise = function(){
+                if (paramsObj.copyOf) {
+                    // @todo retrieve
+                    return contentService['fetch' + type](paramsObj.copyOf);
+                } else {
+                    // Nothing to do, just return a proise and resolve it
+                    return promiseutils.createPromise( function(resolve, reject) {
+                        resolve(null);
+                    });
+                }
+            }();
+
+            promise.then(function(originalContent) {
+                var contentModel = contentService['create' +  type](paramsObj.parent);
+
+                // Copying
+                if (originalContent) {
+                    var origContenObj = originalContent.toJSON();
+                    origContenObj.metadata.title = 'Copy of: ' + origContenObj.metadata.title;
+                    contentModel.set({
+                        metadata: origContenObj.metadata,
+                        body: origContenObj.body
+                    });
+                }
+                /*
+                var contentEditorView = new ContentEditorView({
+                    app: clientApp, model: content, el: contentEditorEl
+                });
+                contentEditorView.render();
+                */
+                clientApp.createAndRenderComponent(ContentEditorPane, contentEditorEl, {
+                    app: clientApp, model: contentModel, el: contentEditorEl
+                });
+            })
+            .catch(function(error){
+                clientApp.showMessage('Error', JSON.stringify(error));
+            });
+
+
+        } else {
+            contentService['fetch' +  type](uuid)
+            .then(function (contentModel) {
+                clientApp.createAndRenderComponent(ContentEditorPane, contentEditorEl, {
+                    app: clientApp, model: contentModel, el: contentEditorEl
+                });
+                console.log('model:', contentModel);
+            })
+            .catch(function (error) {
+                console.log(error);
+                clientApp.showMessage('Error', JSON.stringify(error));
+            });
+        }
+    }
+
+</script>

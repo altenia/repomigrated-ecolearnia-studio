@@ -1,100 +1,87 @@
 <!-- SECONDARY BAR { -->
-<div class="fixed second-top-bar">
-    <nav id="secondary-top-bar" class="top-bar" data-topbar role="navigation">
-        <ul class="title-area">
-            <li class="name">
-                <h1><a href="">Hello second</a></h1>
-            </li>
+<div class="row">
+    <div class="col s3"> <!-- SIDE MENU { -->
+
+        <!-- Dropdown Trigger -->
+        <a class='dropdown-button btn' href='#' data-activates='workspace-el' style="width:100%">Workspaces!</a>
+        <!-- Dropdown Structure -->
+        <ul id='workspace-el' class='dropdown-content'>
+            <li><a href="#!">Korean</a></li>
+            <li><a href="#!">US-West Coast</a></li>
+            <li class="divider"></li>
+            <li><a href="#!">Chinese</a></li>
         </ul>
-        <section class="top-bar-section">
-            <ul class="left">
-                <li>
 
-                </li>
-            </ul>
-            <ul class="right">
-                <li class="has-dropdown menu-icon">
-                    <a href="#"><i class="fa fa-link"></i></a>
-                </li>
-                <li class="has-dropdown "><a href="#"><i class="fa fa-bars"></i></a>
-                    <ul class="dropdown">
-                        <li><a href="#">Bookmark</a></li>
-                        <li><a href="#">Make copy</a></li>
-                        <li class="divider"></li>
-                        <li><a href="#">Rename</a></li>
-                        <li><a href="#">Move to</a></li>
+
+        <ul class="collapsible" data-collapsible="accordion">
+            <li>
+                <div class="collapsible-header"><i class="mdi-action-bookmark"></i>Favorite</div>
+                <div class="collapsible-body">
+                    <ul>
+                        <li>My Favorite content</li>
                     </ul>
-                </li>
-                <li class="divider"></li>
-
-                <li><a href=""><i class="fa fa-cog"></i></a> </li>
-            </ul>
-        </section>
-    </nav>
-</div>
-<!-- } SECONDARY BAR -->
-
-<div class="row full-width">
-    <div id="pane-menu" class="columns small-4 medium-4 hide-for-small-down" >
-
-        <ul class="accordion" data-accordion="myAccordionGroup">
-            <li class="accordion-navigation">
-                <a href="#panel1a">Favorites</a>
-                <div id="panel1a" class="content">
-                    Favorites
                 </div>
             </li>
-            <li class="accordion-navigation">
-                <a href="#panel2a">Root Contents</a>
-                <div id="panel2a" class="content active">
+            <li>
+                <div class="collapsible-header active"><i class="mdi-file-folder"></i>Root contents</div>
+                <div class="collapsible-body">
 
-                    <!-- Filter -->
-                    <form>
-                        <div class="row collapse" >
-                            <div class="small-3 columns">
-                                <span class="prefix">Locale</span>
+                    <div class="row">
+                        <form class="col s12">
+                            <div class="input-field tight">
+                                <input id="code" type="text" >
+                                <label for="title">Code</label>
                             </div>
-                            <div class="small-9 columns">
-                                <input type="text"  placeholder="Locale">
+                            <div class="input-field tight">
+                                <input id="title" type="text" class="validate">
+                                <label for="title">Title</label>
                             </div>
-                        </div>
-                        <div class="row collapse">
-                            <div class="small-3 columns">
-                                <span class="prefix">Grade</span>
-                            </div>
-                            <div class="small-9 columns">
-                                <input type="text" placeholder="Grade">
-                            </div>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
 
                     <div id="content-root-table"></div>
 
                 </div>
             </li>
         </ul>
+    </div> <!-- } SIDE MENU -->
 
-    </div>
+    <div class="col s9"> <!-- CONTENT PANE { -->
+        <!-- TOOLBAR { -->
+        <nav class="light-blue lighten-1">
+            <div class="nav-wrapper">
+                <div id="breadcrumbs-component"></div>
 
-    <div id="pane-content" class="columns small-12 medium-8">
-        <ul class="breadcrumbs">
-            <li><a href="#">Workspace A</a></li>
-            <li><a href="#">EN_US-MA</a></li>
-            <li class="unavailable"><a href="#">OA-2-3</a></li>
-            <li class="current"><a href="#">Problem 1a</a></li>
-        </ul>
+                <ul id="nav-mobile" class="right">
+                    <li><a href="#link"><i class="mdi-content-link"></i></a></li>
+                    <li>
+                        <a class="dropdown-button" data-hover="true" href='#' data-activates='action-el'><i style="font-size: 1.5rem" class="mdi-navigation-menu"></i></a>
+                        <ul id='action-el' class='dropdown-content'>
+                            <li><a href="#!">Bookmakr</a></li>
+                            <li><a href="#!">Make copy</a></li>
+                            <li class="divider"></li>
+                            <li><a href="#!">Rename</a></li>
+                            <li><a href="#!">Moveto</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        <!-- } TOOLBAR -->
+
         <div id="content-tree"></div>
 
-    </div>
+    </div> <!-- } CONTENT PANE -->
 </div>
+<!-- } SECONDARY BAR -->
 
 <div id="message-dialog"></div>
 
-<script src="/cohevium/public/foundation/js/foundation/foundation.reveal.js"></script>
 <script src='/cohevium/public/js/el-externdeps.bundle.min.js'></script>
 <script src='/cohevium/public/js/el-studio.bundle.js'></script>
 
 <script>
+    var React = require('react/addons');
     var clientapp = require('clientapp');
 
     var ContentCollectionView = require('contentcollection-view').ContentCollectionView;
@@ -105,14 +92,6 @@
     };
     var clientApp = clientapp.init(appSettings);
     //clientApp.initMessageDialog( document.getElementById('message-dialog'));
-
-    function openMessageModal(title, body)
-    {
-        $('#messageModalTitle').html(title);
-        $('#messageModalBody').html(body);
-        $('#messageModal').foundation('reveal', 'open');
-    }
-    //setTimeout(function(){ openMessageModal('Hello', 'test'); }, 2000);
 
 
     var contentService = clientApp.getContentService();
@@ -128,7 +107,7 @@
             })
             .catch(function(error){
                 console.log(error);
-                openMessageModal('Error', JSON.stringify(error));
+                Materialize.toast('Error while querying nodes: ' + JSON.stringify(error), 4000);
             });
 
 
@@ -144,14 +123,20 @@
 
         content: function(uuid) {
             console.log(uuid);
-            contentService.fetchNode(uuid)
+            contentService.fetchNode(uuid, true)
                     .done(function(data){
+                        var breadcrumbItems = contentService.getBreadcrumbItems(data.toJSON());
+                        // Breadcrumbs
+                        var breadcrumbsEl = document.getElementById('breadcrumbs-component');
+                        clientApp.createBreadcrumbs(breadcrumbsEl, breadcrumbItems);
+
                         var contentTreeEl = document.getElementById('content-tree');
                         var contentTreeView = new ContentTreeView(
                                 {
-                                    model: data,
                                     el: contentTreeEl,
-                                    siteBaseUrl: '/cohevium/content'
+                                    model: data,
+                                    siteBaseUrl: '/cohevium/content',
+                                    service: contentService
                                 }
                         );
                         contentTreeView.render();
@@ -161,11 +146,7 @@
     });
 
     var t = router.history.start({pushState: false});
+
+
+
 </script>
-
-
-<div id="messageModal" class="reveal-modal" data-reveal aria-labelledby="messageModalTitle" aria-hidden="true" role="dialog">
-    <h2 id="messageModalTitle"></h2>
-    <div id="messageModalBody"></div>
-    <a class="close-reveal-modal" aria-label="Close">&#215;</a>
-</div>

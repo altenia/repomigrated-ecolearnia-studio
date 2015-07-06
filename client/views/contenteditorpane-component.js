@@ -58,14 +58,14 @@ export class ContentEditorPaneComponent extends React.Component
         };
         var component;
         // @todo - change comparison to 'node'
-        if (this.state.content.kind === 'Assignment')
+        if (this.isKindItem(this.state.content))
         {
             component = React.createElement(
-                ContentNodeEditorComponent, props
+                ContentItemEditorComponent, props
             );
         } else {
             component = React.createElement(
-                ContentItemEditorComponent, props
+                ContentNodeEditorComponent, props
             );
         }
 
@@ -122,11 +122,11 @@ export class ContentEditorPaneComponent extends React.Component
 
         var method;
         var contentService = this.props.app.getContentService();
-        if (this.state.content.kind === 'Assignment')
+        if (this.isKindItem(this.state.content))
         {
-            method = contentService.moveNode.bind(contentService);
-        } else {
             method = contentService.moveItem.bind(contentService);
+        } else {
+            method = contentService.moveNode.bind(contentService);
         }
 
         method(this.state.content.uuid, to)
@@ -139,15 +139,29 @@ export class ContentEditorPaneComponent extends React.Component
 
     }
 
-    itemSort_(oldIndex, newIndex)
-    {
+    itemSort_(oldIndex, newIndex) {
         var items = this.state.content.body.items;
 
         // Swap
-        var itemHolder = items[newIndex];
+        var itemHolder = items[oldIndex];
+        if (oldIndex < newIndex) {
+            items.splice(newIndex+1, 0, itemHolder);
+            items.splice(oldIndex, 1);
+        } else {
+            // If oldIndex was bigger, then the deletion should be one index up
+            // Because it has been inserted to a lower position
+            items.splice(newIndex, 0, itemHolder);
+            items.splice(oldIndex+1, 1);
+        }
+        /*
         items[newIndex] = items[oldIndex];
         items[oldIndex] = itemHolder;
-
+        */
         this.setState({content: this.state.content});
+    }
+
+    isKindItem(content)
+    {
+        return (content.kind === '' || content.kind.toLowerCase() === 'item');
     }
 };
